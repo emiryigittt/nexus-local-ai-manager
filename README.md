@@ -10,6 +10,8 @@ A local-first Windows desktop assistant for Ollama, LM Studio and llama.cpp — 
 
 **English** · [Türkçe](README.tr.md)
 
+[![Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml)
+
 </div>
 
 ![Nexus answering in its desktop window](docs/assets/localization/en/response.png)
@@ -67,8 +69,8 @@ model. A matching API is necessary; model capabilities still vary.
 
 ### 2. Install from source
 
-You need Windows and **64-bit Python 3.11+**. The configured Windows CI matrix targets
-3.11–3.13; hosted CI has not yet been verified. Python 3.14 has known intermittent
+You need Windows and **64-bit Python 3.11+**. Windows CI has passed on Python
+3.11–3.13. Python 3.14 has known intermittent
 native access violations during tests and subprocess-cleanup warnings. A clean-machine
 compatibility check is pending. See the [latest local verification](docs/PREPUBLICATION_CHECK.md).
 
@@ -134,7 +136,7 @@ expose it to a LAN, proxy, or public tunnel. [Privacy and security boundaries](d
 
 | Area | What is verified / what remains |
 | --- | --- |
-| Automated checks | 262 tests passed locally on 29 September 2026; an earlier run crashed intermittently. [Verification details](docs/PREPUBLICATION_CHECK.md); not a hosted CI badge |
+| Automated checks | [Windows CI passed](https://github.com/emiryigittt/nexus-local-ai-manager/actions/runs/36627956686) on Python 3.11–3.13 on 29 September 2026. All 262 tests passed locally on retry; the Python 3.14 native crash remains unresolved. [Verification details](docs/PREPUBLICATION_CHECK.md) |
 | Local speech | Two segments completed real Qt playback; naturalness needs listening tests |
 | Memory | Candidate persistence/approval tested; current live-model recall check awaits a running server |
 | Hey Nexus | Opt-in experiment; missed triggers and CPU use remain. Use `F2` as fallback |

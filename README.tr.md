@@ -10,6 +10,8 @@ Ollama, LM Studio ve llama.cpp ile sohbet, belgeler, ses ve kontrolü sende olan
 
 [English](README.md) · **Türkçe**
 
+[![Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml)
+
 </div>
 
 ![Nexus masaüstü arayüzü](docs/assets/localization/tr/response.png)
@@ -63,8 +65,8 @@ Nexus bu sunucuları kurmaz veya başlatmaz. RAM/GPU ihtiyacı seçtiğin modele
 
 ### 2. Nexus'u kur
 
-Windows ve **64 bit Python 3.11+** gerekir. Yapılandırılmış Windows CI matrisi
-3.11–3.13'ü hedefler; GitHub testlerinin çalıştığı henüz doğrulanmadı. Python 3.14'te
+Windows ve **64 bit Python 3.11+** gerekir. GitHub Windows CI kontrolleri
+Python 3.11–3.13 üzerinde geçti. Python 3.14'te
 testler sırasında aralıklı yerel erişim ihlalleri ve işlem kapanış uyarıları var.
 Temiz bilgisayarda kurulum testi bekliyor. [Son yerel doğrulama](docs/PREPUBLICATION_CHECK.md).
 
@@ -126,8 +128,9 @@ yerel ağa veya herkese açık tünele açma. [Gizlilik sınırları](docs/PRIVA
 
 ## Durum ve sınırlamalar
 
-- 29 Eylül 2026'da yerelde 262 test geçti; önceki koşu aralıklı bir çöküşle kesildi.
-  [Doğrulama ayrıntıları](docs/PREPUBLICATION_CHECK.md); bu bir GitHub CI rozeti değil.
+- 29 Eylül 2026'da [GitHub Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/runs/36627956686)
+  Python 3.11–3.13 üzerinde geçti. Yerelde 262 test yeniden çalıştırıldığında geçti;
+  Python 3.14'teki aralıklı çöküş açık kalıyor. [Doğrulama ayrıntıları](docs/PREPUBLICATION_CHECK.md).
 - Yerel seste iki parçanın oynatımı doğrulandı; doğallık için dinleme testleri bekliyor.
 - Hafıza kayıt/onay testleri geçti; gerçek modelle oturumlar arası hatırlama kontrolü açık.
 - “Hey Nexus” ayrı izinli, deneysel bir özellik; tetiklemeleri kaçırabilir. `F2` alternatifini kullan.

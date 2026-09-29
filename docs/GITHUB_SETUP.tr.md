@@ -2,8 +2,9 @@
 
 [English](GITHUB_SETUP.md) · **Türkçe** · [Belgeler](INDEX.md)
 
-Bu dosya bir rehberdir; hesap açılmadı, program kurulmadı, dosyalar yüklenmedi.
-Hesabın ve depo adresin belli olmadığı için README'de uydurma klonlama bağlantısı yok.
+Herkese açık depo artık [emiryigittt/nexus-local-ai-manager](https://github.com/emiryigittt/nexus-local-ai-manager)
+adresinde. README gerçek klonlama bağlantısını içeriyor. Aşağıdaki adımlar ilk
+kurulum rehberidir; güncel sonuçlar için [yayın doğrulamasına](PREPUBLICATION_CHECK.md) bak.
 
 ## 1. Hesabını oluştur
 

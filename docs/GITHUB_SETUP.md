@@ -2,8 +2,9 @@
 
 **English** · [Türkçe](GITHUB_SETUP.tr.md) · [Documentation](INDEX.md)
 
-This is a guide: no account was created, software installed, or files uploaded.
-The account/repository name is not yet known, so the README has no invented clone URL.
+The public repository is now [emiryigittt/nexus-local-ai-manager](https://github.com/emiryigittt/nexus-local-ai-manager).
+The README includes its real clone URL. The instructions below describe the initial
+setup process; see the [publication verification](PREPUBLICATION_CHECK.md) for current results.
 
 ## 1. Create your account
 
