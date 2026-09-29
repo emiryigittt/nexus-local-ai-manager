@@ -1,0 +1,65 @@
+name: Bug report / Hata bildirimi
+description: Report a reproducible problem in English or Turkish / Tekrarlanabilir hata bildirin
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        English or Turkish reports are welcome. Use synthetic examples. Never upload
+        databases, .env files, private prompts, documents or recordings. Security
+        vulnerabilities belong in the private channel described in SECURITY.md.
+        Türkçe bildirimler kabul edilir. Veritabanı, .env, özel istem, belge veya ses
+        kaydı yüklemeyin; yapay örnek kullanın. Güvenlik açıkları için SECURITY.tr.md içindeki özel kanal yönergesine uyun.
+  - type: input
+    id: version
+    attributes:
+      label: Nexus version or commit / Sürüm veya commit
+      placeholder: Commit SHA or ZIP download date / Commit SHA veya ZIP indirme tarihi
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment / Ortam
+      placeholder: Windows 11, Python 3.12, LM Studio 0.x
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / Tekrarlama adımları
+      placeholder: Tell us exactly what you did. / Yaptığınız adımları sırayla yazın.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / Beklenen davranış
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / Gerçekte ne oldu?
+    validations:
+      required: true
+  - type: input
+    id: backend
+    attributes:
+      label: Model and voice backend / Model ve ses motoru
+      description: Include model ID and voice backend; no secrets. / Model kimliği ve ses motorunu yazın; anahtar veya özel sunucu adresi eklemeyin.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs (optional) / Temizlenmiş kayıtlar (isteğe bağlı)
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist / Kontrol listesi
+      options:
+        - label: I searched existing issues. / Mevcut bildirimleri kontrol ettim.
+          required: true
+        - label: I removed keys and private content. / Anahtarları ve özel verileri çıkardım.
+          required: true

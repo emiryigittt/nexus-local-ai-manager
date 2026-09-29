@@ -1,0 +1,17 @@
+{
+  "pairs": [
+    ["README.md", "README.tr.md"],
+    ["CONTRIBUTING.md", "CONTRIBUTING.tr.md"],
+    ["SECURITY.md", "SECURITY.tr.md"],
+    ["CODE_OF_CONDUCT.md", "CODE_OF_CONDUCT.tr.md"],
+    ["THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.tr.md"],
+    ["docs/USER_GUIDE.md", "docs/USER_GUIDE.tr.md"],
+    ["docs/PRIVACY.md", "docs/PRIVACY.tr.md"],
+    ["docs/GOOD_FIRST_ISSUES.md", "docs/GOOD_FIRST_ISSUES.tr.md"],
+    ["docs/DEMO_SCRIPT.md", "docs/DEMO_SCRIPT.tr.md"],
+    ["docs/GITHUB_SETUP.md", "docs/GITHUB_SETUP.tr.md"],
+    ["docs/GITHUB_LAUNCH_PLAN.en.md", "docs/GITHUB_LAUNCH_PLAN.md"],
+    ["docs/LAUNCH_COPY.md", "docs/LAUNCH_COPY.tr.md"],
+    ["docs/VOICE_AND_MEMORY_RELIABILITY.en.md", "docs/VOICE_AND_MEMORY_RELIABILITY.md"]
+  ]
+}

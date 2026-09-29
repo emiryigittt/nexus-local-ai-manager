@@ -1,0 +1,28 @@
+name: Feature request / Özellik önerisi
+description: Suggest an improvement in English or Turkish / İngilizce veya Türkçe öneri paylaşın
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        English and Turkish are welcome. Use synthetic examples, not private documents.
+        İngilizce ve Türkçe kabul edilir. Özel belge yerine yapay örnek kullanın.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Sorun
+      description: What workflow is difficult today? / Hangi iş akışı zor geliyor?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution / Önerilen çözüm
+      description: Describe the user experience, not only the code. / Yalnızca kodu değil, kullanıcı deneyimini anlatın.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / Değerlendirilen alternatifler

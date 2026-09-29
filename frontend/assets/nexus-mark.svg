@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Nexus — linked ribbons</title>
+  <defs>
+    <linearGradient id="upper" x1="10" y1="12" x2="36" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9AFFBC"/>
+      <stop offset="1" stop-color="#36E991"/>
+    </linearGradient>
+    <linearGradient id="lower" x1="54" y1="14" x2="28" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#55EF9D"/>
+      <stop offset="1" stop-color="#16BB75"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#upper)" d="M10 50V23C10 16.925 14.925 12 21 12H24L36 26L27 34L22 28V50Z"/>
+  <path fill="url(#lower)" d="M54 14V41C54 47.075 49.075 52 43 52H40L28 38L37 30L42 36V14Z"/>
+</svg>
