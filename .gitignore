@@ -1,0 +1,53 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.pytest-tmp/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local configuration and runtime output
+.env
+.env.*
+!.env.example
+last_debug.json
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+settings.json
+mcp_servers.json
+memory-export*.json
+*.log
+*.mp3
+*.wav
+ui_preview.png
+models/
+# Unreviewed legacy screenshots stay local; README uses synthetic docs/assets previews.
+/arayuz_goruntusu.png
+/gorsel_isleme_ozelligi.png
+/pano_ozelligi.png
+# Personal document-generation outputs are not Nexus publication assets.
+/output/pdf/
+/tmp/pdfs/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Builds
+build/
+dist/
+*.egg-info/
