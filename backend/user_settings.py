@@ -33,8 +33,15 @@ class ProviderProfile:
 class UserPreferences:
     schema_version: int = 1
     setup_complete: bool = False
+    introduction_complete: bool = False
+    personal_questions_enabled: bool = True
     language: str = "tr"
     theme: str = "dark"
+    accent_color: str = "#55ef9d"
+    rgb_enabled: bool = False
+    companion_style: str = "robot"
+    ui_sounds_enabled: bool = False
+    ui_sound_volume: int = 20
     reduced_motion: bool = False
     global_shortcut: str = "alt+space"
     selected_provider_id: str = "lm-studio"
@@ -47,10 +54,14 @@ class UserPreferences:
     voice_input_device: str = ""
     voice_output_device: str = ""
     voice_input_mode: str = "toggle"
+    voice_auto_finish: bool = True
+    voice_review_before_send: bool = False
+    voice_transcription_model: str = "base"
     voice_silence_seconds: float = 1.2
     voice_threshold: float = 0.012
     wake_word_enabled: bool = False
     wake_word_on_startup: bool = False
+    wake_word_threshold: float = 0.004
     cloud_speech_consent: bool = False
     web_consent: bool = False
     memory_enabled: bool = False

@@ -14,7 +14,7 @@ echo [1/2] Yerel ses motoru kuruluyor...
 if errorlevel 1 goto :error
 
 echo [2/2] Supertonic Turkce modeli indiriliyor...
-".venv\Scripts\python.exe" scripts\setup_local_tts.py
+".venv\Scripts\python.exe" scripts\setup_local_tts.py --download
 if errorlevel 1 goto :error
 
 echo.

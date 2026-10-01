@@ -23,6 +23,7 @@ from backend.conversation_summaries import update_rolling_summary
 from backend.conversations import conversation_repository
 from backend.documents import document_repository
 from backend.embeddings import embed_texts
+from backend.identity import identity_instruction, profile_context, profile_memories
 from backend.mcp_client import MCPServerConfig, mcp_config_store, mcp_manager
 from backend.memory import memory_repository
 from backend.memory_jobs import memory_job_status
@@ -42,7 +43,7 @@ from backend.user_settings import ProviderProfile, settings_store
 app = FastAPI(
     title="Nexus Local API",
     description="Local gateway for the Nexus desktop command center.",
-    version="0.3.0-dev",
+    version="0.3.0-beta.1",
 )
 app.add_middleware(
     CORSMiddleware,
@@ -98,13 +99,18 @@ class PreferencesUpdate(BaseModel):
     voice_input_device: str | None = Field(default=None, max_length=1000)
     voice_output_device: str | None = Field(default=None, max_length=1000)
     voice_input_mode: str | None = Field(default=None, pattern="^(toggle|push_to_talk|vad)$")
+    voice_auto_finish: bool | None = None
+    voice_review_before_send: bool | None = None
+    voice_transcription_model: str | None = Field(default=None, pattern="^(base|small)$")
     voice_silence_seconds: float | None = Field(default=None, ge=0.3, le=3.0)
     voice_threshold: float | None = Field(default=None, ge=0.001, le=0.2)
     wake_word_enabled: bool | None = None
     wake_word_on_startup: bool | None = None
+    wake_word_threshold: float | None = Field(default=None, ge=0.001, le=0.2)
     cloud_speech_consent: bool | None = None
     web_consent: bool | None = None
     memory_enabled: bool | None = None
+    personal_questions_enabled: bool | None = None
     memory_auto_learn: bool | None = None
     memory_reference_history: bool | None = None
     clipboard_policy: str | None = Field(default=None, pattern="^(ask|always|never)$")
@@ -207,6 +213,16 @@ def _record_user_message(data: ChatRequest) -> None:
 _memory_tasks: set[asyncio.Task[Any]] = set()
 
 
+async def _prioritize_interactive_request():
+    """Stop optional model work before submitting the next interactive answer."""
+    pending = [task for task in _memory_tasks if not task.done()]
+    for task in pending:
+        task.cancel()
+    if pending:
+        # A provider must not turn cancelled optional work into another long wait.
+        await asyncio.wait(pending, timeout=0.2)
+
+
 def _schedule_memory_learning(data: ChatRequest, assistant_text: str) -> None:
     preferences = settings_store.load()
     if data.private or not preferences.memory_auto_learn or not data.text.strip():
@@ -216,6 +232,7 @@ def _schedule_memory_learning(data: ChatRequest, assistant_text: str) -> None:
 
     async def learn():
         try:
+            await asyncio.sleep(1.0)
             count = await learn_from_turn(
                 data.text,
                 assistant_text,
@@ -245,6 +262,8 @@ def _schedule_memory_learning(data: ChatRequest, assistant_text: str) -> None:
 
     def completed(done: asyncio.Task[Any]) -> None:
         _memory_tasks.discard(done)
+        if done.cancelled():
+            memory_job_status.finish(job_id, "cancelled")
         try:
             done.exception()
         except (asyncio.CancelledError, Exception):
@@ -264,16 +283,15 @@ def _schedule_summary_updates(data: ChatRequest, assistant_text: str) -> None:
     if data.project_id:
         targets.append(("project", data.project_id))
     for kind, scope_id in targets:
-        task = asyncio.create_task(
-            update_rolling_summary(
-                kind=kind,
-                scope_id=scope_id,
-                user_text=data.text,
-                assistant_text=assistant_text,
-                chat_url=chat_url,
-                model=model,
-                headers=headers,
+        async def summarize(kind=kind, scope_id=scope_id):
+            await asyncio.sleep(1.0)
+            await update_rolling_summary(
+                kind=kind, scope_id=scope_id, user_text=data.text,
+                assistant_text=assistant_text, chat_url=chat_url, model=model, headers=headers,
             )
+
+        task = asyncio.create_task(
+            summarize()
         )
         _memory_tasks.add(task)
 
@@ -307,11 +325,33 @@ def _clean_model_output(result: dict[str, Any]) -> str:
 
 
 async def _build_prompt(
-    data: ChatRequest, *, include_metadata: bool = False
+    data: ChatRequest, *, include_metadata: bool = False, allow_personal_question: bool = True
 ) -> tuple[Any, str] | tuple[Any, str, list[dict[str, Any]]]:
     memory_sources: list[dict[str, Any]] = []
+    preferences = settings_store.load()
+    profile = profile_memories(memory_repository, preferences, private=data.private)
+    summary = memory_repository.profile_summary() if preferences.memory_enabled and not data.private else ""
+    personal_context = profile_context(profile, summary)
+    memory_sources.extend(
+        {"id": item["id"], "content": item["content"], "memory_type": item["memory_type"],
+         "source_conversation_id": item.get("source_conversation_id"), "score": None}
+        for item in profile
+    )
 
-    def result(content: Any, instruction: str):
+    def result(content: Any, instruction: str, mode: str = "chat"):
+        if personal_context:
+            if isinstance(content, list):
+                content[0] = {"type": "text", "text": personal_context + "\n\nCurrent request:\n" + content[0]["text"]}
+            else:
+                content = personal_context + "\n\nCurrent request:\n" + content
+        provider = _provider_for(data)
+        model = data.model_id or provider.selected_model
+        if not model and provider.base_url.rstrip("/") == settings.api_base_url.rstrip("/"):
+            model = settings.model
+        instruction = identity_instruction(
+            preferences, provider, private=data.private, mode=mode,
+            model=model, allow_question=allow_personal_question,
+        ) + "\n" + instruction
         if include_metadata:
             return content, instruction, memory_sources
         return content, instruction
@@ -334,8 +374,8 @@ async def _build_prompt(
                     "image_url": {"url": f"data:image/jpeg;base64,{data.image}"},
                 },
             ],
-            "You are Nexus Vision, a helpful multimodal desktop assistant. "
-            "Answer clearly in the language used by the user.",
+            "For this multimodal request, describe the attached image carefully, distinguishing observations from guesses.",
+            "vision",
         )
 
     search_match = re.match(r"^/(?:web|ara|search)\s+(.+)$", text, re.DOTALL)
@@ -353,8 +393,8 @@ async def _build_prompt(
             f"Research question: {query}\n\nSources:\n{research['brief']}\n\n"
             "Synthesize a useful answer. Cite claims with [1], [2], etc. "
             "End with a Sources section containing the supplied URLs.",
-            "You are Nexus Research. Be accurate, concise, and transparent about "
-            "uncertainty. Answer in the language used by the user.",
+            "Use the supplied sources accurately and be transparent about uncertainty.",
+            "research",
         )
 
     if not text:
@@ -363,9 +403,10 @@ async def _build_prompt(
         query_vector: list[float] | None = None
         embedding_model = ""
         try:
-            vectors, embedding_model = ([], "") if data.private else await embed_texts([text])
+            async with asyncio.timeout(0.6):
+                vectors, embedding_model = ([], "") if data.private else await embed_texts([text])
             query_vector = vectors[0] if vectors else None
-        except (httpx.HTTPError, ValueError):
+        except (TimeoutError, httpx.HTTPError, ValueError):
             pass
         sources = document_repository.search(
             text, query_vector=query_vector, embedding_model=embedding_model
@@ -379,7 +420,6 @@ async def _build_prompt(
                 f"Kullanıcı sorusu: {text}\n\nYerel kaynaklar:\n{context}\n\n"
                 "Yalnızca desteklenen iddialarda [1], [2] biçiminde kaynak göster."
             )
-    preferences = settings_store.load()
     if preferences.memory_reference_history and not data.private:
         summary_parts: list[str] = []
         if data.conversation_id:
@@ -394,6 +434,7 @@ async def _build_prompt(
             text = "\n\n".join(summary_parts) + f"\n\nGüncel istek:\n{text}"
     if preferences.memory_enabled and not data.private:
         memories = await retrieve_memories(data.text, data.project_id)
+        memories = [item for item in memories if item["id"] not in {record["id"] for record in profile}]
         if memories:
             memory_sources.extend(
                 {
@@ -409,23 +450,25 @@ async def _build_prompt(
             text = f"Kullanıcının açıkça kaydettiği bilgiler:\n{facts}\n\n{text}"
     return result(
         text,
-        "You are Nexus, a fast and helpful desktop AI assistant. Give direct, "
-        "clean answers in the language used by the user.",
+        "Give useful, clear answers in the language used by the user.",
+        "action" if data.action_id else "chat",
     )
 
 
 async def _model_payload(
     data: ChatRequest, *, stream: bool = False
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    user_content, system_instruction, memory_sources = await _build_prompt(
-        data, include_metadata=True
-    )
     _, model, _ = _model_connection(data)
     history = []
     if data.private:
         history = recent_turns(item.model_dump() for item in data.history)
     elif data.conversation_id:
         history = recent_turns(conversation_repository.messages(data.conversation_id))
+    recent_answers = [item["content"] for item in history if item["role"] == "assistant"][-2:]
+    user_content, system_instruction, memory_sources = await _build_prompt(
+        data, include_metadata=True,
+        allow_personal_question=not any("?" in answer for answer in recent_answers),
+    )
     return {
         "model": model,
         "messages": [
@@ -446,6 +489,7 @@ def _stream_event(event: str, **payload: Any) -> str:
 async def _stream_model(data: ChatRequest) -> AsyncIterator[str]:
     """Translate the provider's SSE stream into compact newline-delimited JSON."""
     try:
+        await _prioritize_interactive_request()
         payload, memory_sources = await _model_payload(data, stream=True)
         chat_url, _, headers = _model_connection(data)
         _record_user_message(data)
@@ -812,6 +856,7 @@ async def provider_health() -> dict[str, Any]:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(data: ChatRequest) -> ChatResponse:
+    await _prioritize_interactive_request()
     payload, memory_sources = await _model_payload(data)
     chat_url, _, headers = _model_connection(data)
     _record_user_message(data)

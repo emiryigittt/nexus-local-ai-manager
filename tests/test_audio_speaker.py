@@ -82,7 +82,7 @@ def test_explicit_neural_voice_reports_missing_engine(monkeypatch, tmp_path):
     monkeypatch.setattr("backend.supertonic_speaker.synthesize_to_file", lambda *args: False)
     speaker = SpeechSpeaker(backend="supertonic")
     assert not speaker.speak_to_file("Test", str(tmp_path / "missing.wav"))
-    assert "Yerel Ses Kur.bat" in speaker.last_error
+    assert "Ayarlar" in speaker.last_error and "Yanıt sesi" in speaker.last_error
 
 
 def test_cloud_speech_never_runs_without_saved_consent(monkeypatch, tmp_path):
@@ -99,7 +99,6 @@ def test_cloud_speech_never_runs_without_saved_consent(monkeypatch, tmp_path):
 
 
 def test_edge_uses_saved_voice_and_rate_only_after_consent(monkeypatch, tmp_path):
-    from pathlib import Path
 
     from backend.user_settings import UserPreferences
 
@@ -112,12 +111,37 @@ def test_edge_uses_saved_voice_and_rate_only_after_consent(monkeypatch, tmp_path
     calls = []
 
     class Communicate:
-        def __init__(self, text, voice, *, rate):
+        def __init__(self, text, voice, *, rate, boundary):
+            assert boundary == "WordBoundary"
             calls.append((text, voice, rate))
 
-        async def save(self, path):
-            Path(path).write_bytes(b"synthetic")
+        async def stream(self):
+            yield {"type": "audio", "data": b"synthetic"}
+            yield {"type": "WordBoundary", "offset": 1_000_000, "duration": 2_000_000, "text": "Test"}
 
     monkeypatch.setattr("backend.audio_speaker.edge_tts.Communicate", Communicate)
-    assert SpeechSpeaker(backend="edge").speak_to_file("Test", str(tmp_path / "test.mp3"))
+    speaker = SpeechSpeaker(backend="edge")
+    assert speaker.speak_to_file("Test", str(tmp_path / "test.mp3"))
     assert calls == [("Test", "tr-TR-EmelNeural", "+10%")]
+    assert speaker.last_word_timings == [(100, 300, "Test")]
+
+
+def test_edge_supports_older_communicate_without_boundary_parameter(monkeypatch, tmp_path):
+    from backend.user_settings import UserPreferences
+
+    preferences = UserPreferences.defaults()
+    preferences.cloud_speech_consent = True
+    monkeypatch.setattr("backend.user_settings.settings_store.load", lambda: preferences)
+
+    class Communicate:
+        def __init__(self, text, voice, *, rate):
+            pass
+
+        async def stream(self):
+            yield {"type": "audio", "data": b"synthetic"}
+            yield {"type": "WordBoundary", "offset": 0, "duration": 1_000_000, "text": "Test"}
+
+    monkeypatch.setattr("backend.audio_speaker.edge_tts.Communicate", Communicate)
+    speaker = SpeechSpeaker(backend="edge")
+    assert speaker.speak_to_file("Test", str(tmp_path / "older.mp3"))
+    assert speaker.last_word_timings == [(0, 100, "Test")]

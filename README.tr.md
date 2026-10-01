@@ -14,19 +14,31 @@ Ollama, LM Studio ve llama.cpp ile sohbet, belgeler, ses ve kontrolü sende olan
 
 </div>
 
-![Nexus masaüstü arayüzü](docs/assets/localization/tr/response.png)
+![Nexus masaüstü paneli](docs/assets/companion/tr/dock.png)
 
 *Gerçek arayüzün yapay örnek içerikle oluşturulmuş görüntüsüdür; kaydedilmiş bir model yanıtı değildir.*
 
-`Alt + Space` ile aç, sorunu veya belgeni getir, seçtiğin yerel modelle çalış.
+Nexus ekranın üst kenarında küçük bir şerit olarak durur. Üzerine gelince araçları
+görürsün; mini paneli sabitleyebilir veya tıklayıp sohbeti açabilirsin. `Alt + Space`
+sohbeti açar ya da üst şeride döndürür. PDF, DOCX veya metin dosyasını pencereye
+sürükleyip yerel kitaplığına ekleyebilirsin. **Ayarlar → Görünüm** bölümünden RGB
+rengini, isteğe bağlı kenar ışığını, mini bot veya kediyi ve ses efektlerini seç.
+Hafıza kayıtlarını yenilenen kart görünümünden incele, onayla ve düzenle.
 Nexus bir model sunucusuna bağlanır; bulut sohbet hizmeti değildir ve dil modeli içermez.
 
-**Geliştirme önizlemesi · Windows odaklı · Kaynak koddan kurulum.** Henüz Windows
-kurulum paketi yok. Ana pencere ve Genel/Gizlilik ayarları Türkçe ve İngilizceyi
+**0.3.0 Beta 1 · Herkese açık kaynak kod betası · Windows odaklı.**
+[Sürüm ve ZIP indirme](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1).
+64 bit Python 3.11–3.13 kur, kaynak ZIP'ini çıkar ve **Nexus Baslat.bat** dosyasına
+çift tıkla. Çalışan yerel model sunucusu gerekir.
+
+[Yerel Windows kurulum paketi](docs/WINDOWS_PREVIEW.tr.md) geliştirme testleri için
+hazırlandı. Bu beta herkese açık kurulum paketi içermiyor; PyQt/Qt dağıtım kararı
+ve bağımlılık incelemesi açık. Ana pencere ve Genel/Gizlilik ayarları Türkçe ve İngilizceyi
 destekliyor. Ses, geçmiş, hafıza pencereleri ve bazı durum/hata mesajları hâlâ
 Türkçe içeriyor; tam arayüz çevirisi tamamlanmadı.
 
 **Ayarlar → Genel → Dil → Kaydet** (`Ctrl + ,`) üzerinden dili değiştirebilirsin.
+İlk açılış sihirbazı da dili seçip yerel modelini test etmeni sağlar.
 Yeniden başlatmak gerekmez.
 
 [Başlangıç](#başlangıç) · [Kullanım rehberi](docs/USER_GUIDE.tr.md) ·
@@ -36,6 +48,10 @@ Yeniden başlatmak gerekmez.
 
 ## Neler yapabilirsin?
 
+- **Nexus ile tanış:** amacını bilen, sakin ve tutarlı bir yardımcı. İlk kurulumdan
+  sonra adını, uğraşlarını, hedefini ve yanıt tercihlerini isteğe bağlı sorar.
+  Kayıtları gözden geçirip sen kaydedersin; uygun anlarda seni daha iyi tanımak için
+  kısa sorular sorabilir. [Kimlik ve tanışma rehberi](docs/IDENTITY.tr.md).
 - **Modelini kendin seç:** çalışan LM Studio, Ollama ve llama.cpp sunucularını bul.
 - **Belgelerinle çalış:** PDF, DOCX, metin, Markdown veya kod ekleyip ilgili
   bölümler üzerinden yanıt al. Taranmış PDF'ler için önce ayrı bir OCR işlemi gerekir.
@@ -65,12 +81,15 @@ Nexus bu sunucuları kurmaz veya başlatmaz. RAM/GPU ihtiyacı seçtiğin modele
 
 ### 2. Nexus'u kur
 
-Windows ve **64 bit Python 3.11+** gerekir. GitHub Windows CI kontrolleri
-Python 3.11–3.13 üzerinde geçti. Python 3.14'te
+Windows ve **64 bit Python 3.11–3.13** gerekir. Önceki GitHub Windows CI kontrolleri
+bu sürümlerde geçti; yeni beta yayını güncel CI başarısına bağlıdır. Python 3.14'te
 testler sırasında aralıklı yerel erişim ihlalleri ve işlem kapanış uyarıları var.
 Temiz bilgisayarda kurulum testi bekliyor. [Son yerel doğrulama](docs/PREPUBLICATION_CHECK.md).
 
-Bu depoda **Code → Download ZIP** ile indir, arşivi çıkar ve çıkan klasörde terminal aç:
+[Beta sürümünün](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1)
+**Source code (zip)** dosyasını indir, tamamen çıkar ve **Nexus Baslat.bat** dosyasına
+çift tıkla. Başlatıcı bağımlılıkları hazırlayıp bağlantı sihirbazını açar.
+Elle kurmak istersen çıkan klasörde terminal aç ve aşağıdaki komutları kullan.
 
 Git kullanıyorsan depoyu klonlayabilirsin:
 
@@ -128,14 +147,18 @@ yerel ağa veya herkese açık tünele açma. [Gizlilik sınırları](docs/PRIVA
 
 ## Durum ve sınırlamalar
 
-- 29 Eylül 2026'da [GitHub Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/runs/36627956686)
-  Python 3.11–3.13 üzerinde geçti. Yerelde 262 test yeniden çalıştırıldığında geçti;
-  Python 3.14'teki aralıklı çöküş açık kalıyor. [Doğrulama ayrıntıları](docs/PREPUBLICATION_CHECK.md).
+- 1 Ekim 2026'da yerelde 377 test, Ruff ve 13 paket kontrolü geçti. Kaynak kod
+  betası ancak Python 3.11–3.13 Windows CI kontrolleri geçince yayımlanır.
+  Python 3.14'teki önceki aralıklı çöküş açık. [Doğrulama ayrıntıları](docs/PREPUBLICATION_CHECK.md).
 - Yerel seste iki parçanın oynatımı doğrulandı; doğallık için dinleme testleri bekliyor.
 - Hafıza kayıt/onay testleri geçti; gerçek modelle oturumlar arası hatırlama kontrolü açık.
 - “Hey Nexus” ayrı izinli, deneysel bir özellik; tetiklemeleri kaçırabilir. `F2` alternatifini kullan.
-- Ses parça parça hazırlanır; gerçek ses akışı veya kelime düzeyinde senkronizasyon yok.
-- Windows dışındaki sistemler için destek ve hazır kurulum paketi taahhüdü yok.
+- Ses parça parça hazırlanır; gerçek PCM akışı yok. Yazılar oynatımı takip eder;
+  yerel seste kelime zamanlaması yaklaşık, bulut sesinde hizmetin zamanları kullanılır.
+- Konuşma girişi ayarlanabilir duraklamadan sonra biter, zayıf sesi dengeler ve
+  göndermeden önce metin kontrolü sunar. Gerçek mikrofon doğruluğu kullanıcı testi bekliyor.
+- Hedef Windows 10/11 x64; temiz bilgisayar testi bekliyor. Windows dışı destek
+  ve herkese açık kurulum paketi taahhüdü yok.
 
 Sorun yaşarsan [kullanım ve sorun giderme rehberine](docs/USER_GUIDE.tr.md) bak.
 Hatalı model yanıtları mümkündür; önemli bilgileri doğrula.

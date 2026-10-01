@@ -2,8 +2,72 @@
 
 **English** · [Türkçe](VOICE_AND_MEMORY_RELIABILITY.md) · [Documentation](INDEX.md)
 
-Updated 27 September 2026. The LLM remains the user's chosen local provider.
+Updated 1 October 2026. Answers use the provider selected by the user.
 This report separates implemented changes, measured results and outstanding checks.
+
+## Natural speech and recording endpoints — 1 October
+
+- Command transcription is separate from the lightweight wake detector. **Natural
+  speech** selects multilingual Whisper small; default **Balanced** selects base. Until small is
+  prepared, cached base is used. If neither is cached, setup guidance is shown;
+  recording never initiates a download.
+- Commands use five candidates and zero temperature; short wake calls still use one.
+  Quiet input receives bounded amplification and DC removal. Source samples remain
+  unchanged; working copies are erased after processing.
+- **Send automatically when speech ends** defaults on in F2 start/stop mode, including
+  existing preferences without this new field. Push-to-talk still waits for key release.
+  Disable auto-finish to end start/stop capture with a second F2 press.
+- Endpoints use the bundled local Silero speech detector. Inference runs on the
+  recording worker with bounded context, outside the device callback. Resumed speech
+  resets the pause timer. End silence defaults to 1.2 seconds and is configurable
+  under Settings → Voice → Input.
+- Optional **Review text before sending** leaves the transcript editable; Enter
+  submits it. The default fast flow sends recognized text automatically.
+- **Prepare speech model** downloads only model files and validates offline loading.
+  It performs no recording or cloud transcription. The stronger model requires more
+  processing power; identical response speed on every device is not guaranteed.
+- 367 automated tests passed. Fixed synthetic Turkish fixtures were checked normally
+  and at 20% volume with 12% speedup. The lightweight model made two word errors in
+  one harder fixture; perfect accuracy is not claimed. Capture ended despite continued
+  synthetic background noise. These fixtures do not represent the user's accent or
+  actual noise environment; no physical microphone was opened.
+- Small was downloaded, verified against its official SHA256, and loaded offline by
+  both the source launcher and Windows package. In the final fixed-fixture comparison,
+  base took 1.1–1.6s and small 3.4–3.9s. Small misrecognized the same single word in two
+  fixtures; base made no word errors in these six fixtures, excluding punctuation.
+  This small synthetic set does not establish accuracy on the user's voice. Larger
+  models are not claimed to be better on every example; base remains the fast default.
+
+## Wake calls, response delay and speech following — 1 October (earlier pass)
+
+This section describes current behavior. The 27 September limits and measurements below are historical.
+
+- A separate **Wake call threshold** defaults to 0.40% for short calls. Ordinary
+  command capture keeps its existing threshold. Accented Turkish and joined spellings
+  are accepted; “Hey next”, “Nexus” alone and mentions within sentences do not trigger.
+- Local transcription uses one candidate. Post-inference expiry increased from two
+  to six seconds; cancellation and stale-capture checks remain. This is not a hard
+  interruption deadline for an inference already running.
+- **Settings → Voice → Hey Nexus → Try wake call (5 sec)** opens the microphone only
+  when clicked, after the ambient listener releases the device. Below-threshold audio
+  and unrecognized calls get separate results. Audio is neither saved nor uploaded;
+  continuous listening permission is unchanged. Say “Hey Nexus”, pause, then give the command.
+- Command transcription reuses the Whisper model loaded for wake detection.
+  The answer shows the first piece immediately, then batches further rendering every 40 ms.
+- Speech chunks are limited to 110 characters. Completed words may be submitted after
+  25 characters and 0.45 seconds without punctuation. Provider and synthesis times add to this.
+- The caption and main-answer word highlight follow actual player position. Edge word
+  boundaries are used when available. Local speech uses estimated word alignment;
+  exact synchronization for every word is not claimed.
+- Memory/document embedding lookup has a 0.6-second budget per query, then falls back
+  to lexical matching. A new interaction cancels optional memory extraction/summary work
+  to reduce competing model requests. That turn may therefore produce no new automatic
+  memory suggestions or summary. Approved records are not deleted.
+- 358 automated tests and Ruff passed. Fixed offline synthetic fixtures recognized 6/6
+  calls with no triggers on 9 negative phrases; buffered processing took 0.48–0.61 seconds.
+  No physical microphone was opened; these results do not establish real voice/noise accuracy.
+  The selected LM Studio server was unavailable, so actual end-to-end model response time
+  was not measured. Cloud timing was verified using a fake stream, not a live cloud service.
 
 ## Hey Nexus follow-up — 27 September
 

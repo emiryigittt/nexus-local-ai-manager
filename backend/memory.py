@@ -6,6 +6,7 @@ import re
 import sqlite3
 import uuid
 from array import array
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -82,10 +83,15 @@ class MemoryRepository:
                 updated_at TEXT NOT NULL)"""
             )
 
-    def _connect(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connect(self):
         connection = sqlite3.connect(self.path, timeout=10)
         connection.row_factory = sqlite3.Row
-        return connection
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     @staticmethod
     def _validate_type(memory_type: str) -> str:
@@ -239,6 +245,44 @@ class MemoryRepository:
                     (datetime.now(UTC).isoformat(), memory["supersedes_id"]),
                 )
         return updated
+
+    def save_introduction(self, entries: dict[str, tuple[str, str]]) -> None:
+        """Commit explicitly reviewed profile answers together, preserving versions.
+
+        Missing fields are unchanged. These are ordinary memories, so disabling,
+        editing or forgetting them in the memory manager also changes the profile.
+        """
+        clean_entries = []
+        for key, (content, memory_type) in entries.items():
+            if not key.startswith("user.") or self.normalize_key(key) != key:
+                raise ValueError("Invalid introduction key.")
+            clean = " ".join(content.split())
+            if not clean or len(clean) > 500:
+                raise ValueError("Invalid introduction answer.")
+            clean_entries.append((key, clean, self._validate_type(memory_type)))
+        now = datetime.now(UTC).isoformat()
+        with self._connect() as connection:
+            for key, content, memory_type in clean_entries:
+                existing = connection.execute(
+                    """SELECT * FROM memories WHERE memory_key = ? AND scope = 'global'
+                    AND status = 'active' ORDER BY updated_at DESC LIMIT 1""", (key,),
+                ).fetchone()
+                if existing and existing["enabled"] and self._same_content(existing["content"], content):
+                    continue
+                # Supersede all previous active/candidate answers for this field.
+                connection.execute(
+                    """UPDATE memories SET status = 'superseded', enabled = 0, updated_at = ?
+                    WHERE memory_key = ? AND scope = 'global' AND status IN ('active', 'candidate')""",
+                    (now, key),
+                )
+                connection.execute(
+                    """INSERT INTO memories
+                    (id, content, created_at, updated_at, memory_type, scope,
+                    confidence, importance, pinned, status, supersedes_id, memory_key)
+                    VALUES (?, ?, ?, ?, ?, 'global', 1, 0.9, 1, 'active', ?, ?)""",
+                    (str(uuid.uuid4()), content, now, now, memory_type,
+                     existing["id"] if existing else None, key),
+                )
 
     def list(self, enabled_only: bool = False) -> list[dict[str, Any]]:
         clause = " WHERE enabled = 1" if enabled_only else ""

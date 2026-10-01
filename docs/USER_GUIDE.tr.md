@@ -6,7 +6,23 @@ Kurulum için [Türkçe başlangıca](../README.tr.md#başlangıç) bak. Etiketl
 Türkçe arayüzle eşleşir. Ortam değişkenlerini değiştirmek yerine normal uygulama
 ayarlarını tercih et. Bu rehber geliştirme önizlemesini anlatır.
 
+İlk açılışta dili seç, yerel sağlayıcıları tara ve seçtiğin modeli test et.
+Daha sonra dersen kayıtlı ayarlar değişmez. Karşılama ekranındaki **Bağlantı kurulumu**
+ile geri dönebilirsin. **Örnek belgeyle dene** kurgu bir belgeyi yükleyip göndermen
+için soruyu hazırlar. Python gerektirmeyen kurulum ve uygulama içindeki isteğe bağlı
+ses hazırlığı için [Windows önizleme rehberine](WINDOWS_PREVIEW.tr.md) bak.
+
 ## Arayüz dili
+
+Panel ile Sohbet arasında geçiş, düğmeler ve belge bırakma alanı kısa animasyonlar
+kullanır. Asistan dinlerken, düşünürken ve yanıtı seslendirirken farklı hareketler
+gösterir; işlem tamamlanınca kısa bir onay, hata olunca farklı bir tepki verir.
+Ses dalgası ses seviyesini ölçmez. **Ayarlar → Genel → Hareketi azalt** bütün
+hareketleri ve göz kırpmayı kapatır; durum yazıları ve işlevler korunur.
+
+Asistan karşılama ekranında daha büyük görünür. Geniş sohbet penceresinde yanıtın
+yanında kalır; küçük pencerede başlığa taşınarak okuma alanını korur. Hazırken yavaş
+bir nefes hareketi, dinleme ve seslendirmede daha belirgin renkli halkalar kullanır.
 
 `Ctrl + ,` ile ayarları aç, **Genel → Dil → Türkçe / English → Kaydet** yolunu
 izle. Ana pencere yeniden başlamadan; sohbet, taslak ve ekli görsel silinmeden
@@ -17,9 +33,20 @@ pencereleri ve bazı durum/hata mesajları henüz tamamen çevrilmedi.
 
 ## Günlük kontroller
 
+Nexus üst kenarın ortasında 180×36 boyutunda küçük bir şeritte açılır. Fareyi
+üzerinde kısa süre tutunca 460×188 mini panel görünür. Uzaklaştırınca kapanır;
+**Sabitle** ile açık tutabilirsin. Şeride tıkla veya **Sohbeti aç** ile genişle.
+Konum, görev çubuğunun kaplamadığı ekranın üst kenarına sabitlenir.
+Asistanın yüzü ve durum yazısı gerçek
+dinleme/yanıt hazırlama durumunu gösterir. Belge ekleme, hafıza, araştırma ve sesli
+giriş buradan açılır. **Sohbet** sekmesi daha geniş çalışma alanını gösterir;
+yanıt başladığında kendiliğinden açılır. Panel ve Sohbet arasında geçiş yapmak
+konuşmayı, yazdığın taslağı veya ekli görseli silmez. Alt bölümdeki **Model**
+düğmesi bağlantı kurulumunu açar. **Özel oturum** doğrudan mesaj alanında da bulunur.
+
 | İşlem | Kısayol / kontrol |
 | --- | --- |
-| Göster / gizle | `Alt + Space` |
+| Sohbeti aç / üst şeride dön | `Alt + Space` |
 | Gönder | `Enter` veya gönder düğmesi |
 | Kontroller arasında dolaş | `Tab` / `Shift + Tab` |
 | Panoyu incele | `Ctrl + Shift + V` veya `/clip [talimat]` |
@@ -27,7 +54,7 @@ pencereleri ve bazı durum/hata mesajları henüz tamamen çevrilmedi.
 | Sesli girişi başlat / bitir | Nexus odaktayken `F2` |
 | Yeni sohbet / geçmiş | `Ctrl + N` / `Ctrl + H` |
 | İstem geçmişi | Giriş alanında `↑` / `↓` |
-| İşlemi iptal et / boşta gizle | `Esc` |
+| İşlemi iptal et / boşta üst şeride dön | `Esc` |
 | Çık | `Ctrl + Q` |
 | Web araştırması | `/web <soru>` |
 | Açıkça hafızaya kaydet | `/remember <bilgi>` veya `/hatırla <bilgi>` |
@@ -38,10 +65,32 @@ Mesaj alanında **Ekle**, **Araştır** ve **Araçlar** bulunur. Araçlar menüs
 özel oturum, belgelerden yanıtlama, sesli yanıt ve hafıza yönetimine ulaşılır.
 Yanıt başlığında kopyalama düğmesi vardır.
 
+## Renk, yol arkadaşı ve ses efektleri
+
+**Ayarlar → Görünüm** bölümünde hazır renklerden seçebilir, R/G/B değerlerini
+girebilir veya renk seçiciyi açabilirsin. Canlı önizleme kaydedilmemiş tercihini
+gösterir. **Kaydet** uygulamaya aktarır; **Vazgeç** önceki ayarlarını korur.
+Mini bot ve Nexus kedisi aynı gerçek dinleme/düşünme/konuşma durumlarını izler.
+**Yavaş RGB kenar ışığı** isteğe bağlıdır; Hareketi azalt açıkken sabit görünür.
+RGB, göz kırpma ve hareketler görünmeyen pencerelerde çalışmaz.
+
+Ses efektleri başlangıçta kapalıdır. Etkinleştirip ses düzeyini seçebilir,
+**Sesi dene** ile kısa onay sesini dinleyebilirsin. Açma/küçültme, gerçek kayıt
+başlangıcı, belge ekleme, tamamlanma ve hata için özgün kısa sesler kullanılır.
+Üzerine gelmek ses çıkarmaz. Bu ayar, sesli yanıt ve mikrofon izinlerinden ayrıdır.
+
+Hafıza ekranında arama ve tür/durum filtreleri kartları daraltır. Seçili kaydı
+sağ tarafta düzenle; **Onayla** yalnızca aday kayıtta açılır. **Ayrıntılar** kapsam,
+proje ve güven/önem alanlarını gösterir. **Profil özeti** ayrı sekmede kaydedilir.
+
 ## Belgeler ve hafıza
 
-**Ekle** ile okunabilir belge getir, ardından **Belgelerimden yanıtla** seçeneğini
-aç. PDF'deki gömülü metin okunur; OCR yapılmaz. DOCX için şu anda paragraflar okunur,
+**Ekle** ile okunabilir belge getir veya PDF, DOCX ya da metin dosyasını pencereye
+sürükle. Belge yerel kitaplığa eklenir ve **Belgelerimden yanıtla** açılır.
+Sürükleyince mevcut taslağın korunur; alan boşsa bir özet sorusu hazırlanır.
+Soruyu göndermek için Enter'a bas. Dosya bırakmak kendiliğinden bir model isteği
+göndermez. Yeni sohbet açmak kitaplıktaki belgeleri silmez.
+PDF'deki gömülü metin okunur; OCR yapılmaz. DOCX için şu anda paragraflar okunur,
 her tablo veya gömülü nesne değil. Metin modeli çıkarılan metni özetleyebilir;
 görsel analizi için görsel anlayan model seçilmelidir.
 

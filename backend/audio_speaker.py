@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import os
 import sys
 import threading
@@ -26,6 +27,7 @@ class SpeechSpeaker:
         self.backend = selected_backend.casefold()
         self.requested_backend = self.backend
         self.last_error = ""
+        self.last_word_timings = []
         if self.backend == "auto":
             from backend.supertonic_speaker import runtime_is_ready
 
@@ -48,6 +50,7 @@ class SpeechSpeaker:
         if not text.strip():
             return False
         self.last_error = ""
+        self.last_word_timings = []
 
         if self.backend == "edge":
             from backend.user_settings import settings_store
@@ -62,7 +65,7 @@ class SpeechSpeaker:
             if synthesize_to_file(text, output_path):
                 return True
             if self.requested_backend != "auto":
-                self.last_error = "Supertonic kullanılamıyor. Yerel Ses Kur.bat ile ses motorunu kurun."
+                self.last_error = "Supertonic hazır değil. Ayarlar → Ses → Yanıt sesi bölümünden sesi hazırlayın."
                 return False
             self.backend = "local"
 
@@ -110,7 +113,17 @@ class SpeechSpeaker:
         voice = self.voice or os.getenv("NEXUS_EDGE_TTS_VOICE") or preferences.tts_edge_voice
         try:
             rate = f"{round((preferences.tts_speed - 1) * 100):+d}%"
-            await edge_tts.Communicate(text, voice, rate=rate).save(output_path)
+            options = {"rate": rate}
+            if "boundary" in inspect.signature(edge_tts.Communicate).parameters:
+                options["boundary"] = "WordBoundary"
+            communication = edge_tts.Communicate(text, voice, **options)
+            with Path(output_path).open("wb") as audio:
+                async for message in communication.stream():
+                    if message["type"] == "audio":
+                        audio.write(message["data"])
+                    elif message["type"] == "WordBoundary":
+                        start = message["offset"] / 10_000
+                        self.last_word_timings.append((start, start + message["duration"] / 10_000, message["text"]))
             path = Path(output_path)
             return path.exists() and path.stat().st_size > 0
         except Exception as exc:

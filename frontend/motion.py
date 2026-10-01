@@ -45,7 +45,7 @@ class MotionLogo(QWidget):
         self.update()
 
     def set_mode(self, mode):
-        if mode not in {"idle", "entrance", "listening", "thinking"}:
+        if mode not in {"idle", *self.DURATIONS}:
             raise ValueError("Unknown visual activity")
         if mode == self.mode:
             return

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import re
 from array import array
 from datetime import UTC, datetime
@@ -85,6 +86,22 @@ async def retrieve_memories(
         return []
     query_vector: list[float] | None = None
     try:
+        # Retrieval must never hold up first-token delivery for a slow or cold
+        # embedding model. Keep a bounded total budget, then use lexical memory.
+        async with asyncio.timeout(0.6):
+            memories, query_vector = await _embedded_memories(memories, query, project_id, repository)
+    except (TimeoutError, httpx.HTTPError, ValueError):
+        query_vector = None
+    selected = rank_memories(
+        memories, query, query_vector=query_vector, token_budget=token_budget
+    )
+    repository.mark_used([item["id"] for item in selected])
+    return selected
+
+
+async def _embedded_memories(memories, query, project_id, repository):
+    query_vector = None
+    if memories:
         vectors, model = await embed_texts([query])
         if vectors:
             query_vector = vectors[0]
@@ -101,10 +118,4 @@ async def retrieve_memories(
                 item if item.get("embedding_model") == model else item | {"embedding": None}
                 for item in repository.for_context(project_id)
             ]
-    except (httpx.HTTPError, ValueError):
-        query_vector = None
-    selected = rank_memories(
-        memories, query, query_vector=query_vector, token_budget=token_budget
-    )
-    repository.mark_used([item["id"] for item in selected])
-    return selected
+    return memories, query_vector

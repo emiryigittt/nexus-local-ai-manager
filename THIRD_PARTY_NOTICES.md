@@ -37,4 +37,7 @@ not deleted. Review every new screenshot for private content before committing i
 - [ ] Confirm rights/consent for any future demo voice or reference recording.
 - [ ] Complete a distribution review before any executable/installer release.
 
-No license change, bundled installer, or model redistribution is made by this preparation.
+Nexus now supports a [local installer preview](docs/WINDOWS_PREVIEW.md), with source,
+available dependency license texts and a build-environment inventory. It is not a
+public release or a completed distribution audit. No source license change or
+model redistribution is made; the gates above remain open.

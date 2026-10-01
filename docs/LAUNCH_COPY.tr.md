@@ -1,52 +1,99 @@
-# Tanıtım metni taslakları
+# Nexus tanıtım metinleri
 
 [English](LAUNCH_COPY.md) · **Türkçe** · [Belgeler](INDEX.md)
 
-Proje sahibinin incelemesi için hazırlandı; **paylaşılmadı**. Gerçek depo/demo adresini
-oluşunca ekle. İddiaları paylaşılacak sürümle karşılaştır ve ilgili topluluğun kurallarına
-uy. Aşağıdaki metinlerde geliştirici olduğumuz açıkça belirtilir.
+## İlk kaynak kod betası duyurusu — 1 Ekim 2026
 
-## Depo açıklaması
+Nexus ile tanış: Windows ekranının üstünde küçük bir yerel yapay zekâ asistanı.
+Üzerine gelince araçlar açılıyor; Alt+Space ile sohbete geçiyorsun. RGB rengini,
+bot/kedini seçebiliyor, hafızasında ne kalacağını kontrol edebiliyorsun.
+Ollama, LM Studio veya llama.cpp'de çalışan kendi modeline bağlanıyor.
 
-Seçtiğin yerel yapay zeka modeli için Windows asistanı: belgeler, ses ve kontrolü
-sende olan hafıza, tek kısayolda.
+İlk kaynak kod betası erken geri bildirim için hazır. Windows, 64 bit Python
+3.11–3.13 ve çalışan yerel model gerekiyor; bu yayında herkese açık `.exe` yok.
+“Hey Nexus” deneysel; F2 ile elle konuşmayı başlatabilirsin.
 
-## Kısa tanıtım
+Bir işini deneyip nerede takıldığını paylaş:
+https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1
 
-Nexus'u geliştiriyorum: seçtiğin yerel yapay zeka modeline klavye odaklı arayüz,
-belge bağlamı, isteğe bağlı ses ve inceleyip düzenleyebildiğin hafıza kazandıran
-bir Windows asistanı. Şu an kaynak koddan kurulan geliştirme önizlemesi. Kurulum,
-günlük kullanım ve erişilebilirlik konusunda geri bildirim arıyorum.
+Video destekleniyorsa Türkçe 50 saniyelik v2 tanıtımı ekle. İçerik örnek arayüz,
+sesler özgün müzik/efekt; canlı model çalışması veya hız ölçümü değil.
+Bu metin hazırlandı, paylaşılmadı. Aşağıdaki eski taslaklar tarihî kayıttır.
 
-## Geliştirici topluluğu paylaşımı
+30 Eylül 2026'da hazırlandı; paylaşılmadı. Video destekleyen kanallara Türkçe
+arayüz tanıtımını ekle. Örnek içerik açıklaması videonun içinde sürekli görünür.
 
-Yerel modelimin sohbet sekmesi dışında da işime yaramasını istediğim için Nexus'u
-geliştiriyorum. Alt+Space ile açıp belge veya pano bağlamı getirerek küçük bir
-masaüstü penceresinde çalışabiliyorsun. Hafıza adaylarını inceleyebiliyorsun;
-yerel ses isteğe bağlı, web ve bulut sesi ayrı izinlere bağlı.
+## X paylaşımı
 
-Bu erken bir Windows önizlemesi; bitmiş ürün değil. Python ve çalışan yerel model
-sunucusu gerekiyor. Tam İngilizce arayüz, gerçek modelle hafıza doğrulaması ve ek
-ses kalitesi testleri hâlâ açık. Yerel API kimlik doğrulamasız; aynı bilgisayar
-üzerinde tutulmalı. Kaynak kod MIT lisanslı, bağımlılık/model koşulları ayrı.
+Yerel modelini Windows masaüstüne taşı: Nexus.
+Alt+Space, belgeler, isteğe bağlı ses ve yönetilebilir hafıza.
+İlk 10 deneme kullanıcısını arıyorum. Geliştirme önizlemesi; Python ve yerel model gerekiyor.
+https://github.com/emiryigittt/nexus-local-ai-manager
 
-Özellikle tekrarlanabilir kurulum raporları, zorlandığın günlük iş akışları,
-klavye erişilebilirliği ve İngilizce arayüz metinleri konusunda katkı değerli.
-Özel belge veya kayıt yerine yapay örneklerle geri bildirim paylaşmanı rica ediyorum.
+## LinkedIn / geliştirici topluluğu paylaşımı
 
-## Pilot deneme daveti
+Nexus'u geliştiriyorum: Ollama, LM Studio veya llama.cpp ile kullandığın yerel
+modeli masaüstüne taşıyan açık kaynaklı bir Windows asistanı.
 
-Erken aşamadaki bir Windows yerel yapay zeka asistanını denemek ister misin?
-Kaynak koddan kurulum, yapay belge özeti ve hafıza inceleme akışını deneyecek küçük
-bir grup arıyorum. Kişisel veri veya sürekli açık mikrofon gerekmiyor. Neyin
-çalıştığını, nerede takıldığını ve model/sağlayıcı sürümünü paylaşman yeterli.
-Ses özelliğini denemek isteğe bağlı.
+Alt+Space ile küçük bir masaüstü penceresi açılıyor. Sorunu veya belgeni getirip
+çalışabilir, isteğe bağlı ses kullanabilir ve yanıtları kişiselleştiren hafızayı
+yönetebilirsin. Kayıtlı hafızayı kullanma ve otomatik öğrenme ayrı kontrollere bağlı.
 
-## Kullanım kuralları
+Kaynak kod herkese açık. Windows CI kontrolleri Python 3.11–3.13 üzerinde geçti.
+Şu an kaynak koddan kurulan geliştirme önizlemesi; Windows kurulum paketi henüz yok.
+Bazı pencereler Türkçe içeriyor; yerel Python 3.14 testlerindeki aralıklı çöküş açık.
 
-- Seçili metnin altına doğrulanmış depo adresini ekle; adres uydurma.
-- Demo bağlantısını çekim ve gizlilik incelemesinden sonra ekle; yapay önizlemeyi etiketle.
-- Uyarlamada teknik sınırları ve geliştirici kimliğini koru.
-- Yıldız/sıralama, insan gibi ses, çevrimdışı ilk kurulum veya tam İngilizce arayüz vaat etme.
-- Global girişte İngilizceyi kullan, Türkçe bağlantıyı görünür tut; iki dilde katkıyı kabul et.
-- İlgili topluluklara seçici paylaşım yap; toplu gönderi veya yıldız takası isteme.
+Windows ve yerel model kullanan ilk 10 kişiyi arıyorum. Kurulumu tamamlayıp
+depodaki örnek proje belgesine bir soru sorabilir misin? Nerede takıldığını ve
+hangi iş için tekrar kullanacağını öğrenmek istiyorum.
+
+Kaynak kod ve kurulum: https://github.com/emiryigittt/nexus-local-ai-manager
+
+Ekli video, gerçek arayüzde örnek içerik gösteren bir tanıtım; canlı model veya
+hız gösterimi değil. Türkçe ve İngilizce geri bildirim verebilirsin.
+
+## LocalLLaMA proje tanıtım yorumu
+
+Global toplulukta [İngilizce metni](LAUNCH_COPY.md) kullan. İçeriğin Türkçe özeti:
+
+Nexus; Ollama, LM Studio ve llama.cpp için klavye odaklı pencere, belge bağlamı,
+isteğe bağlı ses ve kullanıcı kontrollü hafıza ekleyen açık kaynaklı Windows asistanı.
+Model içermez veya model sunucusunu başlatmaz. Web araştırması ve bulut sesi ayrı izne bağlıdır.
+
+Windows CI, Python 3.11–3.13 üzerinde geçiyor; test kümesi 262 test içeriyor.
+Temiz bilgisayarda kurulum, fiziksel mikrofon kalitesi ve yerel Python 3.14 çöküşü
+için çalışma gerekiyor. Kurulum Python gerektiriyor ve bazı pencereler kısmen Türkçe.
+
+Tanıtım videosu gerçek arayüzde örnek içerik gösteriyor; canlı çıkarım değil.
+Windows'ta yerel model kullananlardan kurulum ve belge akışı için geri bildirim istiyoruz.
+Tekrar açmana değecek hangi işi çözmeli?
+
+https://github.com/emiryigittt/nexus-local-ai-manager
+
+Göndermeden önce güncel proje tanıtım başlığını ve kurallarını kontrol et.
+Geliştirme süreci isteniyorsa kendi sürecini doğru biçimde ekle; kodlama yöntemleri
+veya elle testler hakkında doğrulayamadığın iddialar yazma.
+
+## İlk kullanıcı daveti
+
+Yerel yapay zekâ modelleri için geliştirdiğim Windows asistanı Nexus'u denemek ister misin?
+Ollama, LM Studio veya llama.cpp kullanan 10 kişi arıyorum.
+
+Windows, 64 bit Python 3.11–3.13 ve çalışan yerel model sunucusu gerekiyor.
+README'deki kurulumu tamamla, depodaki örnek proje belgesini ekle, belge bağlamını aç
+ve şunu sor: “Bu belgedeki üç yayın önceliği nedir? Kapsam dışındaki işleri ayrıca belirt.”
+
+Sonra şunları paylaş: Kurulum çalıştı mı? Yanıt işine yaradı mı? Nerede takıldın?
+Ses testi isteğe bağlı. İndirme ve kurulum süresi kullandığın ortama bağlı.
+
+Başlangıç: https://github.com/emiryigittt/nexus-local-ai-manager
+Geri bildirim: https://github.com/emiryigittt/nexus-local-ai-manager/issues
+
+Yapay örnekleri kullan ve bildiriminden özel verileri çıkar.
+
+## Video ekinin açıklaması
+
+Nexus arayüz tanıtımı. Gerçek uygulama görüntülerinde yapay örnek içerik kullanıldı;
+canlı model çıkarımı, mikrofon kaydı veya üretilmiş ses gösterilmiyor.
+Ekran yazılarıyla anlaşılabilen sessiz video. Windows için geliştirme önizlemesi;
+Python ve çalışan yerel model gerekir. Bazı pencereler kısmen Türkçe.

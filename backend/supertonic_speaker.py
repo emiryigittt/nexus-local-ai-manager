@@ -7,6 +7,8 @@ import os
 import threading
 from pathlib import Path
 
+from backend.app_paths import data_dir
+
 MODEL_NAME = "sherpa-onnx-supertonic-3-tts-int8-2026-05-11"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_FILES = (
@@ -26,7 +28,10 @@ _generation_lock = threading.Lock()
 
 def model_directory() -> Path:
     configured = os.getenv("NEXUS_SUPERTONIC_MODEL_DIR")
-    return Path(configured) if configured else PROJECT_ROOT / "models" / MODEL_NAME
+    if configured:
+        return Path(configured)
+    legacy = PROJECT_ROOT / "models" / MODEL_NAME
+    return legacy if model_is_ready(legacy) else data_dir() / "models" / MODEL_NAME
 
 
 def model_is_ready(path: Path | None = None) -> bool:
@@ -52,7 +57,7 @@ def _create_engine():
     directory = model_directory()
     if not model_is_ready(directory):
         raise RuntimeError(
-            "Supertonic model is not installed. Run scripts/setup_local_tts.py."
+            "Supertonic is not ready. Open Settings → Voice → Response voice → Prepare voice."
         )
 
     supertonic = sherpa_onnx.OfflineTtsSupertonicModelConfig(

@@ -28,7 +28,7 @@ async def probe_provider(profile: ProviderProfile, timeout: float = 2.0) -> dict
     result = asdict(profile)
     result.update({"healthy": False, "models": [], "error": ""})
     try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
             response = await client.get(f"{profile.base_url.rstrip('/')}/models")
             response.raise_for_status()
             models = _model_ids(response.json())

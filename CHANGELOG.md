@@ -5,7 +5,38 @@ All notable changes to Nexus are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.1] - 2026-10-01
+
+First public source beta. Windows installer distribution remains pending the
+PyQt/Qt licensing decision and dependency distribution review.
+
 ### Added
+
+- Compact top-edge strip with hover tools, expandable chat, preserved drafts,
+  RGB accents, optional rainbow motion, bot/cat companions and original interface sounds.
+- Card-based memory review and an optional first-run introduction with an explicit
+  review/save step for personal preferences. Nexus has a defined assistant identity;
+  it does not claim consciousness or invent personal knowledge.
+- Three-step connection wizard and a source launcher that prepares dependencies.
+  A reproducible, unsigned installer is available locally for development checks.
+- Speech-end detection using local Silero, bounded input amplification, default
+  automatic finish after a configurable pause, optional transcript review, and
+  separately prepared balanced/stronger offline transcription profiles.
+- Playback-following captions; cloud speech uses supplied word timings, while
+  local speech uses approximate alignment. This is not true PCM streaming.
+- Original 50-second, 1080×1920, 60 fps Turkish/English promo preparation tools.
+  The films show fictional sample content rather than live inference.
+
+### Reliability updates
+
+- Batch streamed UI updates, start speech from smaller completed text pieces,
+  bound optional memory lookups, and cancel background memory work before foreground replies.
+- Accept common Turkish wake-phrase transcriptions and reject stale detections.
+  Hey Nexus remains experimental; F2 is the reliable manual fallback.
+- Keep model preparation outside microphone capture and erase captured audio
+  buffers on completion, cancellation and error.
+
+### Earlier work included in this beta
 
 - Shared two-ribbon Nexus vector logo, livelier emerald accents, multi-resolution
   window icon and clearly distinct paused/listening tray variants. Added transparent

@@ -39,7 +39,14 @@ class VoiceRecordWorker(QThread):
         self.language = language
 
     def run(self):
+        audio = None
         try:
+            if self.isInterruptionRequested():
+                return
+            if hasattr(self.recorder, "prepare"):
+                self.recorder.prepare()
+            if hasattr(self.transcriber, "get_model"):
+                self.transcriber.get_model()
             if self.isInterruptionRequested():
                 return
             self.recorder.start()
@@ -50,6 +57,8 @@ class VoiceRecordWorker(QThread):
                 self.recording_started.emit()
             started = time.monotonic()
             while not self._stopped.wait(0.05):
+                if hasattr(self.recorder, "poll_endpoint"):
+                    self.recorder.poll_endpoint()
                 stream = getattr(self.recorder, "stream", None)
                 if stream is not None and not stream.active:
                     raise RuntimeError("Mikrofon bağlantısı kesildi. Cihazı kontrol edip yeniden deneyin.")
@@ -68,15 +77,22 @@ class VoiceRecordWorker(QThread):
                 self.text_ready.emit("")
                 return
             self.status_changed.emit("Ses yerel Whisper ile çözümleniyor…")
-            text = self.transcriber.transcribe(audio, language=self.language)
+            try:
+                text = self.transcriber.transcribe(audio, language=self.language)
+            finally:
+                audio.fill(0)
             if not self.isInterruptionRequested():
                 self.text_ready.emit(text)
         except Exception as exc:
             if not self.isInterruptionRequested():
                 self.error_received.emit(str(exc))
         finally:
+            if audio is not None and hasattr(audio, "fill"):
+                audio.fill(0)
             try:
-                self.recorder.stop()
+                discarded = self.recorder.stop()
+                if hasattr(discarded, "fill"):
+                    discarded.fill(0)
             except Exception:
                 pass
 
@@ -114,6 +130,7 @@ class StreamingVoiceWorker(QThread):
     audio_ready = pyqtSignal(str)
     error_received = pyqtSignal(str)
     chunk_ready = pyqtSignal(str, str, float, str)
+    timing_ready = pyqtSignal(str, list)
 
     def __init__(self, backend=None):
         super().__init__()
@@ -124,7 +141,7 @@ class StreamingVoiceWorker(QThread):
     def enqueue(self, sentence: str) -> None:
         cleaned = _clean_for_speech(sentence)
         if cleaned and not self._finished_input and not self.isInterruptionRequested():
-            pieces, _ = take_speech_chunks(cleaned, flush=True)
+            pieces, _ = take_speech_chunks(cleaned, flush=True, limit=110)
             for piece in pieces:
                 self.sentences.put(piece)
 
@@ -165,6 +182,7 @@ class StreamingVoiceWorker(QThread):
                     raise RuntimeError(self.speaker.last_error or "Ses üretilemedi. Yerel ses motorunu kontrol edin.")
                 if not self.isInterruptionRequested():
                     self.chunk_ready.emit(path, sentence, time.monotonic() - started, self.speaker.backend)
+                    self.timing_ready.emit(path, list(getattr(self.speaker, "last_word_timings", [])))
                     self.audio_ready.emit(path)
                     delivered = True
             except Exception as exc:

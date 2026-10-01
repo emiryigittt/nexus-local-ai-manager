@@ -20,7 +20,9 @@ from PyQt6.QtWidgets import (
 
 from backend.user_settings import SettingsStore, settings_store
 from frontend.api_client import request_json
-from frontend.design import STYLE, settings_card
+from frontend.appearance import themed_style
+from frontend.appearance_settings import AppearanceSettings
+from frontend.design import settings_card
 from frontend.i18n import UiText
 from frontend.memory_dialog import MemoryDialog
 from frontend.voice_settings import VoiceSettings
@@ -36,7 +38,7 @@ class SetupDialog(QDialog):
         tr = self.ui_text
 
         self.setWindowTitle(tr("Nexus · Ayarlar"))
-        self.setStyleSheet(STYLE)
+        self.setStyleSheet(themed_style(preferences.accent_color))
         self.setMinimumWidth(480)
         self.setModal(True)
         outer = QVBoxLayout(self)
@@ -66,6 +68,7 @@ class SetupDialog(QDialog):
         layout = page("Genel")
         privacy = page("Gizlilik")
         voice_layout = page("Ses")
+        appearance_layout = page("Görünüm")
         screen = QApplication.primaryScreen()
         self.resize(640, min(720, screen.availableGeometry().height() - 80) if screen else 700)
         description = QLabel(tr(
@@ -138,6 +141,9 @@ class SetupDialog(QDialog):
         ))
         self.memory_reference_history.setChecked(preferences.memory_reference_history)
         memory_card.addWidget(self.memory_reference_history)
+        self.personal_questions = QCheckBox(tr("Uygun anlarda beni tanımak için kısa sorular sor"))
+        self.personal_questions.setChecked(preferences.personal_questions_enabled)
+        memory_card.addWidget(self.personal_questions)
         manage_memory = QPushButton(tr("Kişisel hafızayı yönet…"))
         manage_memory.clicked.connect(self.open_memory_manager)
         memory_card.addWidget(manage_memory, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -157,6 +163,9 @@ class SetupDialog(QDialog):
         self.voice = VoiceSettings(preferences)
         voice_layout.addWidget(self.voice)
         voice_layout.addStretch()
+        self.appearance = AppearanceSettings(preferences, tr)
+        appearance_layout.addWidget(self.appearance)
+        self.reduced_motion.toggled.connect(self.appearance.set_reduced_motion)
 
         self.status = QLabel(tr("Çalışan yerel sağlayıcıları bulmak için tara."))
         self.status.setWordWrap(True)
@@ -203,7 +212,10 @@ class SetupDialog(QDialog):
         self.status.setText(self.ui_text("{count} çalışan yerel sağlayıcı bulundu.", count=len(healthy)))
 
     def done(self, result):
-        if self.voice.wake_setup.stop_and_wait():
+        wake_stopped = self.voice.wake_setup.stop_and_wait()
+        voice_stopped = self.voice.local_setup.stop_and_wait()
+        speech_stopped = self.voice.speech_setup.stop()
+        if wake_stopped and voice_stopped and speech_stopped:
             super().done(result)
 
     def open_memory_manager(self) -> None:
@@ -231,10 +243,12 @@ class SetupDialog(QDialog):
         preferences.memory_enabled = self.memory_enabled.isChecked()
         preferences.memory_auto_learn = self.memory_auto_learn.isChecked()
         preferences.memory_reference_history = self.memory_reference_history.isChecked()
+        preferences.personal_questions_enabled = self.personal_questions.isChecked()
         preferences.clipboard_policy = str(self.clipboard_policy.currentData())
         preferences.selected_provider_id = provider_id
         preferences.embedding_model = self.embedding_model.currentText().strip()
         self.voice.apply(preferences)
+        self.appearance.apply(preferences)
         preferences.setup_complete = True
         for item in preferences.providers:
             if item.id == provider_id:

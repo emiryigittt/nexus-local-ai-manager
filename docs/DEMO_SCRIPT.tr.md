@@ -5,6 +5,9 @@
 Senaryo hazır; video **çekilmedi**. Üretilmiş arayüz önizlemelerini canlı model
 çalışmasının kanıtı olarak kullanma. Gerçek hafıza/ses kabul testlerinden sonra çek.
 
+Etiketli arayüz tanıtımı ve kopyalanabilir davetler artık
+[hazırlanan tanıtım paketinde](LAUNCH_PACKAGE.md). Bu tanıtım canlı çekimin yerine geçmez.
+
 ## Çekimden önce
 
 - Kişisel hafıza/geçmiş yerine ayrı test veri klasörü kullan.

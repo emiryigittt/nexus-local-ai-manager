@@ -5,6 +5,9 @@
 Status: script ready; video **not recorded**. Never use generated UI previews as
 evidence of a live model run. Record after the live memory/voice acceptance checks pass.
 
+A separate, labelled interface teaser and copy-ready invitations are now in the
+[prepared launch package](LAUNCH_PACKAGE.md). The teaser does not complete the live recording above.
+
 ## Before recording
 
 - Use a separate test data directory, not your personal history or memory.

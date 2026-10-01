@@ -70,6 +70,7 @@ class WakeCapture:
         self.ready = threading.Event()
         self.closed = threading.Event()
         self.error = False
+        self.peak_level = 0.0
         self.thread = None
 
     def _callback(self, indata, frames, time_info, status):
@@ -81,6 +82,7 @@ class WakeCapture:
             return
         try:
             clip = self.buffer.feed(indata)
+            self.peak_level = max(self.peak_level, self.buffer.activity.level)
             if clip is not None:
                 self.discard_pending()  # Keep newest audio, never an unbounded backlog.
                 self.pending.put_nowait((time.monotonic(), clip))

@@ -17,7 +17,10 @@ def test_spotlight_interface_has_primary_workflows():
     assert len(window.shortcuts) == 10
     assert window.input_line.isEnabled()
     assert window.input_line.accessibleName() == "Nexus komut alanı"
-    assert window.welcome.isVisibleTo(window)
+    assert window.notch_button.isVisibleTo(window)
+    assert not window.dock_overview.isVisibleTo(window)
+    assert not window.composer.isVisibleTo(window)
+    assert not window.chat_content.isVisibleTo(window)
     assert window.local_badge.text() == "YEREL MODEL"
 
     window.toggle_private_session()

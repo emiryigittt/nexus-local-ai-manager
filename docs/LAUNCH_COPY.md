@@ -1,52 +1,101 @@
-# Launch copy drafts
+# Nexus launch copy
 
 **English** · [Türkçe](LAUNCH_COPY.tr.md) · [Documentation](INDEX.md)
 
-Prepared for owner review, **not posted**. Add the real repository/demo link only
-after it exists. Recheck claims against the version being shared and follow the
-target community's rules. The author relationship is explicit below.
+## First source beta announcement — 1 October 2026
 
-## Repository description
+Meet Nexus: a small local AI companion at the top of your Windows screen.
+Hover for tools, open chat with Alt+Space, choose your RGB accent and bot/cat,
+and review what it remembers. Connect your own Ollama, LM Studio or llama.cpp model.
 
-A Windows desktop assistant for your local AI model — documents, voice, and
-user-controlled memory, one shortcut away.
+The first source beta is ready for early feedback. Windows, 64-bit Python 3.11–3.13
+and a running local model are required; no public installer is attached.
+Hey Nexus is experimental; F2 is the manual fallback.
 
-## Short introduction
+Try one task and tell me where you get stuck:
+https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1
 
-I'm building Nexus: a Windows assistant that gives the local AI model you choose
-a keyboard-first interface, document context, optional voice, and memory you can
-review and edit. It's a development preview installed from source. I'm looking for
-feedback on setup, daily workflows and accessibility.
+Attach the English 50-second v2 film if supported. It uses sample UI content
+and original music/effects; it is not live inference or a performance benchmark.
+This text is prepared, not posted. The older drafts below are historical.
 
-## Developer-community post
+Prepared 30 September 2026; not posted. Attach the English interface teaser where
+video is supported. Its sample-content label is part of the video.
 
-I'm building Nexus because I want my local model to be useful outside a chat tab.
-Press Alt+Space, bring a document or clipboard context, and work in a small desktop
-window. Memory candidates stay reviewable; local voice is optional, and web/cloud
-speech have separate consent controls.
+## X post
 
-This is an early Windows preview, not a finished product. It needs Python and a
-running local model server. Full English UI localization, live-model memory
-validation and further speech-quality testing remain open. The local API is
-unauthenticated and must stay on loopback. The source is available under MIT;
-dependency/model terms are separate.
+Bring your local model to your Windows desktop with Nexus.
+Alt+Space, documents, optional voice and memory you control.
+Looking for 10 early testers. Preview; Python + a local model required.
+https://github.com/emiryigittt/nexus-local-ai-manager
 
-I'd especially value a reproducible setup report, an everyday workflow you find
-awkward, or help with keyboard accessibility and English UI text. Please use
-synthetic examples rather than private documents or logs.
+## LinkedIn / developer-community post
 
-## Pilot invitation
+I'm building Nexus, an open-source Windows assistant for the local model you
+already use with Ollama, LM Studio or llama.cpp.
 
-Would you like to help test an early Windows local-AI assistant? I'm looking for a
-small group to try source installation, a synthetic document summary and the memory
-review flow. No personal data or always-on microphone is needed. Please report what
-worked, where you got stuck, and your model/provider version. Voice is optional.
+Press Alt+Space to open a compact desktop window. Bring a question or document,
+use optional voice and manage the memories that personalize your answers.
+Saved-memory use and automatic learning have separate controls.
 
-## Reuse rules
+The source is public and Windows CI passes on Python 3.11–3.13. This is a
+development preview installed from source; there is no Windows installer yet.
+Some dialogs still contain Turkish. An intermittent local Python 3.14 test
+crash remains open.
 
-- Add a verified repository URL below the selected draft, not a guessed address.
-- Link the real demo only after recording and privacy review; label synthetic previews.
-- Keep technical limits and the author disclosure when adapting to a community.
-- Do not promise stars, rankings, “human” speech, full offline setup or complete English UI.
-- Use English for the global entry; link the Turkish version visibly. Welcome either language.
-- Keep launch posts selective and relevant; no bulk posting or star-exchange requests.
+I'm looking for 10 Windows users who already run a local model. Can you complete
+setup and ask one question about the included fictional project brief?
+I'd like to hear where you get stuck and what task you would use Nexus for again.
+
+Source and setup: https://github.com/emiryigittt/nexus-local-ai-manager
+
+The attached video shows the actual interface with sample content; it is not a
+live model or speed demonstration. Feedback in English or Turkish is welcome.
+
+## LocalLLaMA project-showcase comment
+
+I'm building **Nexus**, an open-source Windows desktop assistant for Ollama,
+LM Studio and llama.cpp. The focus is a keyboard-first workflow: Alt+Space,
+document context, optional voice and user-controlled memory in one compact window.
+
+Nexus connects to your existing server; it does not ship or start a model.
+Web research and cloud speech have separate consent controls.
+
+Verification: Windows CI passes on Python 3.11–3.13, and the suite contains 262
+tests. Clean-PC installation, physical microphone quality and the intermittent
+local Python 3.14 crash still need work. Setup requires Python, and some dialogs
+remain partly Turkish.
+
+The teaser uses the actual interface with sample content, not live inference.
+I'd value setup and document-workflow feedback from Windows local-model users.
+What task would make you open this again?
+
+https://github.com/emiryigittt/nexus-local-ai-manager
+
+Before posting, use the current project-showcase thread and check its rules.
+If development-process disclosure is required, describe your own process
+truthfully; do not invent manual tests or coding methods.
+
+## First-user invitation
+
+Want to help test Nexus, an early Windows assistant for local AI models?
+I'm looking for 10 people who already use Ollama, LM Studio or llama.cpp.
+
+You need Windows, 64-bit Python 3.11–3.13 and a running local model server.
+Follow the README, attach the included fictional project brief, enable document
+context and ask: “What are the three release priorities? List the excluded work separately.”
+
+Then tell me: Did setup work? Was the answer useful? Where did you get stuck?
+Voice testing is optional. Download/setup time depends on your environment.
+
+Start: https://github.com/emiryigittt/nexus-local-ai-manager
+Feedback: https://github.com/emiryigittt/nexus-local-ai-manager/issues
+
+Please use fictional examples and remove private data from reports.
+
+## Video attachment caption
+
+Nexus interface teaser. Actual application screenshots with fictional sample
+content; no live model inference, microphone recording or synthesized speech.
+Silent video with on-screen text. Development preview for Windows; Python and a
+running local model are required. Some dialogs remain partly Turkish.

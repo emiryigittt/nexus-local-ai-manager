@@ -53,9 +53,7 @@ class WakeController(QObject):
             self.show_window()
 
     def show_window(self):
-        self.window.show()
-        self.window.raise_()
-        self.window.activateWindow()
+        self.window.open_full_chat()
 
     def _set_state(self, state):
         tr = self.window.ui_text

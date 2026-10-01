@@ -30,6 +30,12 @@ memory-export*.json
 *.log
 *.mp3
 *.wav
+!frontend/assets/sounds/open.wav
+!frontend/assets/sounds/collapse.wav
+!frontend/assets/sounds/success.wav
+!frontend/assets/sounds/attachment.wav
+!frontend/assets/sounds/error.wav
+!frontend/assets/sounds/listen.wav
 ui_preview.png
 models/
 # Unreviewed legacy screenshots stay local; README uses synthetic docs/assets previews.
@@ -39,6 +45,8 @@ models/
 # Personal document-generation outputs are not Nexus publication assets.
 /output/pdf/
 /tmp/pdfs/
+# Rendered launch videos are delivered locally, outside source commits.
+/output/launch/
 
 # Editors and OS
 .idea/

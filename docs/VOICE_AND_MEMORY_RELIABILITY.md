@@ -2,8 +2,73 @@
 
 [English](VOICE_AND_MEMORY_RELIABILITY.en.md) · **Türkçe** · [Belgeler](INDEX.md)
 
-Güncelleme: 27 Eylül 2026. Dil modeli kullanıcının seçtiği yerel sağlayıcıda kalır.
+Güncelleme: 1 Ekim 2026. Yanıtlar kullanıcının seçtiği sağlayıcıdan alınır.
 Bu rapor ölçülen sonuçları, uygulanan değişiklikleri ve açık testleri birbirinden ayırır.
+
+## Doğal konuşma ve kayıt bitişi — 1 Ekim
+
+- Komut çözümleme, çağrı algılamasının hafif modelinden ayrıldı. **Doğal konuşma**
+  seçimi çok dilli Whisper small kullanır; varsayılan **Dengeli** seçimi base kullanır. Küçük model
+  henüz hazırlanmadıysa mevcut base ile devam edilir. İkisinin de bulunmaması halinde
+  model hazırlama yönlendirmesi gösterilir; konuşma sırasında otomatik indirme yapılmaz.
+- Komut çözümlemede beş aday ve sıfır sıcaklık kullanılır; yalnızca kısa çağrı algılama
+  tek adayla devam eder. Zayıf kayıtlara sınırlı ses yükseltme uygulanır, DC bileşeni
+  çıkarılır. Kaynak örnekler değiştirilmez; çalışma kopyaları işlem sonrasında silinir.
+- F2 başlat/durdur modunda **Konuşma bitince otomatik gönder** varsayılan açıktır.
+  Mevcut ayarlarda bu yeni alan yoksa açık kabul edilir. Basılı konuş modu tuşu bırakmayı
+  beklemeye devam eder; otomatik bitiş kapatılarak ikinci F2 ile sonlandırma kullanılabilir.
+- Kayıt bitişi, paketle gelen yerel Silero konuşma algılayıcısıyla belirlenir. Model
+  işlemi mikrofon geri çağrısında çalışmaz; kayıt çalışanında, sınırlı bağlamla ilerler.
+  Kısa duraklamalardan sonra konuşma sürerse sessizlik sayacı yenilenir. Varsayılan
+  bitirme sessizliği 1,2 saniyedir; Ayarlar → Ses → Giriş bölümünde değiştirilebilir.
+- İsteğe bağlı **Göndermeden önce metni kontrol et**, sonucu düzenlenebilir alanda
+  bekletir. Enter ile gönderilir. Varsayılan hızlı akış, tanınan metni otomatik gönderir.
+- **Konuşma modelini hazırla** yalnızca model dosyalarını indirir ve çevrimdışı
+  yüklemeyi doğrular. Ses kaydı veya bulut çözümlemesi yapılmaz. Daha güçlü model
+  daha fazla işlem gücü kullanır; her cihazda önceki yanıt hızını koruma garantisi yoktur.
+- 367 otomatik test geçti. Sabit yapay Türkçe örneklerin normal ve %20 ses düzeyinde,
+  %12 hızlandırılmış sürümleri kontrol edildi. Hafif modelde zorlaştırılmış bir örnekte
+  iki kelime hatası görüldü; kusursuz doğruluk iddia edilmez. Yapay arka plan gürültüsü
+  sürerken örnek kayıt sona erdi. Bu testler gerçek kullanıcının aksanını/gürültüsünü
+  temsil etmez; fiziksel mikrofon açılmadı.
+- Small modeli indirildi, resmi SHA256 kaydıyla doğrulandı ve hem kaynak başlatıcıda
+  hem Windows paketinde çevrimdışı yüklenebildi. Son sabit örnek karşılaştırmasında
+  base 1,1–1,6 sn, small 3,4–3,9 sn sürdü. Small iki örnekte aynı tek kelimeyi hatalı
+  tanıdı; base bu altı örnekte kelime hatası yapmadı (noktalama farklılıkları hariç).
+  Bu küçük, yapay örnek kümesi gerçek kullanıcı doğruluğunu ölçmez. Daha büyük modelin
+  her örnekte daha iyi olduğu iddia edilmez; varsayılan, hız için base olarak korundu.
+
+## Çağrı, yanıt gecikmesi ve ses takibi — 1 Ekim (önceki geçiş)
+
+Bu bölüm güncel davranışı anlatır. Aşağıdaki 27 Eylül ölçümleri ve sınırları tarihsel kayıttır.
+
+- Kısa çağrılar için ayrı **Çağrı ses eşiği** eklendi; varsayılan %0,40.
+  Normal komut kaydının eşiği değişmez. Türkçe aksan ve bitişik yazım varyantları
+  kabul edilir; “Hey next”, yalnızca “Nexus” veya cümle içindeki anmalar tetiklemez.
+- Yerel çözümleme tek adayla yapılır. Çözümleme sonrası geçersiz sayılma sınırı
+  iki saniyeden altı saniyeye çıkarıldı; iptal ve eski kayıt kontrolleri korunur.
+  Bu sınır, çalışan yerel çözümlemeyi zorla kesme garantisi değildir.
+- **Ayarlar → Ses → Hey Nexus → Çağrıyı dene (5 sn)** yalnızca tıklanınca mikrofonu
+  açar. Önce arka plan dinleyicisinin cihazı bırakmasını bekler. Yetersiz ses düzeyi
+  ile algılanamayan çağrı ayrı bildirilir. Ses diske kaydedilmez veya gönderilmez;
+  sürekli dinleme izni değişmez. “Hey Nexus” deyip duraklayın; ardından komutu söyleyin.
+- Çağrı sırasında yüklenmiş Whisper modeli komut çözümlemesinde yeniden kullanılır.
+  Yanıt ekranı ilk parçayı hemen gösterir; sonraki parçalar 40 ms aralıklarla birleştirilir.
+- Ses parçaları en fazla 110 karakterdir. Noktalamasız akışta 25 karakter ve 0,45 saniye
+  sonrasında tamamlanmış kelimeler gönderilebilir. Motor ve sağlayıcı süreleri ayrıca eklenir.
+- Alt yazı ve ana yanıttaki kelime vurgusu gerçek oynatıcı konumunu takip eder.
+  Edge zaman bilgisi sağladığında kelime sınırları kullanılır. Yerel seslerde kelime
+  hizası yaklaşık hesaplanır; her kelime için kesin eşzamanlılık iddiası yoktur.
+- Hafıza/belge vektör aramasına sorgu başına 0,6 saniye ayrılır; aşılırsa metin eşleşmesine
+  dönülür. Yeni etkileşim, isteğe bağlı hafıza çıkarma/özetleme işlerini iptal eder.
+  Böylece bu işlerin modeli meşgul etmesi azaltılır; iptal edilen tur için yeni otomatik
+  hafıza adayları veya özet oluşmayabilir. Onaylı kayıtlar silinmez.
+- 358 otomatik test ve Ruff geçti. Sabit yapay seslerle çevrimdışı kontrolde 6/6 çağrı
+  algılandı, 9 olumsuz cümlede tetiklenme olmadı; tampon işleme 0,48–0,61 saniye sürdü.
+  Fiziksel mikrofon açılmadı. Bu sonuç gerçek ses/gürültü başarısını kanıtlamaz.
+  Seçili LM Studio sunucusu kontrol sırasında erişilebilir olmadığından gerçek modelin
+  uçtan uca yanıt süresi ölçülemedi. Bulut sesi zamanlaması sahte akışla doğrulandı;
+  canlı bulut hizmeti çağrılmadı.
 
 ## Hey Nexus takibi — 27 Eylül
 

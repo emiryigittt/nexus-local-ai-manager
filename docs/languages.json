@@ -1,5 +1,8 @@
 {
   "pairs": [
+    ["docs/IDENTITY.md", "docs/IDENTITY.tr.md"],
+    ["docs/COMPANION_LAUNCH.md", "docs/COMPANION_LAUNCH.tr.md"],
+    ["docs/WINDOWS_PREVIEW.md", "docs/WINDOWS_PREVIEW.tr.md"],
     ["README.md", "README.tr.md"],
     ["CONTRIBUTING.md", "CONTRIBUTING.tr.md"],
     ["SECURITY.md", "SECURITY.tr.md"],

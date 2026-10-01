@@ -6,7 +6,24 @@ For installation: [English](../README.md#get-started) · [Türkçe](../README.tr
 Turkish labels below also help locate controls in the untranslated dialogs. Normal app settings are preferred
 over environment overrides. This guide describes a development preview.
 
+On first launch, choose a language, scan local providers and test your selected model.
+No saved preferences change if you choose Later. Reopen **Connection setup** from
+the welcome screen. **Try a sample document** loads a fictional brief and prepares
+a question for you to send. See the [Windows preview guide](WINDOWS_PREVIEW.md)
+for the Python-free installer and in-app optional voice preparation.
+
 ## Interface language
+
+View changes, controls and the document drop target use short animations. The
+companion has different listening, thinking and playback movements, a brief
+completion reaction, and a different error expression. Its speech wave is a rhythm
+cue, not measured audio level. **Settings → General → Reduce motion** disables
+all movement and blinking while retaining status text and controls.
+
+The larger companion stays beside responses in wide windows and moves into the
+header in small windows to preserve reading space. Welcome also has a larger
+character. Idle uses slow breathing; activity uses brighter rings and distinct
+thinking/playback colors.
 
 Open settings with `Ctrl + ,`, then **General → Language → English → Save**.
 From Turkish, use **Genel → Dil → English → Kaydet**. The main window updates
@@ -18,9 +35,19 @@ status/error messages are not fully translated yet.
 
 ## Everyday controls
 
+Nexus opens in a 180×36 strip centered at the top edge. Hover briefly to reveal
+the 460×188 mini panel. It collapses after you leave; use **Pin** to keep it open.
+Click the strip or **Open chat** to expand. The anchor respects the taskbar's
+reserved screen area. The companion face and status text follow
+the actual listening and response state. Open documents, memory, research or voice
+input directly from the panel. **Chat** opens the larger workspace and appears
+automatically when an answer starts. Switching views preserves the conversation,
+draft and attached image. **Model** in the footer reopens connection setup.
+**Private session** is also available directly in the composer.
+
 | Action | Shortcut / control |
 | --- | --- |
-| Show / hide | `Alt + Space` |
+| Open Chat / return to top strip | `Alt + Space` |
 | Send | `Enter` or send button |
 | Navigate controls | `Tab` / `Shift + Tab` |
 | Clipboard context | `Ctrl + Shift + V` or `/clip [instruction]` |
@@ -28,7 +55,7 @@ status/error messages are not fully translated yet.
 | Start / finish voice input | `F2` while Nexus has focus |
 | New conversation / history | `Ctrl + N` / `Ctrl + H` |
 | Browse prompt history | `↑` / `↓` in the prompt field |
-| Cancel current work / hide when idle | `Esc` |
+| Cancel current work / return to strip when idle | `Esc` |
 | Quit | `Ctrl + Q` |
 | Web research | `/web <question>` |
 | Explicit memory | `/remember <fact>` or `/hatırla <bilgi>` |
@@ -39,9 +66,28 @@ The composer contains **Attach** (Ekle), **Research** (Araştır), and
 **Tools** (Araçlar). Tools includes private session, document-grounded answers,
 response speech, and memory management. The response header has a copy button.
 
+## Color, companion and interface sounds
+
+**Settings → Appearance** offers presets, R/G/B values and a color picker with
+an immediate isolated preview. Save applies choices; Cancel retains prior settings.
+Mini bot and Nexus cat follow the same real activity states. The optional slow RGB
+edge stays static under Reduce motion. Hidden windows stop RGB and character motion.
+
+Interface sounds default to off. Enable them, choose volume and use **Try sound**.
+Original short chimes cover open/collapse, actual recording start, document addition,
+completion and errors. Hovering is silent. Speech and microphone consent are separate.
+
+Memory cards support search and type/status filters. Edit the selected record on
+the right; **Approve** is enabled only for suggestions. **Details** exposes scope,
+project and confidence/importance. Save the **Profile summary** in its separate tab.
+
 ## Documents and memory
 
-Use **Ekle** to import readable text, then enable **Belgelerimden yanıtla**.
+Use **Attach** (Ekle) or drop a PDF, DOCX or text file onto the window. Nexus adds
+it to the local library and enables document-grounded answers. Dropping preserves
+an existing draft; an empty input gets a suggested summary question. Press Enter
+to send it. Dropping a file does not send a model request. Starting a new chat
+does not delete documents from the library.
 PDF extraction uses embedded text, not OCR; DOCX extraction currently reads paragraphs,
 not every table or embedded object. A text-only model can summarize extracted text.
 To understand an attached image, choose a model with image capability.

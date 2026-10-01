@@ -1,5 +1,33 @@
 # Local publication check / Yerel yayın kontrolü
 
+## 1 October 2026 beta preparation / 1 Ekim 2026 beta hazırlığı
+
+- The local Windows Python 3.12.14 build environment passed 377 tests, Ruff, and
+  13 packaged smoke checks. The package used a synthetic HTTP model fixture;
+  no real microphone, clean-PC installation or real LLM quality claim follows.
+- The earlier Python 3.14 test instability remains open. This beta recommends
+  Python 3.11–3.13.
+- Source beta publication is gated on all three current Windows CI jobs. The
+  publisher pins the tested commit, preserves existing releases/tags, and never
+  uploads installers, downloaded models, local outputs or user data.
+- Local speech model checks passed without downloading during recording.
+  Real-user transcription and wake accuracy still need testing.
+- The public beta offers source code only. The local unsigned installer remains
+  pending a documented PyQt/Qt distribution decision and dependency review.
+- Turkish/English 50-second, 1080×1920, 60 fps promo files were prepared locally.
+  They contain original audio and fictional sample UI content, not live inference.
+  No social posts or direct invitations were sent.
+
+Türkçe: Yerel Python 3.12.14 ortamında 377 test, Ruff ve 13 paket kontrolü geçti.
+Paket testinde kurgu model sunucusu kullanıldı; gerçek mikrofon, model kalitesi
+ve temiz bilgisayar kurulumu bu sonuçla doğrulanmıyor. Kaynak kod betası üç
+Windows CI işi geçince test edilen commit üzerinden yayımlanır. Kurulum paketi,
+modeller ve kullanıcı verileri yüklenmez. Yerel imzasız kurulumun PyQt/Qt dağıtım
+kararı ve bağımlılık incelemesi açık. Önceki Python 3.14 sorunu nedeniyle 3.11–3.13
+önerilir. İki dilde 50 saniyelik tanıtımlar yerelde hazır; sosyal paylaşım yapılmadı.
+
+## Historical checkpoint / Önceki kontrol kaydı
+
 29 September 2026 / 29 Eylül 2026
 
 ## Verification / Doğrulama

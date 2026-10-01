@@ -14,20 +14,33 @@ A local-first Windows desktop assistant for Ollama, LM Studio and llama.cpp — 
 
 </div>
 
-![Nexus answering in its desktop window](docs/assets/localization/en/response.png)
+![Nexus compact desktop panel](docs/assets/companion/en/dock.png)
 
 *Actual interface rendered with synthetic example content; not a recorded model response.*
 
-Press `Alt + Space`, bring a question or document, and work with the local model you
-choose. Nexus connects to an existing model server; it is not another hosted chatbot
+Nexus rests in a small strip at the top edge of your screen. Hover to reveal quick
+tools, pin the mini panel, or click to open Chat. `Alt + Space` opens Chat or returns
+to the strip. Drop PDF, DOCX or text files to add them to your local library.
+Choose an RGB accent, optional slow rainbow glow, mini bot or cat, and optional
+interface chimes under **Settings → Appearance**. Review memory in its new card view.
+Nexus connects to an existing model server; it is not another hosted chatbot
 and does not bundle a language model.
 
-**Development preview · Windows-first · Source installation only.** The main window
+**0.3.0 Beta 1 · Public source beta · Windows-first.**
+[Release and ZIP download](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1).
+Install 64-bit Python 3.11–3.13, extract the source ZIP, then double-click
+**Nexus Baslat.bat**. A running local model server is required.
+
+The main window
 and General/Privacy settings support English and Turkish. Voice, history, memory
 dialogs and some status/error messages still include Turkish; full localization is unfinished.
-There is no Windows installer yet. Known limits are described below.
+A [local Windows installer build](docs/WINDOWS_PREVIEW.md) is available as a
+development preview for testing. No public installer is included in this beta; the
+PyQt/Qt distribution decision and dependency review remain open.
+Known limits are described below.
 
 Switch the interface under **Settings → General → Language → Save** (`Ctrl + ,`).
+The first-run wizard also lets you choose the language and test a local model.
 In Turkish: **Ayarlar → Genel → Dil → Kaydet**. No restart is needed.
 
 [Get started](#get-started) · [User guide](docs/USER_GUIDE.md) ·
@@ -37,6 +50,10 @@ In Turkish: **Ayarlar → Genel → Dil → Kaydet**. No restart is needed.
 
 ## What you can do
 
+- **Meet Nexus:** a calm, consistent companion with a clear purpose. An optional
+  introduction after setup asks your preferred name, interests, goal and response
+  style. Review and save your answers; Nexus can ask occasional relevant questions
+  to get to know you. [Identity and introduction guide](docs/IDENTITY.md).
 - **Keep your chosen model:** discover LM Studio, Ollama, or llama.cpp servers and
   select a model already available locally.
 - **Work from documents:** import PDF, DOCX, text, Markdown, or code and retrieve
@@ -69,13 +86,16 @@ model. A matching API is necessary; model capabilities still vary.
 
 ### 2. Install from source
 
-You need Windows and **64-bit Python 3.11+**. Windows CI has passed on Python
-3.11–3.13. Python 3.14 has known intermittent
+You need Windows and **64-bit Python 3.11–3.13**. Earlier Windows CI passed on
+these versions; the current release is gated on fresh CI. Python 3.14 has known intermittent
 native access violations during tests and subprocess-cleanup warnings. A clean-machine
 compatibility check is pending. See the [latest local verification](docs/PREPUBLICATION_CHECK.md).
 
-Download this repository using **Code → Download ZIP**, extract it, then open a
-terminal in the extracted folder. Run:
+Download **Source code (zip)** from the
+[beta release](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1),
+extract it completely, then double-click **Nexus Baslat.bat**. The launcher
+prepares dependencies and opens the connection wizard. For manual installation,
+open a terminal in the extracted folder and use the commands below.
 
 With Git, you can instead clone the repository:
 
@@ -136,14 +156,17 @@ expose it to a LAN, proxy, or public tunnel. [Privacy and security boundaries](d
 
 | Area | What is verified / what remains |
 | --- | --- |
-| Automated checks | [Windows CI passed](https://github.com/emiryigittt/nexus-local-ai-manager/actions/runs/36627956686) on Python 3.11–3.13 on 29 September 2026. All 262 tests passed locally on retry; the Python 3.14 native crash remains unresolved. [Verification details](docs/PREPUBLICATION_CHECK.md) |
+| Automated checks | 377 tests, Ruff and 13 packaged smoke checks passed locally on 1 October 2026. The source beta publishes only after fresh Windows CI on Python 3.11–3.13 passes. [Verification details](docs/PREPUBLICATION_CHECK.md) |
 | Local speech | Two segments completed real Qt playback; naturalness needs listening tests |
 | Memory | Candidate persistence/approval tested; current live-model recall check awaits a running server |
 | Hey Nexus | Opt-in experiment; missed triggers and CPU use remain. Use `F2` as fallback |
-| Compatibility | Windows-first; no installer or macOS/Linux support claim |
+| Compatibility | Windows 10/11 x64 target; clean-PC installation testing pending. No public installer or macOS/Linux support claim |
 
-Speech uses text segments, not true PCM streaming or word-level synchronized
-highlighting. Model answers can be wrong. See [verification scope](docs/VOICE_AND_MEMORY_RELIABILITY.en.md)
+Speech uses text segments rather than true PCM streaming. Captions follow playback;
+cloud word timings are supplied by the service and local word alignment is approximate.
+Speech input now finishes after a configurable pause, balances quiet input and offers
+optional transcript review. These changes have not established accuracy with your
+physical microphone. Model answers can be wrong. See [verification scope](docs/VOICE_AND_MEMORY_RELIABILITY.en.md)
 and [troubleshooting](docs/USER_GUIDE.md#troubleshooting).
 
 ## Help shape Nexus

@@ -26,3 +26,27 @@ jobs:
       - run: python -m ruff check .
       - run: python scripts/check_public_repo.py
       - run: python -m pytest
+
+  source-beta:
+    name: Publish verified source beta
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    concurrency:
+      group: nexus-source-beta-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Publish pinned source prerelease after all Windows checks pass
+        run: python scripts/publish_source_beta.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

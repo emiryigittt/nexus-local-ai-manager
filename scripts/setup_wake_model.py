@@ -5,17 +5,13 @@ Output is a small content-free JSON-lines protocol for the settings UI.
 """
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from backend.setup_events import report  # noqa: E402
 from backend.wake_model import load_wake_model, resolve_wake_model  # noqa: E402
-
-
-def report(stage):
-    print(json.dumps({"stage": stage}), flush=True)
 
 
 def main(argv=None):

@@ -37,4 +37,7 @@ kaydetmeden önce kişisel veri açısından incele.
 - [ ] Demo sesi ve referans kayıtlarının haklarını/izinlerini doğrula.
 - [ ] Çalıştırılabilir dosya veya kurulum paketi öncesinde dağıtım incelemesini bitir.
 
-Bu hazırlık lisansı değiştirmez; kurulum paketi veya model dağıtımı yapmaz.
+Nexus artık kaynak kodu, bulunabilen bağımlılık lisansları ve derleme ortamı listesiyle
+[yerel kurulum önizlemesi](docs/WINDOWS_PREVIEW.tr.md) üretir. Bu, herkese yayımlanan
+bir sürüm veya tamamlanmış dağıtım denetimi değildir. Kaynak lisansı değişmez ve model
+dağıtımı yapılmaz; yukarıdaki kontroller açık kalır.

@@ -2,9 +2,10 @@
 
 from PyQt6.QtCore import QEvent, QSize, Qt
 from PyQt6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap
-from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QSizePolicy, QVBoxLayout
 
 from frontend.brand import ACCENT, ACCENT_HOVER, brand_icon
+from frontend.micro_motion import MotionButton
 
 
 def icon(name, color="#bfc3c7"):
@@ -38,9 +39,48 @@ def icon(name, color="#bfc3c7"):
             painter.drawEllipse(x - 2, y - 2, 4, 4)
     elif name == "hide":
         painter.drawLine(6, 12, 18, 12)
+    elif name == "pin":
+        painter.drawLine(8, 3, 16, 3)
+        painter.drawLine(9, 3, 9, 10)
+        painter.drawLine(15, 3, 15, 10)
+        painter.drawLine(9, 10, 5, 15)
+        painter.drawLine(5, 15, 19, 15)
+        painter.drawLine(19, 15, 15, 10)
+        painter.drawLine(12, 15, 12, 22)
     elif name == "plus":
         painter.drawLine(12, 5, 12, 19)
         painter.drawLine(5, 12, 19, 12)
+    elif name == "home":
+        painter.drawLine(3, 11, 12, 4)
+        painter.drawLine(12, 4, 21, 11)
+        painter.drawLine(6, 10, 6, 20)
+        painter.drawLine(6, 20, 18, 20)
+        painter.drawLine(18, 20, 18, 10)
+    elif name == "chat":
+        painter.drawRoundedRect(3, 4, 18, 14, 4, 4)
+        painter.drawLine(7, 18, 7, 22)
+        painter.drawLine(7, 22, 12, 18)
+    elif name == "document":
+        painter.drawRoundedRect(5, 3, 14, 19, 2, 2)
+        painter.drawLine(8, 9, 16, 9)
+        painter.drawLine(8, 13, 16, 13)
+        painter.drawLine(8, 17, 13, 17)
+    elif name == "memory":
+        painter.drawRoundedRect(5, 5, 14, 14, 3, 3)
+        for point in (8, 12, 16):
+            painter.drawLine(point, 2, point, 5)
+            painter.drawLine(point, 19, point, 22)
+            painter.drawLine(2, point, 5, point)
+            painter.drawLine(19, point, 22, point)
+    elif name == "shield":
+        painter.drawLine(4, 5, 12, 2)
+        painter.drawLine(12, 2, 20, 5)
+        painter.drawLine(4, 5, 5, 15)
+        painter.drawLine(5, 15, 12, 22)
+        painter.drawLine(12, 22, 19, 15)
+        painter.drawLine(19, 15, 20, 5)
+        painter.drawLine(9, 12, 11, 14)
+        painter.drawLine(11, 14, 16, 9)
     elif name == "web":
         painter.drawEllipse(3, 3, 18, 18)
         painter.drawEllipse(8, 3, 8, 18)
@@ -57,7 +97,7 @@ def icon(name, color="#bfc3c7"):
 
 
 def button(name, tooltip, callback, text="", primary=False):
-    widget = QPushButton(text)
+    widget = MotionButton(text)
     widget.setIcon(icon(name, "#142820" if primary else "#bfc3c7"))
     widget.setIconSize(QSize(20, 20))
     widget.setObjectName("sendButton" if primary else "toolButton")
@@ -107,7 +147,7 @@ class ComposerFrame(QFrame):
         return super().eventFilter(watched, event)
 
 
-class ActionCard(QPushButton):
+class ActionCard(MotionButton):
     """A single keyboard/click target with a title, hint and drawn icon."""
 
     def __init__(self, name, title, description, shortcut, callback, ui):
@@ -160,12 +200,47 @@ def settings_card(parent_layout, title):
 STYLE = """
 QWidget { color: #ecebea; font-family: 'Segoe UI'; font-size: 13px; }
 #outer, #header, #content, #welcome, #footer { background: transparent; }
-#container { background: qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #202426,stop:0.5 #191c1f,stop:1 #191c1f);
-    border: 1px solid #3c4245; border-radius: 24px; }
+#container { background: #111416; border: 1px solid #30383a; border-radius: 22px; }
+#container[shell="notch"], #container[shell="dock"] { background: #090c0e;
+    border: none; border-top-left-radius: 0; border-top-right-radius: 0;
+    border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+#notchButton { background: transparent; border: none; }
+#notchButton:focus { border: 1px solid #56836c; border-radius: 12px; }
+#notchName { color: #cbd3cf; font-size: 12px; font-weight: 600; background: transparent; }
+#header { border-bottom: 1px solid #252c2e; padding-bottom: 9px; }
+#navigationTab { color: #a2afaa; background: transparent; border: 1px solid transparent;
+    border-radius: 10px; padding: 5px 10px; font-size: 12px; }
+#navigationTab:hover { background: #252d2a; color: #edf7f0; }
+#navigationTab[selected="true"] { color: #d4f5e1; background: #26352c; border-color: #3b5948; }
+#navigationTab:focus { border-color: @accent; }
+#dockOverview { background: transparent; border: none; }
+#welcomePresence { background: qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #1e3029,stop:1 #182224);
+    border: 1px solid #3b5547; border-radius: 18px; }
+#presencePanel { background: qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #1d3029,stop:1 #172025);
+    border: 1px solid #375548; border-radius: 18px; }
+#presencePanel[activity="listening"] { border-color: #70dba2; }
+#presencePanel[activity="thinking"] { border-color: #8aaedd; }
+#presencePanel[activity="speaking"] { border-color: #98b9ed; }
+#presenceTitle { font-size: 14px; font-weight: 600; color: #d9f3e3; }
+#presenceStatus { font-size: 10px; color: #a0b5a8; }
+#dockTitle { font-size: 15px; font-weight: 600; color: #f1faf4; }
+#dockStatus { font-size: 11px; color: #b6c7bc; }
+#dockHint { font-size: 10px; color: #8c9c92; }
+#dockTool { background: #262e2a; border: 1px solid #3d4a41; border-radius: 10px;
+    padding: 4px 5px; text-align: left; font-size: 10px; color: #d5e5dc; }
+#dockTool:hover { background: #33453a; border-color: #749781; }
+#dockTool:focus { border-color: @accent; }
+#modePill { background: #202829; border: 1px solid #3b4646; border-radius: 9px;
+    padding: 5px 8px; color: #aabdb4; font-size: 11px; }
+#modePill:hover { border-color: #718e7e; }
+#modePill:checked { background: #313249; border-color: #8580b6; color: #dedaff; }
+#modePill:focus { border-color: @accent; }
+#connectionButton { background: transparent; color: #b4c6ba; border: none; font-size: 10px; padding: 0 4px; }
+#connectionButton:hover { color: @accent; }
 #brand { color: #f3f1ed; font-size: 16px; font-weight: 600; }
 #brandNote { color: #8f959d; font-size: 11px; }
 #heroMark { background: transparent; border: none; }
-#welcomeTitle { color: #f1efeb; font-size: 34px; font-weight: 600; }
+#welcomeTitle { color: #f1efeb; font-size: 30px; font-weight: 600; }
 #subtitle { color: #a0a4ab; font-size: 14px; }
 #eyebrow { color: #83dbaa; font-size: 11px; font-weight: 600; }
 #actionCard { background: #23282b; border: 1px solid #394145; border-radius: 14px; }
@@ -180,8 +255,8 @@ QWidget { color: #ecebea; font-family: 'Segoe UI'; font-size: 13px; }
     text-align: left; padding: 12px 16px; color: #d9dbdd; }
 #suggestion:hover { background: #2b3033; border-color: #6b897a; }
 #suggestion:focus { border-color: #a4d5b9; }
-#composer { background: #252b2e; border: 1px solid #4d5858; border-radius: 18px; }
-#composer[focused="true"] { border: 1px solid #9abea7; background: #272f31; }
+#composer { background: #1b2322; border: 1px solid #3b4c43; border-radius: 15px; }
+#composer[focused="true"] { border: 1px solid #83b899; background: #1e2924; }
 HistoryLineEdit { color: #f0eeeb; background: transparent; border: none; padding: 6px 0;
     font-size: 17px; selection-background-color: #3b6851; }
 HistoryLineEdit:disabled { color: #888e96; }
@@ -197,6 +272,7 @@ HistoryLineEdit:disabled { color: #888e96; }
 #contextButton { color: #b1b8bd; background: transparent; border: none; text-align: left;
     padding: 5px 0; font-size: 11px; }
 #contextButton:hover { color: #c5e5d0; }
+#attachmentHint { color: #b1d7c1; font-size: 11px; padding: 2px 0; }
 #contextButton:focus, #wakeButton:focus { border: 1px solid #a4d5b9; border-radius: 5px; }
 #output { background: transparent; color: #e4e3e0; border: none;
     selection-background-color: #3b6851; padding: 0; font-size: 15px; }
@@ -222,7 +298,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: trans
 QDialog { background: #191b1e; }
 QDialog QLabel { background: transparent; }
 QDialog QScrollArea, QDialog QScrollArea > QWidget > QWidget { background: #191b1e; border: none; }
-QDialog QLineEdit, QDialog QComboBox, QDialog QDoubleSpinBox, QDialog QListWidget,
+QDialog QLineEdit, QDialog QComboBox, QDialog QDoubleSpinBox, QDialog QSpinBox, QDialog QListWidget,
 QDialog QTextEdit { background: #25292e; color: #e8e7e4; border: 1px solid #454c54;
     border-radius: 6px; padding: 7px; selection-background-color: #3b6851; }
 QDialog QPushButton { background: #30363b; border: 1px solid #48535a; border-radius: 7px; padding: 8px 12px; }
@@ -232,6 +308,7 @@ QDialog QPushButton:focus, QDialog QComboBox:focus, QDialog QLineEdit:focus,
 QDialog QDoubleSpinBox:focus { border-color: @accent; }
 QDialog QPushButton[primary="true"] { background: @accent; color: #142820; border-color: @accent; font-weight: 600; }
 QDialog QPushButton[primary="true"]:hover { background: @accentHover; }
+QDialog QPushButton[primary="true"]:disabled { background: #30393a; color: #7e888e; border-color: #424b4c; }
 QDialog #settingsCard { background: #22272a; border: 1px solid #394246; border-radius: 14px; }
 QDialog #sectionTitle { color: #c4dccd; font-size: 12px; font-weight: 600; }
 QDialog #settingsNote { color: #a3adb3; font-size: 12px; }

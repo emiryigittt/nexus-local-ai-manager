@@ -33,7 +33,9 @@ def path_problem(relative: Path) -> str | None:
         return "private environment file"
     if re.search(r"\.(?:db|sqlite3?)(?:-(?:wal|shm|journal))?$", name):
         return "local database"
-    if relative.suffix.casefold() in {".wav", ".mp3", ".log", ".onnx", ".gguf"}:
+    ui_sound = (relative.as_posix() in {f"frontend/assets/sounds/{name}.wav" for name in
+                                      ("open", "collapse", "success", "attachment", "error", "listen")})
+    if relative.suffix.casefold() in {".wav", ".mp3", ".log", ".onnx", ".gguf"} and not ui_sound:
         return "recording, log or model artifact"
     if name.startswith("memory-export") and name.endswith(".json"):
         return "memory export"

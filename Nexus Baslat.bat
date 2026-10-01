@@ -11,8 +11,10 @@ echo.
 if not exist ".venv\Scripts\python.exe" (
     echo [1/3] Creating a virtual environment...
     where py >nul 2>nul
-    if %errorlevel% equ 0 (
-        py -3 -m venv .venv
+    if not errorlevel 1 (
+        py -3.13 -m venv .venv
+        if errorlevel 1 py -3.12 -m venv .venv
+        if errorlevel 1 py -3.11 -m venv .venv
     ) else (
         python -m venv .venv
     )
@@ -21,8 +23,8 @@ if not exist ".venv\Scripts\python.exe" (
     echo [1/3] Virtual environment is ready.
 )
 
-echo [2/3] Installing dependencies...
-".venv\Scripts\python.exe" -m pip install -r requirements.txt --quiet
+echo [2/3] Checking dependencies...
+".venv\Scripts\python.exe" scripts\ensure_dependencies.py
 if errorlevel 1 goto :error
 
 echo [3/3] Starting Nexus...

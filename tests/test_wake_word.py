@@ -11,7 +11,7 @@ from frontend.app import SpotlightApp
 from frontend.wake_worker import WakeWordWorker
 
 
-@pytest.mark.parametrize("text", ["Hey Nexus", "Hey, Nexus!", "HEY NEKSUS."])
+@pytest.mark.parametrize("text", ["Hey Nexus", "Hey, Nexus!", "HEY NEKSUS.", "Hey Neksüs", "HeyNexus", "Hey Nex us"])
 def test_exact_wake_phrase(text):
     assert matches_wake_phrase(text)
 
@@ -395,7 +395,7 @@ def test_slow_inference_never_triggers_an_old_call(monkeypatch):
     recorder, audio, calls = fake_recorder()
     worker = WakeWordWorker(UserPreferences.defaults(),
                             SimpleNamespace(prepare=lambda: None, detects=lambda data: True), recorder)
-    times = iter([10.0, 12.01])
+    times = iter([10.0, 10.0 + worker.MAX_INFERENCE_SECONDS + .01])
     monkeypatch.setattr("frontend.wake_worker.time.monotonic", lambda: next(times))
     takes = []
 

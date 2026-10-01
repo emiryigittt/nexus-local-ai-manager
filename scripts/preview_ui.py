@@ -40,6 +40,16 @@ def main():
         preferences.providers[0].selected_model = "Local model" if args.language == "en" else "Yerel model"
         settings_store.save(preferences)
         window = SpotlightApp()
+        window.apply_motion_preference(True)
+        window._setup_prompted = True
+        window.show()
+        app.processEvents()
+        window.setWindowOpacity(1)
+        window.grab().save(str(args.output / "notch.png"))
+        window.set_shell_mode("dock")
+        app.processEvents()
+        window.grab().save(str(args.output / "dock.png"))
+        window.set_shell_mode("chat")
         if args.compact:
             window.setFixedSize(640, 560)
         window.wake.timer.stop()
@@ -97,7 +107,33 @@ def main():
         scrollbar.setValue(scrollbar.maximum())
         app.processEvents()
         dialog.grab().save(str(args.output / "voice-output.png"))
+        dialog.tabs.setCurrentIndex(3)
+        app.processEvents()
+        dialog.grab().save(str(args.output / "appearance.png"))
+        dialog.appearance.set_color("#ba9fff")
+        dialog.appearance.character.setCurrentIndex(1)
+        dialog.appearance.rgb.setChecked(True)
+        app.processEvents()
+        dialog.grab().save(str(args.output / "appearance-cat.png"))
         dialog.close()
+        from backend.memory import MemoryRepository
+        from frontend.memory_dialog import MemoryDialog
+
+        repository = MemoryRepository(Path(directory) / "preview-memory.db")
+        repository.add("Kısa ve uygulanabilir yanıtları tercih eder." if args.language == "tr" else
+                       "Prefers concise, practical answers.", "preference")
+        repository.add("Nexus projesinin amacı: kullanımı kolay bir yerel asistan." if args.language == "tr" else
+                       "Nexus aims to be an easy-to-use local companion.", "goal")
+        memory = MemoryDialog(repository, parent=window)
+        if args.compact:
+            memory.resize(640, 560)
+        memory.show()
+        app.processEvents()
+        memory.grab().save(str(args.output / "memory.png"))
+        memory.search.setText("no-results-example")
+        app.processEvents()
+        memory.grab().save(str(args.output / "memory-empty.png"))
+        memory.close()
         window.close()
         app.processEvents()
     print(str(args.output.resolve()))

@@ -7,14 +7,20 @@ logged, persisted, forwarded to the chat model, or used as command text.
 
 import math
 import re
+import unicodedata
 
 from backend.wake_model import load_wake_model, resolve_wake_model
 
 
 def matches_wake_phrase(text: str) -> bool:
     # Full utterance only: mentioning Nexus inside a conversation must not wake it.
-    tokens = re.findall(r"[^\W_]+", text.casefold(), flags=re.UNICODE)
-    return tokens in (["hey", "nexus"], ["hey", "neksus"])
+    normalized = "".join(char for char in unicodedata.normalize("NFKD", text.casefold())
+                         if not unicodedata.combining(char))
+    tokens = re.findall(r"[^\W_]+", normalized, flags=re.UNICODE)
+    # Accent/spacing variants occur in Turkish decoding of the English name.
+    # Keep whole-utterance matching: no fuzzy matches or ordinary mentions.
+    return tokens in (["hey", "nexus"], ["hey", "neksus"],
+                      ["hey", "nex", "us"], ["heynexus"], ["heyneksus"])
 
 
 class LocalWakeDetector:
@@ -34,7 +40,7 @@ class LocalWakeDetector:
 
     def detects(self, audio) -> bool:
         segments, _ = self.model.transcribe(
-            audio, language=self.language, beam_size=3, temperature=0,
+            audio, language=self.language, beam_size=1, temperature=0,
             condition_on_previous_text=False, vad_filter=True,
             vad_parameters={"min_silence_duration_ms": 300},
         )

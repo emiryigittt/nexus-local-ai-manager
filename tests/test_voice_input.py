@@ -143,6 +143,9 @@ def test_voice_preferences_roundtrip_and_disconnected_selection(tmp_path, monkey
     panel.mode.setCurrentIndex(panel.mode.findData("vad"))
     panel.silence.setValue(1.5)
     panel.threshold.setValue(2.0)
+    panel.review.setChecked(True)
+    panel.auto_finish.setChecked(False)
+    panel.transcription_model.setCurrentIndex(panel.transcription_model.findData("base"))
     panel.apply(preferences)
     store = SettingsStore(tmp_path / "voice.json")
     store.save(preferences)
@@ -152,6 +155,9 @@ def test_voice_preferences_roundtrip_and_disconnected_selection(tmp_path, monkey
     assert loaded.voice_input_mode == "vad"
     assert loaded.voice_silence_seconds == 1.5
     assert loaded.voice_threshold == 0.02
+    assert loaded.voice_review_before_send
+    assert not loaded.voice_auto_finish
+    assert loaded.voice_transcription_model == "base"
     panel.close()
     app.processEvents()
 

@@ -11,7 +11,7 @@ from backend.wake_capture import WakeCapture
 class WakeWordWorker(QThread):
     # Pending capture already expires after two seconds. Also bound inference:
     # an overloaded CPU must not open the assistant for an old utterance.
-    MAX_INFERENCE_SECONDS = 2.0
+    MAX_INFERENCE_SECONDS = 6.0
     detected = pyqtSignal()
     state_changed = pyqtSignal(str)
     failed = pyqtSignal(str)
@@ -21,7 +21,7 @@ class WakeWordWorker(QThread):
         self.detector = detector
         self.language = preferences.language
         self.capture = capture or WakeCapture(
-            device=preferences.voice_input_device, threshold=preferences.voice_threshold,
+            device=preferences.voice_input_device, threshold=preferences.wake_word_threshold,
         )
         self._cancelled = threading.Event()
         self.detection_deadline = 0.0

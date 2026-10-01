@@ -5,6 +5,129 @@ from weakref import ref
 from PyQt6 import sip
 
 ENGLISH = {
+    "Dengeli · hızlı yerel model": "Balanced · fast local model",
+    "Göndermeden önce metni kontrol et": "Review text before sending",
+    "Metin hazır. Düzenleyip Enter ile gönderebilirsin.": "Text is ready. Edit it and press Enter to send.",
+    "Konuşma bitince otomatik gönder": "Send automatically when speech ends",
+    "Başlat / durdur modunda kısa duraklamaları bekler, konuşma bitince kaydı sonlandırır. Basılı konuş modunda tuşu bırakmanız beklenir.":
+        "In start/stop mode, waits through short pauses and ends capture when speech finishes. Push-to-talk waits for key release.",
+    "Doğal konuşma · daha güçlü yerel model": "Natural speech · stronger local model",
+    "Hızlı · hafif yerel model": "Fast · lightweight local model",
+    "Konuşmayı anlama": "Speech recognition",
+    "Doğal konuşma seçeneği daha fazla işlem gücü kullanır. Henüz hazırlanmadıysa mevcut hafif model kullanılır. Modeli aşağıdan hazırlayabilirsiniz; Hey Nexus izni gerekmez.":
+        "Natural speech uses more processing power. The existing lightweight model is used until prepared. Prepare it below; Hey Nexus permission is not required.",
+    "Konuşma modeli yerelde çalışır. Hazırlama işlemi mikrofonu açmaz.":
+        "Speech recognition runs locally. Preparation does not open the microphone.",
+    "Konuşma modelini hazırla…": "Prepare speech model…",
+    "Konuşma modelini hazırla": "Prepare speech model",
+    "Seçili modeli kontrol edin veya hazırlayın. Sesiniz buluta gönderilmez.":
+        "Check or prepare the selected model. Your audio is not sent to the cloud.",
+    "Seçili Whisper modeli Hugging Face üzerinden indirilir; internet ve yüzlerce MB disk alanı kullanabilir. İndirme sonrası konuşmalar yerelde çözümlenir. Mikrofon açılmaz, ses gönderilmez. Devam edilsin mi?":
+        "The selected Whisper model downloads from Hugging Face, using internet and potentially hundreds of MB of disk space. Speech is then transcribed locally. No microphone or audio upload. Continue?",
+    "Konuşma modeli hazırlanıyor… Mikrofon kapalı.": "Preparing speech model… Microphone off.",
+    "Konuşma modeli indiriliyor… Mikrofon kapalı.": "Downloading speech model… Microphone off.",
+    "Hazırlama durduruldu. Mikrofon kapalı; kısmi indirme önbellekte kalabilir.":
+        "Preparation stopped. Microphone off; partial downloads may remain cached.",
+    "Seçili konuşma modeli hazır. Kaydet düğmesiyle seçiminizi uygulayın.":
+        "Selected speech model is ready. Click Save to apply your choice.",
+    "Konuşma modeli hazır değil. Hazırla seçeneğini kullanın; internet ve disk alanını kontrol edin.":
+        "Speech model isn't ready. Use Prepare; check your internet connection and disk space.",
+    "Konuşma modeli hazır değil. Ayarlar → Ses → Giriş bölümünden modeli hazırlayın.":
+        "Speech model isn't ready. Prepare it under Settings → Voice → Input.",
+    "Mikrofon verisi geçersiz. Yeniden deneyin.": "Invalid microphone data. Try again.",
+    "Çağrı ses eşiği": "Wake call threshold",
+    "Kısa çağrılar için ayrı hassasiyet. Sessiz konuşmayı kaçırıyorsa azalt; ortam gürültüsü algılamayı yoruyorsa artır.":
+        "Separate sensitivity for short wake calls. Lower it for quiet speech; raise it if background noise overloads detection.",
+    "Ses eşiğine ulaşılmadı. Doğru mikrofonu seç veya Çağrı ses eşiğini azaltıp tekrar dene. Mikrofon kapalı.":
+        "Audio stayed below the threshold. Choose the right microphone or lower the Wake call threshold and retry. Microphone off.",
+    "Çağrıyı dene (5 sn)": "Try wake call (5 sec)",
+    "Yalnızca tıklayınca mikrofon beş saniye açılır. Hey Nexus deyip durakla. Ses kaydedilmez veya gönderilmez.":
+        "Click to open the microphone for five seconds. Say Hey Nexus and pause. Audio is never saved or sent.",
+    "Mikrofon açık · şimdi Hey Nexus deyip durakla. Test beş saniyede biter.":
+        "Microphone on · say Hey Nexus and pause. The test ends in five seconds.",
+    "Hey Nexus algılandı. Test tamamlandı; mikrofon kapalı.":
+        "Hey Nexus detected. Test complete; microphone off.",
+    "Ses eşiğine ulaşılmadı. Doğru mikrofonu seç veya Giriş sekmesindeki ses eşiğini azaltıp tekrar dene. Mikrofon kapalı.":
+        "Audio stayed below the threshold. Choose the right microphone or lower the threshold on the Input tab and retry. Microphone off.",
+    "Ses geldi ama çağrı algılanmadı. Hey Nexus deyip kısa bir duraklama yaparak tekrar dene. Mikrofon kapalı.":
+        "Audio arrived but the wake call wasn't detected. Say Hey Nexus, pause briefly and retry. Microphone off.",
+    "Nexus ile tanış": "Meet Nexus",
+    "Tanışalım": "Meet Nexus", "Tanışma": "Introduction",
+    "Merhaba, {name}.": "Hello, {name}.",
+    "Ben Nexus. Nasıl çalıştığını ve hedeflerini tanımak isterim.\nTanışalım mı?":
+        "I'm Nexus. I'd like to learn how you work and what you're working toward.\nLet's get acquainted?",
+    "Tanışma, kişisel hafızanı düzenler. Kullanmak için özel oturumdan çık.":
+        "Introductions update your personal memory. Leave the private session to use this feature.",
+    "Uygun anlarda beni tanımak için kısa sorular sor": "Ask brief questions to get to know me when it fits",
+    "Hafıza: {enabled} · Otomatik öneriler: {learning}": "Memory: {enabled} · Automatic suggestions: {learning}",
+    "açık": "on", "kapalı": "off",
+    "Henüz bir otomatik hafıza işlemi yok.": "No automatic memory task yet.",
+    "Son işlem: {count} yeni aday. Adayları seçip etkinleştirin.": "Latest task: {count} new suggestions. Review and approve them.",
+    "{count} kayıt · {active} etkin · {candidates} aday": "{count} records · {active} active · {candidates} suggestions",
+    "Görünüm": "Appearance", "Renk ve RGB": "Color and RGB",
+    "Rengini seç. Karakteri ve ışığı önizlemede hemen gör.": "Choose a color. Preview your character and glow instantly.",
+    "Senin rengin. Senin asistanın.": "Your color. Your companion.",
+    "Renk kanalı": "Color channel", "Renk seç…": "Choose color…",
+    "Yavaş RGB kenar ışığı": "Slow RGB edge glow",
+    "Hareketi azalt açıkken RGB ışığı sabit kalır.": "RGB stays static when reduced motion is on.",
+    "Yol arkadaşın": "Your companion", "Mini bot": "Mini bot", "Nexus kedisi": "Nexus cat",
+    "Karakter": "Character", "Karakteri selamla": "Say hello",
+    "Göz kırpar, dinler, düşünür ve konuşur. Uygulamanın gerçek durumunu takip eder.":
+        "Blinks, listens, thinks and speaks. Follows the application's actual state.",
+    "Küçük sesler": "Little sounds", "Arayüz ses efektlerini aç": "Enable interface sounds",
+    "Ses düzeyi": "Volume", "Sesi dene": "Try sound",
+    "Fareyle üzerine gelince ses çıkmaz. Sesler isteğe bağlıdır; konuşma sesi ayrı ayarlanır.":
+        "Hovering is silent. Sounds are optional; speech is configured separately.",
+    "Nexus · Kişisel Hafıza": "Nexus · Personal Memory",
+    "Seni tanıyan bir hafıza": "A memory that knows you",
+    "Kayıtlar bu bilgisayarda saklanır. Önerileri incele; neyi hatırlayacağına sen karar ver.":
+        "Records stay on this computer. Review suggestions and choose what Nexus remembers.",
+    "Kayıtlar": "Records", "Profil özeti": "Profile summary",
+    "Nexus seni nasıl tanısın?": "How should Nexus know you?",
+    "Tercihlerin ve çalışma biçimin hakkında kısa bir özet…": "A short summary of your preferences and how you work…",
+    "Özeti kaydet": "Save summary", "Özet kaydedildi.": "Summary saved.",
+    "Hafızada ara…": "Search memory…", "Hafıza kayıtları": "Memory records",
+    "Tüm türler": "All types", "Tüm durumlar": "All statuses",
+    "Tercih": "Preference", "Bilgi": "Fact", "Hedef": "Goal", "Talimat": "Instruction", "Proje kararı": "Project decision",
+    "Onay bekliyor": "Awaiting approval", "Etkin": "Active", "Eski sürüm": "Previous version", "Devre dışı": "Disabled",
+    "Kaydı incele": "Review record", "Hatırlanacak bilgi": "Information to remember",
+    "Tür": "Type", "Durum": "Status", "Bu bilgiyi önceliklendir": "Prioritize this information",
+    "Ayrıntılar": "Details", "Kapsam": "Scope", "Proje": "Project", "Proje kimliği": "Project ID",
+    "Güven": "Confidence", "Önem": "Importance", "Kaynak": "Source", "Onayla": "Approve", "Unut": "Forget",
+    "Henüz kayıt yok. Sohbette /remember ile bir bilgi ekleyebilirsin.": "No records yet. Add information with /remember in chat.",
+    "Aramana uygun kayıt bulunamadı.": "No records match your search.",
+    "Yenile": "Refresh", "Dışa aktar": "Export", "Tümünü sil": "Clear all", "Kapat": "Close",
+    "Nexus sohbetini aç": "Open Nexus chat",
+    "Üzerine gel: mini panel · Tıkla: sohbet": "Hover: mini panel · Click: chat",
+    "Küçült · Esc": "Collapse · Esc",
+    "Küçült": "Collapse",
+    "Mini paneli sabitle": "Pin mini panel",
+    "Sabitlemeyi kaldır": "Unpin mini panel",
+    "Belgeyi veya görseli buraya bırak": "Drop a document or image here",
+    "Nexus konuşuyor": "Nexus speaking",
+    "Yanıt seslendiriliyor.": "Playing the response audio.",
+    "Yerel kitaplığa eklendi · {name}": "Added to local library · {name}",
+    "Eklediğim belgedeki önemli noktaları özetle.": "Summarize the key points in the document I added.",
+    "Nexus'a yerel belge ekle": "Add a local document to Nexus",
+    "Belge eklendi": "Document added",
+    "Belge eklenemedi": "Could not add document",
+    "Belge yalnızca yerel bilgi tabanına eklendi.": "The document was added to the local knowledge library only.",
+    "Dosya okunamadı veya yerel Nexus bağlantısı kurulamadı. Dosyayı ve bağlantı ayarlarını kontrol et.":
+        "Could not read the file or connect to local Nexus. Check the file and connection settings.",
+    "Kontrol paneli": "Control panel",
+    "Panel": "Panel",
+    "Sohbet": "Chat",
+    "Sohbeti aç": "Open chat",
+    "Hafıza": "Memory",
+    "Bir soru sor veya araç seç.": "Ask a question or choose a tool.",
+    "Kontrol sende. İzinler ayarlardan yönetilir.": "You are in control. Manage permissions in settings.",
+    "Ses yerel olarak işleniyor.": "Audio is processed locally.",
+    "Alt + Space": "Alt + Space",
+    "Konuşmayı yazıya çevirmek için Hey Nexus sekmesindeki Modeli hazırla düğmesini kullanabilirsiniz. Dinleme izni vermeniz gerekmez.": "To prepare speech transcription, use Prepare model in the Hey Nexus tab. Listening permission is not required.",
+    "Örnek belgeyle dene": "Try a sample document",
+    "Bağlantı kurulumu": "Connection setup",
+    "Örnek belge yüklenemedi. Nexus'u yeniden açıp dene.": "Could not load the sample document. Restart Nexus and try again.",
+    "Örnek proje belgesini özetle ve sıradaki üç adımı çıkar.": "Summarize the sample project brief and identify the next three steps.",
     "Hareketi azalt": "Reduce motion",
     "Logo ve pencere animasyonlarını kapatır; durum bilgileri görünür kalır.":
         "Disable logo and window animations; status information stays visible.",

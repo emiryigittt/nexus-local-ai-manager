@@ -10,6 +10,7 @@ import os
 import sys
 import tempfile
 import time
+import wave
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -21,9 +22,9 @@ def main():
     args = parser.parse_args()
     os.environ["HF_HUB_OFFLINE"] = "1"
     import numpy as np
-    from faster_whisper.audio import decode_audio
 
     from backend.supertonic_speaker import synthesize_to_file
+    from backend.user_settings import UserPreferences
     from backend.wake_capture import WakeBuffer
     from backend.wake_word import LocalWakeDetector
 
@@ -55,12 +56,21 @@ def main():
             path = str(Path(directory) / "synthetic.wav")
             if not synthesize_to_file(phrase, path):
                 raise RuntimeError("Synthetic speech could not be generated")
-            audio = decode_audio(path, sampling_rate=16000)
+            # Supertonic writes PCM16 WAV. Read this fixed fixture directly:
+            # recent PyAV versions removed a faster-whisper decoder argument.
+            with wave.open(path, "rb") as fixture:
+                if fixture.getsampwidth() != 2:
+                    raise RuntimeError("Expected a synthetic PCM16 fixture")
+                rate = fixture.getframerate()
+                audio = np.frombuffer(fixture.readframes(fixture.getnframes()), dtype="<i2")
+                audio = audio.reshape(-1, fixture.getnchannels()).mean(axis=1) / 32768
+            audio = np.interp(np.arange(round(len(audio) * 16000 / rate)) * rate / 16000,
+                              np.arange(len(audio)), audio).astype(np.float32)
             # Exercise the same buffering as the live worker, including a phrase
             # crossing the old fixed four-second boundary. No device is opened.
             source = np.concatenate((np.zeros(60800, dtype=np.float32), audio,
                                      np.zeros(9600, dtype=np.float32)))
-            buffer = WakeBuffer()
+            buffer = WakeBuffer(threshold=UserPreferences.defaults().wake_word_threshold)
             detector.language = language
             decoded.clear()
             started = time.monotonic()

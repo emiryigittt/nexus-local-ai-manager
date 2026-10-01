@@ -22,6 +22,7 @@ def test_tools_menu_preserves_privacy_and_knowledge_toggles():
 def test_send_button_and_keyboard_focus_are_available(monkeypatch):
     app = QApplication.instance() or QApplication([])
     window = SpotlightApp()
+    window.set_shell_mode("chat")
     window._setup_prompted = True
     window.show()
     app.processEvents()
@@ -65,7 +66,7 @@ def test_settings_are_sectioned_and_choices_persist(tmp_path):
     app = QApplication.instance() or QApplication([])
     store = SettingsStore(tmp_path / "settings.json")
     dialog = SetupDialog(store=store)
-    assert [dialog.tabs.tabText(i) for i in range(dialog.tabs.count())] == ["Genel", "Gizlilik", "Ses"]
+    assert [dialog.tabs.tabText(i) for i in range(dialog.tabs.count())] == ["Genel", "Gizlilik", "Ses", "Görünüm"]
     dialog.cloud_speech.setChecked(True)
     dialog.voice.mode.setCurrentIndex(dialog.voice.mode.findData("push_to_talk"))
     dialog.save()
@@ -80,6 +81,7 @@ def test_settings_are_sectioned_and_choices_persist(tmp_path):
 def test_long_status_cannot_expand_the_window():
     app = QApplication.instance() or QApplication([])
     window = SpotlightApp()
+    window.set_shell_mode("chat")
     window._setup_prompted = True
     window.show()
     app.processEvents()

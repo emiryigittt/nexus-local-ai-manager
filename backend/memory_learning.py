@@ -105,7 +105,12 @@ async def learn_from_turn(
     prompt = (
         "Extract only durable user preferences, facts, goals, instructions, or project "
         "decisions that would improve future help. Ignore transient requests and assistant "
-        "claims. Mark sensitive content. Return the required JSON only.\n\n"
+        "claims. Only learn what the USER actually states, never facts introduced by the assistant. "
+        "For explicit profile answers use stable keys: user.name (preferred name), user.work "
+        "(work/interests), user.goal (current goal), user.response_style (answer preference). "
+        "Store the name itself as user.name content, without a label or sentence. If the user "
+        "changes a previous preference, propose the new value; do not assume both are current. "
+        "Mark sensitive content. Return the required JSON only.\n\n"
         f"USER:\n{user_text[:6000]}\n\nASSISTANT:\n{assistant_text[:6000]}"
     )
     payload: dict[str, Any] = {

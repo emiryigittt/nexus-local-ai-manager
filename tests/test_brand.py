@@ -43,7 +43,7 @@ def test_window_header_and_tray_use_shared_brand(qt_application):
     try:
         assert not window.windowIcon().isNull()
         assert window.windowIcon().pixmap(32).toImage() == brand_icon().pixmap(32).toImage()
-        assert window.findChild(QLabel, "brandMark").pixmap().toImage() == brand_pixmap(30, tile=False).toImage()
+        assert window.findChild(QLabel, "brandMark").pixmap().toImage() == brand_pixmap(22, tile=False).toImage()
         window.wake._set_state("Duraklatıldı")
         paused = window.wake.tray.icon().pixmap(32).toImage()
         window.wake._set_state("Dinliyor · yerel mikrofon açık")

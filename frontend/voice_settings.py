@@ -15,6 +15,8 @@ from PyQt6.QtWidgets import (
 
 from backend.audio_transcriber import input_devices
 from frontend.i18n import UiText
+from frontend.local_voice_setup import LocalVoiceSetupPanel
+from frontend.speech_model_setup import SpeechModelSetupPanel
 from frontend.wake_setup import WakeSetupPanel
 
 
@@ -54,6 +56,15 @@ class VoiceSettings(QWidget):
         self.mode.addItem(tr("F2 ile başlat, sessizlikte bitir"), "vad")
         self.mode.setCurrentIndex(max(0, self.mode.findData(preferences.voice_input_mode)))
         form.addRow(tr("Sesli giriş"), self.mode)
+        self.auto_finish = QCheckBox(tr("Konuşma bitince otomatik gönder"))
+        self.auto_finish.setChecked(preferences.voice_auto_finish)
+        self.auto_finish.setToolTip(tr("Başlat / durdur modunda kısa duraklamaları bekler, konuşma bitince kaydı sonlandırır. Basılı konuş modunda tuşu bırakmanız beklenir."))
+        self.auto_finish.setEnabled(self.mode.currentData() == "toggle")
+        self.mode.currentIndexChanged.connect(lambda: self.auto_finish.setEnabled(self.mode.currentData() == "toggle"))
+        form.addRow(self.auto_finish)
+        self.review = QCheckBox(tr("Göndermeden önce metni kontrol et"))
+        self.review.setChecked(preferences.voice_review_before_send)
+        form.addRow(self.review)
         self.silence = QDoubleSpinBox()
         self.silence.setRange(0.3, 3.0)
         self.silence.setSingleStep(0.1)
@@ -66,7 +77,8 @@ class VoiceSettings(QWidget):
         self.threshold.setSuffix(" %")
         self.threshold.setValue(preferences.voice_threshold * 100)
         self.threshold.setToolTip(tr("Sessiz konuşmayı kaçırıyorsa azaltın; ortam gürültüsünü konuşma sayıyorsa artırın."))
-        form.addRow(tr("Ses eşiği"), self.threshold)
+        # Preserve the legacy energy threshold when saving old preferences;
+        # command capture now uses a speech detector rather than this gate.
         form = wake_form
         self.wake = QCheckBox(tr("Hey Nexus dinlemesine izin ver (deneysel)"))
         self.wake.setChecked(preferences.wake_word_enabled)
@@ -76,6 +88,13 @@ class VoiceSettings(QWidget):
         self.wake_startup.setEnabled(self.wake.isChecked())
         self.wake.toggled.connect(self.wake_startup.setEnabled)
         form.addRow(self.wake_startup)
+        self.wake_threshold = QDoubleSpinBox()
+        self.wake_threshold.setRange(.1, 20)
+        self.wake_threshold.setSingleStep(.1)
+        self.wake_threshold.setSuffix(" %")
+        self.wake_threshold.setValue(preferences.wake_word_threshold * 100)
+        self.wake_threshold.setToolTip(tr("Kısa çağrılar için ayrı hassasiyet. Sessiz konuşmayı kaçırıyorsa azalt; ortam gürültüsü algılamayı yoruyorsa artır."))
+        form.addRow(tr("Çağrı ses eşiği"), self.wake_threshold)
         wake_info = QLabel(tr(
             "İzin verirseniz arka planda kısa ses parçaları yalnızca yerel Whisper ile incelenir; "
             "kaydedilmez veya buluta gönderilmez. 'Hey Nexus' deyip duraklayın; pencere açılınca "
@@ -88,6 +107,16 @@ class VoiceSettings(QWidget):
         form.addRow(wake_info)
         self.wake_setup = WakeSetupPanel(preferences.language, self)
         form.addRow(self.wake_setup)
+        self.transcription_model = QComboBox()
+        self.transcription_model.addItem(tr("Doğal konuşma · daha güçlü yerel model"), "small")
+        self.transcription_model.addItem(tr("Dengeli · hızlı yerel model"), "base")
+        self.transcription_model.setCurrentIndex(max(0, self.transcription_model.findData(preferences.voice_transcription_model)))
+        input_form.addRow(tr("Konuşmayı anlama"), self.transcription_model)
+        input_note = QLabel(tr("Doğal konuşma seçeneği daha fazla işlem gücü kullanır. Henüz hazırlanmadıysa mevcut hafif model kullanılır. Modeli aşağıdan hazırlayabilirsiniz; Hey Nexus izni gerekmez."))
+        input_note.setWordWrap(True)
+        input_form.addRow(input_note)
+        self.speech_setup = SpeechModelSetupPanel(self.transcription_model, preferences.language, self)
+        input_form.addRow(self.speech_setup)
         self.microphone_status = QLabel()
         self.microphone_status.setWordWrap(True)
         self.microphone_status.setObjectName("settingsNote")
@@ -127,6 +156,8 @@ class VoiceSettings(QWidget):
             self.steps.addItem(tr(label), value)
         self.steps.setCurrentIndex(max(0, self.steps.findData(preferences.tts_steps)))
         form.addRow(tr("Yerel üretim"), self.steps)
+        self.local_setup = LocalVoiceSetupPanel(preferences.language, self)
+        form.addRow(self.local_setup)
         self.backend.currentIndexChanged.connect(self.update_backend_controls)
         self.steps.setToolTip(tr("Daha az adım üretimi hızlandırır; ses kalitesi değişebilir."))
         self.speed.setToolTip(tr("Supertonic ve Edge için geçerli; Windows sesi kendi hız ayarını kullanır."))
@@ -187,10 +218,14 @@ class VoiceSettings(QWidget):
         preferences.voice_input_device = self.input.currentData()
         preferences.voice_output_device = self.output.currentData()
         preferences.voice_input_mode = self.mode.currentData()
+        preferences.voice_auto_finish = self.auto_finish.isChecked()
+        preferences.voice_review_before_send = self.review.isChecked()
+        preferences.voice_transcription_model = self.transcription_model.currentData()
         preferences.voice_silence_seconds = self.silence.value()
         preferences.voice_threshold = self.threshold.value() / 100
         preferences.wake_word_enabled = self.wake.isChecked()
         preferences.wake_word_on_startup = self.wake.isChecked() and self.wake_startup.isChecked()
+        preferences.wake_word_threshold = self.wake_threshold.value() / 100
         preferences.tts_enabled = self.tts.isChecked()
         preferences.tts_backend = self.backend.currentData()
         preferences.tts_local_voice = self.local_voice.currentData()

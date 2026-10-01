@@ -46,17 +46,26 @@ from backend.audio_transcriber import AudioRecorder, WhisperTranscriber
 from backend.chat_context import recent_turns
 from backend.config import settings
 from backend.conversations import conversation_repository
-from backend.document_extract import extract_document
+from backend.document_extract import TEXT_SUFFIXES, extract_document
+from backend.identity import preferred_name, profile_memories
 from backend.memory import memory_repository
+from backend.runtime import resource_root
 from backend.speech_chunks import take_speech_chunks
 from backend.user_settings import settings_store
 from frontend.api_client import request_json
+from frontend.appearance import AccentEdge, themed_style
 from frontend.brand import brand_icon
 from frontend.history_dialog import HistoryDialog
 from frontend.i18n import UiText
 from frontend.image_utils import qimage_to_base64_adaptive as encode_image
+from frontend.introduction import IntroductionDialog
 from frontend.memory_dialog import MemoryDialog
+from frontend.micro_motion import DropTarget, MotionButton, ShellTransition
+from frontend.notch import NotchController
+from frontend.onboarding import OnboardingDialog
 from frontend.setup_dialog import SetupDialog
+from frontend.sound_feedback import SoundFeedback
+from frontend.speech_follow import SpeechFollow
 from frontend.spotlight_view import build_interface
 from frontend.voice_worker import StreamingVoiceWorker, VoiceRecordWorker
 from frontend.wake_controller import WakeController
@@ -180,11 +189,13 @@ class HotkeyBridge(QObject):
 
 class SpotlightApp(QMainWindow):
     IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".webp", ".bmp")
+    DOCUMENT_EXTENSIONS = tuple(sorted(TEXT_SUFFIXES | {".pdf", ".docx"}))
 
     def __init__(self):
         super().__init__()
         self.active_image_b64: str | None = None
         self.active_image_name: str | None = None
+        self._last_document_name: str | None = None
         preferences = settings_store.load()
         self.ui_text = UiText(preferences.language)
         self.reduced_motion = preferences.reduced_motion
@@ -212,8 +223,10 @@ class SpotlightApp(QMainWindow):
         self.audio_queue: list[str] = []
         self.current_audio_path: str | None = None
         self._audio_details = {}
+        self._audio_timings = {}
         self._workers: set[QThread] = set()
         self._quitting = False
+        self._shell_mode = None
         self._private_history: list[dict[str, str]] = []
         self._pending_prompt = ""
         self._response_complete = True
@@ -228,10 +241,24 @@ class SpotlightApp(QMainWindow):
 
         self._configure_window()
         self._build_interface()
+        self.speech_follow = SpeechFollow(self)
+        self.media_player.positionChanged.connect(self.speech_follow.update)
+        self.render_timer = QTimer(self)
+        self.render_timer.setSingleShot(True)
+        self.render_timer.setInterval(40)
+        self.render_timer.timeout.connect(self._flush_response_render)
+        self.shell_transition = ShellTransition(self)
+        self.drop_target = DropTarget(self.centralWidget(), self.ui_text("Belgeyi veya görseli buraya bırak"))
+        self.notch_controller = NotchController(self)
+        self.accent_edge = AccentEdge(self.container)
+        self.sound_feedback = SoundFeedback(self)
+        self.apply_appearance(preferences)
+        self.set_shell_mode("notch")
         self.apply_motion_preference(self.reduced_motion)
         self._install_shortcuts()
+        self.media_player.playbackStateChanged.connect(self._on_playback_state)
         QApplication.instance().installEventFilter(self)
-        self.show_welcome_state()
+        self.show_welcome_state(expand=False)
         self.wake = WakeController(self)
         self.wake_button.clicked.connect(self.wake.toggle)
         self.speech_timer = QTimer(self)
@@ -248,6 +275,7 @@ class SpotlightApp(QMainWindow):
             | Qt.WindowType.Tool
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
         screen = QApplication.primaryScreen().availableGeometry()
         self.setFixedSize(min(800, screen.width() - 32), min(640, screen.height() - 48))
         self.setAcceptDrops(True)
@@ -256,11 +284,72 @@ class SpotlightApp(QMainWindow):
     def _build_interface(self):
         build_interface(self)
 
+    def set_shell_mode(self, mode, *, transient=False):
+        """Switch presentation only; live conversation, draft and workers stay intact."""
+        if mode not in {"notch", "dock", "chat"}:
+            raise ValueError("Unknown window view")
+        if mode == self._shell_mode:
+            return
+        self._shell_mode = mode
+        self.notch_controller.mode_changed(mode, transient)
+        self.notch_button.setVisible(mode == "notch")
+        self.header.setVisible(mode == "chat")
+        self.dock_overview.setVisible(mode == "dock")
+        self.chat_content.setVisible(mode == "chat")
+        self.composer.setVisible(mode == "chat")
+        self.footer_widget.setVisible(mode == "chat")
+        self.container.setProperty("shell", mode)
+        self.container.style().unpolish(self.container)
+        self.container.style().polish(self.container)
+        self.outer_layout.setContentsMargins(*((12, 12, 12, 12) if mode == "chat" else (0, 0, 0, 0)))
+        self.root_layout.setContentsMargins(*((18, 12, 18, 14) if mode == "chat" else
+                                             (12, 8, 12, 12) if mode == "dock" else (0, 0, 0, 0)))
+        self.root_layout.setSpacing(12 if mode == "chat" else 6 if mode == "dock" else 0)
+        self.document_hint.setVisible(mode == "chat" and bool(self._last_document_name))
+        for tab, selected in ((self.home_tab, mode == "dock"), (self.chat_tab, mode == "chat")):
+            tab.setProperty("selected", selected)
+            tab.style().unpolish(tab)
+            tab.style().polish(tab)
+        target = self.notch_controller.target_rect(mode)
+        content = self.notch_button if mode == "notch" else self.dock_overview if mode == "dock" else self.chat_content
+        self.shell_transition.start(target, content)
+        self._sync_presence_layout()
+        (self.notch_avatar if mode == "notch" else self.dock_avatar if mode == "dock" else self.hero_logo).reveal()
+        if mode == "chat":
+            self.input_line.setFocus()
+
+    def open_full_chat(self):
+        was_chat = self._shell_mode == "chat" and self.isVisible()
+        self.set_shell_mode("chat")
+        self.show()
+        self.raise_()
+        self.activateWindow()
+        self.input_line.setFocus()
+        if not was_chat:
+            self.sound_feedback.play("open")
+
+    def collapse_to_notch(self):
+        was_expanded = self._shell_mode != "notch"
+        self.set_shell_mode("notch")
+        if was_expanded:
+            self.sound_feedback.play("collapse")
+
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        if hasattr(self, "notch_controller"):
+            self.notch_controller.enter()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        if hasattr(self, "notch_controller"):
+            self.notch_controller.leave()
+
     def copy_response(self):
         text = self.output_browser.toPlainText().strip()
         if text:
             QApplication.clipboard().setText(text)
             self.copy_button.setToolTip(self.ui_text("Yanıt kopyalandı"))
+            self._react_companions("success")
 
     def _sync_send_button(self):
         self.send_button.setEnabled(self.input_line.isEnabled() and not self._quitting and
@@ -292,7 +381,7 @@ class SpotlightApp(QMainWindow):
         elif self.worker and self.worker.isRunning():
             self.cancel_active_response()
         else:
-            self.hide()
+            self.collapse_to_notch()
 
     def _center_window(self):
         screen = QApplication.primaryScreen().availableGeometry()
@@ -304,9 +393,17 @@ class SpotlightApp(QMainWindow):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if hasattr(self, "welcome_identity"):
-            # Keep actionable cards visible on shorter displays; the decorative
-            # identity row is repeated in the header and can yield space.
-            self.welcome_identity.setVisible(self.height() >= 600)
+            self._sync_presence_layout()
+        if hasattr(self, "drop_target"):
+            self.drop_target.setGeometry(self.centralWidget().rect())
+
+    def _sync_presence_layout(self):
+        size = 136 if self.height() >= 600 else 88
+        if self.hero_logo.width() != size:
+            self.hero_logo.setFixedSize(size, size)
+        full = self.width() >= 740 and not self.welcome.isVisibleTo(self.chat_content)
+        self.presence_panel.setVisible(full)
+        self.inline_avatar.setVisible(not full)
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -325,28 +422,35 @@ class SpotlightApp(QMainWindow):
             self.fade_animation.setEasingCurve(QEasingCurve.Type.OutCubic)
             self.fade_animation.start()
         self.hero_logo.reveal()
-        self.input_line.setFocus()
+        self.dock_avatar.reveal()
+        if self._shell_mode == "chat":
+            self.input_line.setFocus()
         if not self._setup_prompted and not settings_store.load().setup_complete:
             self._setup_prompted = True
-            QTimer.singleShot(200, self.open_settings)
+            QTimer.singleShot(200, self.open_onboarding)
 
     def toggle_visibility(self):
-        if self.isVisible():
-            self.hide()
+        if self.isVisible() and self._shell_mode == "chat":
+            self.collapse_to_notch()
             return
-        self.show()
-        self.raise_()
-        self.activateWindow()
+        self.open_full_chat()
 
-    def show_welcome_state(self):
+    def show_welcome_state(self, *, expand=True):
+        if expand:
+            self.set_shell_mode("chat")
         self.response_bar.hide()
         self.output_browser.hide()
         self.welcome.show()
+        self.refresh_identity_greeting()
+        self._sync_presence_layout()
         self.input_line.setEnabled(True)
-        self.input_line.setFocus()
+        if self._shell_mode == "chat":
+            self.input_line.setFocus()
         self._refresh_composer_context()
 
     def _refresh_composer_context(self):
+        self.document_hint.setText(self.ui_text("Yerel kitaplığa eklendi · {name}", name=self._last_document_name or ""))
+        self.document_hint.setVisible(self._shell_mode == "chat" and bool(self._last_document_name))
         if self.active_image_b64:
             self.input_line.setPlaceholderText(self.ui_text(
                 "{name} hakkında ne öğrenmek istersin?", name=self.active_image_name))
@@ -387,6 +491,7 @@ class SpotlightApp(QMainWindow):
         self.active_memory_sources = []
         self.active_image_b64 = None
         self.active_image_name = None
+        self._last_document_name = None
         self.input_line.clear()
         self.mic_btn.setChecked(False)
         self.current_conversation_id = str(uuid.uuid4())
@@ -406,28 +511,108 @@ class SpotlightApp(QMainWindow):
             self.speaker_btn.setChecked(self.tts_enabled)
             self.apply_ui_language(preferences.language)
             self.apply_motion_preference(preferences.reduced_motion)
+            self.apply_appearance(preferences)
             self.wake.reconfigure()
+
+    def open_onboarding(self):
+        self._cancel_voice_input()
+        self.wake.stop_worker()
+        if OnboardingDialog(parent=self).exec() == QDialog.DialogCode.Accepted:
+            self.apply_ui_language(settings_store.load().language)
+            self.refresh_provider_badge()
+            if not settings_store.load().introduction_complete:
+                self.open_introduction()
+        self.wake.reconfigure()
+
+    def open_introduction(self):
+        if self.private_session:
+            QMessageBox.information(self, self.ui_text("Özel oturum"), self.ui_text(
+                "Tanışma, kişisel hafızanı düzenler. Kullanmak için özel oturumdan çık."))
+            return
+        self._cancel_voice_input()
+        self.wake.stop_worker()
+        IntroductionDialog(self, store=settings_store, repository=memory_repository).exec()
+        self.refresh_identity_greeting()
+        self.wake.reconfigure()
+
+    def refresh_identity_greeting(self):
+        preferences = settings_store.load()
+        records = profile_memories(memory_repository, preferences, private=self.private_session)
+        name = preferred_name(records)
+        self.welcome_title.setText(self.ui_text("Merhaba, {name}.", name=name) if name else self.ui_text("Aklında ne var?"))
+        invitation = not preferences.introduction_complete and not self.private_session
+        self.welcome_subtitle.setText(self.ui_text(
+            "Ben Nexus. Nasıl çalıştığını ve hedeflerini tanımak isterim.\nTanışalım mı?"
+            if invitation else "Bir fikir, bir soru, yarım kalan bir iş.\nBirlikte devam edelim."))
+        self.introduction_button.setText(self.ui_text("Tanışalım" if invitation else "Tanışma"))
+        self.introduction_button.setEnabled(not self.private_session)
+
+    def try_sample_document(self):
+        """Import only the bundled fictional brief; leave sending to the user."""
+        path = resource_root() / "docs" / "demo" / "project-brief.md"
+        try:
+            content, source_type = extract_document(path)
+            request_json("POST", "/api/v1/documents", {
+                "name": path.name, "content": content, "source_type": source_type,
+            })
+        except (OSError, ValueError, ImportError, RuntimeError):
+            QMessageBox.warning(self, self.ui_text("Belge eklenemedi"), self.ui_text("Örnek belge yüklenemedi. Nexus'u yeniden açıp dene."))
+            return
+        self.new_conversation()
+        self.knowledge_enabled = True
+        self.knowledge_btn.setChecked(True)
+        self._refresh_mode_tooltips()
+        self.input_line.setText(self.ui_text("Örnek proje belgesini özetle ve sıradaki üç adımı çıkar."))
+        self.input_line.setFocus()
 
     def apply_ui_language(self, language):
         self.ui_text.set_language(language)
+        self.refresh_identity_greeting()
+        self.drop_target.text = self.ui_text("Belgeyi veya görseli buraya bırak")
+        self.drop_target.update()
         self._refresh_composer_context()
         self.refresh_provider_badge()
         self._refresh_mode_tooltips()
         self.wake._set_state(self.wake.state)
         self._refresh_visual_activity()
+        self.notch_controller._sync_pin()
 
     def apply_motion_preference(self, reduced):
         self.reduced_motion = bool(reduced)
-        for logo in (self.hero_logo, self.activity_logo):
+        for logo in (self.hero_logo, self.activity_logo, self.dock_avatar, self.inline_avatar,
+                     self.notch_avatar, self.activity_indicator):
             logo.set_reduced_motion(self.reduced_motion)
+        for control in self.findChildren(MotionButton):
+            control.set_reduced_motion(self.reduced_motion)
+        self.shell_transition.set_reduced_motion(self.reduced_motion)
+        self.drop_target.set_reduced_motion(self.reduced_motion)
+        if hasattr(self, "accent_edge"):
+            self.accent_edge.configure(self.accent_edge.color, self.accent_edge.rgb, self.reduced_motion)
         if self.reduced_motion and hasattr(self, "fade_animation"):
             self.fade_animation.stop()
             self.setWindowOpacity(1.0)
         self._refresh_visual_activity()
 
+    def apply_appearance(self, preferences):
+        self.setStyleSheet(themed_style(preferences.accent_color))
+        for avatar in (self.hero_logo, self.activity_logo, self.dock_avatar, self.inline_avatar, self.notch_avatar):
+            avatar.set_appearance(preferences.companion_style, preferences.accent_color)
+        self.accent_edge.configure(preferences.accent_color, preferences.rgb_enabled, self.reduced_motion)
+        self.accent_edge.raise_()
+        self.sound_feedback.configure(preferences.ui_sounds_enabled, preferences.ui_sound_volume)
+
     def set_wake_visual(self, listening):
         self._wake_listening = listening
         self._refresh_visual_activity()
+
+    def _on_playback_state(self, state):
+        self._refresh_visual_activity()
+
+    def _react_companions(self, kind):
+        if kind in {"success", "attachment", "error"}:
+            self.sound_feedback.play(kind)
+        for avatar in (self.hero_logo, self.activity_logo, self.dock_avatar, self.inline_avatar, self.notch_avatar):
+            avatar.react(kind)
 
     def _refresh_visual_activity(self):
         if self._recording_ready:
@@ -438,9 +623,32 @@ class SpotlightApp(QMainWindow):
             mode = "listening"
         else:
             mode = "idle"
+        if mode != "listening" and self.media_player.playbackState() == QMediaPlayer.PlaybackState.PlayingState:
+            mode = "speaking"
         description = self.ui_text({"idle": "Nexus hazır", "listening": "Nexus dinliyor",
-                                    "thinking": "Nexus düşünüyor"}[mode])
-        for logo in (self.hero_logo, self.activity_logo):
+                                    "thinking": "Nexus düşünüyor", "speaking": "Nexus konuşuyor"}[mode])
+        self.dock_title.setText(description)
+        self.notch_button.setToolTip(description + " · " + self.ui_text("Üzerine gel: mini panel · Tıkla: sohbet"))
+        self.notch_button.setAccessibleName(self.ui_text("Nexus sohbetini aç") + " · " + description)
+        if self.notch_indicator.property("activity") != mode:
+            self.notch_indicator.setProperty("activity", mode)
+            color = {"idle": "#528768", "listening": "#55ef9d", "thinking": "#91b6ff", "speaking": "#baa6ff"}[mode]
+            self.notch_indicator.setStyleSheet(f"background: {color}; border-radius: 3px;")
+        self.presence_title.setText(description)
+        if self.presence_panel.property("activity") != mode:
+            self.presence_panel.setProperty("activity", mode)
+            self.presence_panel.style().unpolish(self.presence_panel)
+            self.presence_panel.style().polish(self.presence_panel)
+        self.dock_avatar.setProperty("activity", mode)
+        if mode == "idle":
+            self.dock_status.setText(self.ui_text("Bir soru sor veya araç seç."))
+        elif mode == "listening":
+            self.dock_status.setText(self.ui_text("Ses yerel olarak işleniyor."))
+        elif mode == "speaking":
+            self.dock_status.setText(self.ui_text("Yanıt seslendiriliyor."))
+        self.presence_status.setText(self.dock_status.full_text)
+        self.activity_indicator.set_mode(mode)
+        for logo in (self.hero_logo, self.activity_logo, self.dock_avatar, self.inline_avatar, self.notch_avatar):
             # A status refresh must not interrupt the one-shot opening animation.
             if not (mode == "idle" and logo.mode == "entrance"):
                 logo.set_mode(mode)
@@ -459,10 +667,11 @@ class SpotlightApp(QMainWindow):
         self.refresh_privacy_badge()
 
     def _set_badge(self, text: str, mode: str = "local"):
-        self.local_badge.setText(self.ui_text(text))
-        self.local_badge.setProperty("mode", mode)
-        self.local_badge.style().unpolish(self.local_badge)
-        self.local_badge.style().polish(self.local_badge)
+        for badge in (self.local_badge, self.mini_badge):
+            badge.setText(self.ui_text(text))
+            badge.setProperty("mode", mode)
+            badge.style().unpolish(badge)
+            badge.style().polish(badge)
 
     def refresh_privacy_badge(self):
         if self.private_session:
@@ -501,6 +710,7 @@ class SpotlightApp(QMainWindow):
 
     def open_memory_manager(self, memory_id: str | None = None):
         MemoryDialog(parent=self, focus_memory_id=memory_id).exec()
+        self.refresh_identity_greeting()
 
     def show_remembered_context(self):
         if self.private_session:
@@ -563,6 +773,7 @@ class SpotlightApp(QMainWindow):
         self.input_line.history.history.clear()
         self.input_line.history.index = -1
         self.private_session = not self.private_session
+        self.refresh_identity_greeting()
         self.private_btn.setChecked(self.private_session)
         self._refresh_mode_tooltips()
         self.refresh_privacy_badge()
@@ -575,6 +786,8 @@ class SpotlightApp(QMainWindow):
         )
         self.knowledge_btn.setToolTip(self.ui_text(
             "Yerel bilgi tabanı açık" if self.knowledge_enabled else "Yerel bilgi tabanını kullan"))
+        self.private_pill.setChecked(self.private_session)
+        self.private_pill.setToolTip(self.private_btn.toolTip())
 
     def toggle_knowledge(self):
         self.knowledge_enabled = not self.knowledge_enabled
@@ -584,29 +797,45 @@ class SpotlightApp(QMainWindow):
     def import_document(self):
         path, _ = QFileDialog.getOpenFileName(
             self,
-            "Nexus'a yerel belge ekle",
+            self.ui_text("Nexus'a yerel belge ekle"),
             "",
             "Belgeler (*.pdf *.docx *.txt *.md *.rst *.py *.js *.ts *.json *.yaml *.yml *.toml);;Tüm dosyalar (*)",
         )
         if not path:
             return
+        if self.add_local_document(Path(path)):
+            QMessageBox.information(self, self.ui_text("Belge eklendi"),
+                                    self.ui_text("Belge yalnızca yerel bilgi tabanına eklendi."))
+
+    def add_local_document(self, path: Path) -> bool:
         try:
-            content, source_type = extract_document(Path(path))
+            content, source_type = extract_document(path)
             request_json(
                 "POST",
                 "/api/v1/documents",
-                {"name": Path(path).name, "content": content, "source_type": source_type},
+                {"name": path.name, "content": content, "source_type": source_type},
             )
-        except (OSError, ValueError, ImportError, RuntimeError) as exc:
-            QMessageBox.warning(self, "Belge eklenemedi", str(exc))
-            return
+        except Exception:
+            # Third-party file parsers may raise their own errors at this UI boundary.
+            self._react_companions("error")
+            QMessageBox.warning(self, self.ui_text("Belge eklenemedi"), self.ui_text(
+                "Dosya okunamadı veya yerel Nexus bağlantısı kurulamadı. Dosyayı ve bağlantı ayarlarını kontrol et."))
+            return False
         self.knowledge_enabled = True
         self.knowledge_btn.setChecked(True)
-        QMessageBox.information(self, "Belge eklendi", "Belge yalnızca yerel bilgi tabanına eklendi.")
+        self._last_document_name = path.name
+        self.set_shell_mode("chat")
+        self._refresh_mode_tooltips()
+        self._refresh_composer_context()
+        self.input_line.setFocus()
+        self._react_companions("attachment")
+        return True
 
     def _show_output(self):
+        self.set_shell_mode("chat")
         self.response_bar.show()
         self.welcome.hide()
+        self._sync_presence_layout()
         self.context_button.hide()
         self.output_browser.show()
 
@@ -622,20 +851,37 @@ class SpotlightApp(QMainWindow):
             if answer != QMessageBox.StandardButton.Yes:
                 return
             settings_store.update(web_consent=True)
+        self.set_shell_mode("chat")
         self.input_line.setText("/web ")
         self.input_line.setFocus()
         self.input_line.setCursorPosition(len(self.input_line.text()))
 
     def dragEnterEvent(self, event):
         if any(
-            url.toLocalFile().lower().endswith(self.IMAGE_EXTENSIONS)
+            url.isLocalFile() and url.toLocalFile().lower().endswith(self.IMAGE_EXTENSIONS + self.DOCUMENT_EXTENSIONS)
             for url in event.mimeData().urls()
         ):
             event.acceptProposedAction()
+            self.drop_target.show()
+        else:
+            self.drop_target.hide()
+
+    def dragLeaveEvent(self, event):
+        self.drop_target.hide()
+        event.accept()
 
     def dropEvent(self, event):
+        self.drop_target.hide()
         for url in event.mimeData().urls():
+            if not url.isLocalFile():
+                continue
             file_path = url.toLocalFile()
+            if file_path.lower().endswith(self.DOCUMENT_EXTENSIONS):
+                if self.add_local_document(Path(file_path)):
+                    if not self.input_line.text().strip():
+                        self.input_line.setText(self.ui_text("Eklediğim belgedeki önemli noktaları özetle."))
+                    event.acceptProposedAction()
+                return
             if not file_path.lower().endswith(self.IMAGE_EXTENSIONS):
                 continue
             image = QImage(file_path)
@@ -643,9 +889,11 @@ class SpotlightApp(QMainWindow):
                 continue
             self.active_image_b64 = encode_image(image)
             self.active_image_name = Path(file_path).name
+            self.set_shell_mode("chat")
             self._refresh_composer_context()
             self._sync_send_button()
             self.input_line.setFocus()
+            self._react_companions("attachment")
             event.acceptProposedAction()
             return
 
@@ -832,6 +1080,8 @@ class SpotlightApp(QMainWindow):
         self.analyze_clipboard("Seçili metin üzerinde yardımcı ol", explicit=True)
 
     def update_status(self, status: str):
+        self.dock_status.setText(status)
+        self.presence_status.setText(status)
         self.output_browser.setHtml(
             f"<p style='color:#b6dec5;font-size:15px'>{html.escape(status)}</p>"
         )
@@ -840,35 +1090,44 @@ class SpotlightApp(QMainWindow):
         if not chunk:
             return
         self.streaming_text += chunk
-        self._render_markdown(self.streaming_text)
-        scrollbar = self.output_browser.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum())
+        if len(self.streaming_text) == len(chunk):
+            self._flush_response_render()
+        elif not self.render_timer.isActive():
+            self.render_timer.start()
 
         if self.stream_voice_worker:
             if not self.speech_buffer:
                 self._speech_wait_started = time.monotonic()
             self.speech_buffer += chunk
-            pieces, self.speech_buffer = take_speech_chunks(self.speech_buffer)
+            pieces, self.speech_buffer = take_speech_chunks(self.speech_buffer, limit=110)
             for piece in pieces:
                 self.stream_voice_worker.enqueue(piece)
             if pieces:
                 self._speech_wait_started = time.monotonic()
 
     def _flush_waiting_speech(self):
-        if (self.stream_voice_worker and len(self.speech_buffer) >= 50
-                and time.monotonic() - self._speech_wait_started >= 1.2):
+        if (self.stream_voice_worker and len(self.speech_buffer) >= 25
+                and time.monotonic() - self._speech_wait_started >= 0.45):
             # Leave the unfinished final word for the next chunk.
             end = self.speech_buffer.rfind(" ")
-            if end >= 40:
+            if end >= 20:
                 self.stream_voice_worker.enqueue(self.speech_buffer[:end])
                 self.speech_buffer = self.speech_buffer[end:].lstrip()
                 self._speech_wait_started = time.monotonic()
+
+    def _flush_response_render(self):
+        self.render_timer.stop()
+        self._render_markdown(self.streaming_text)
+        scrollbar = self.output_browser.verticalScrollBar()
+        if not self.speech_follow.text:
+            scrollbar.setValue(scrollbar.maximum())
 
     def set_memory_sources(self, sources: list):
         self.active_memory_sources = [item for item in sources if isinstance(item, dict)]
 
     def complete_response(self):
         self._response_complete = True
+        self._flush_response_render()
         self._refresh_visual_activity()
         if self.private_session and self.streaming_text.strip():
             self._private_history = recent_turns([
@@ -878,7 +1137,8 @@ class SpotlightApp(QMainWindow):
             ])
         self.stop_btn.hide()
         self.input_line.setEnabled(True)
-        self.input_line.setFocus()
+        if self._shell_mode == "chat":
+            self.input_line.setFocus()
         if not self.streaming_text:
             self.display_error("Yerel model boş bir yanıt döndürdü.")
         elif self.active_memory_sources:
@@ -901,6 +1161,8 @@ class SpotlightApp(QMainWindow):
             self.stream_voice_worker.finish()
             self.speech_buffer = ""
         self.refresh_privacy_badge()
+        if self.streaming_text.strip():
+            self._react_companions("success")
 
     def cancel_active_response(self):
         if not self.worker or not self.worker.isRunning():
@@ -916,7 +1178,8 @@ class SpotlightApp(QMainWindow):
             self._render_markdown(self.streaming_text)
         self.stop_btn.hide()
         self.input_line.setEnabled(True)
-        self.input_line.setFocus()
+        if self._shell_mode == "chat":
+            self.input_line.setFocus()
         self.refresh_privacy_badge()
 
     def display_error(self, message: str):
@@ -932,6 +1195,7 @@ class SpotlightApp(QMainWindow):
         )
         self._stop_speech()
         self.refresh_privacy_badge()
+        self._react_companions("error")
 
     def toggle_tts(self):
         self.tts_enabled = not self.tts_enabled
@@ -966,6 +1230,9 @@ class SpotlightApp(QMainWindow):
         if hasattr(self.stream_voice_worker, "chunk_ready"):
             self._connect_current(self.stream_voice_worker, "stream_voice_worker",
                                   self.stream_voice_worker.chunk_ready, self._speech_chunk_ready)
+        if hasattr(self.stream_voice_worker, "timing_ready"):
+            self._connect_current(self.stream_voice_worker, "stream_voice_worker",
+                                  self.stream_voice_worker.timing_ready, self._speech_timing_ready)
         self._connect_current(
             self.stream_voice_worker, "stream_voice_worker",
             self.stream_voice_worker.error_received, self.voice_error,
@@ -977,6 +1244,9 @@ class SpotlightApp(QMainWindow):
     def _speech_chunk_ready(self, path, text, seconds, backend):
         self._audio_details[path] = (text, backend)
         self.speaker_btn.setToolTip(f"{backend} · son ses parçası {seconds:.2f} sn içinde üretildi")
+
+    def _speech_timing_ready(self, path, timings):
+        self._audio_timings[path] = timings
 
     def play_audio(self, path: str):
         if self._quitting or not self.tts_enabled or self.sender() is not self.stream_voice_worker:
@@ -1006,8 +1276,7 @@ class SpotlightApp(QMainWindow):
         self.audio_output.setDevice(output)
         self.current_audio_path = self.audio_queue.pop(0)
         text, backend = self._audio_details.pop(self.current_audio_path, ("", ""))
-        self.speech_caption.setText(f"{backend} · {text}")
-        self.speech_caption.setVisible(bool(text))
+        self.speech_follow.start(text, self._audio_timings.pop(self.current_audio_path, []))
         self.media_player.setSource(QUrl.fromLocalFile(self.current_audio_path))
         self.media_player.play()
 
@@ -1015,6 +1284,7 @@ class SpotlightApp(QMainWindow):
         if status != QMediaPlayer.MediaStatus.EndOfMedia:
             return
         completed_path = self.current_audio_path
+        self.speech_follow.finish()
         self.current_audio_path = None
         self.media_player.setSource(QUrl())
         if completed_path:
@@ -1061,15 +1331,21 @@ class SpotlightApp(QMainWindow):
         self._stop_speech()
         recorder = AudioRecorder(
             device=preferences.voice_input_device,
-            auto_stop=wake_triggered or self.voice_input_mode == "vad",
+            auto_stop=(wake_triggered or self.voice_input_mode == "vad"
+                       or (self.voice_input_mode == "toggle" and preferences.voice_auto_finish)),
             threshold=preferences.voice_threshold,
             silence_seconds=preferences.voice_silence_seconds,
         )
+        # Wake has already loaded the same local base model. Reuse it only after
+        # its capture worker released the microphone; do not load a second copy.
+        self._transcriber.configure(preferences.voice_transcription_model)
+        if getattr(self.wake.detector, "model", None) is not None:
+            self._transcriber.use_wake_model(self.wake.detector.model)
         self.voice_record_worker = VoiceRecordWorker(
             recorder=recorder, transcriber=self._transcriber, language=preferences.language
         )
         self._track_worker(self.voice_record_worker)
-        mode = "vad" if wake_triggered else self.voice_input_mode
+        mode = "vad" if recorder.auto_stop else self.voice_input_mode
         self._connect_current(self.voice_record_worker, "voice_record_worker", self.voice_record_worker.recording_started,
                               lambda: self._show_recording_ready(mode))
         self._connect_current(self.voice_record_worker, "voice_record_worker", self.voice_record_worker.status_changed,
@@ -1085,6 +1361,7 @@ class SpotlightApp(QMainWindow):
             return
         self._recording_ready = True
         self._refresh_visual_activity()
+        self.sound_feedback.play("listen")
         tr = self.ui_text
         instruction = {"push_to_talk": "F2'yi bırakınca kayıt biter.",
                        "vad": "Konuşma bitince kayıt otomatik durur. F2 ile de bitirebilirsin."}.get(
@@ -1126,12 +1403,18 @@ class SpotlightApp(QMainWindow):
             self.update_status("Ses kaydı iptal edildi.")
 
     def hideEvent(self, event):
+        self.notch_controller.stop()
+        self.shell_transition.finish()
+        self.drop_target.hide()
         self._cancel_voice_input()
         if hasattr(self, "fade_animation"):
             self.fade_animation.stop()
         super().hideEvent(event)
 
     def eventFilter(self, watched, event):
+        # Qt may dispatch events while Python clears a collected window's attributes.
+        if not hasattr(self, "input_line"):
+            return False
         if watched is self.input_line and event.type() == QEvent.Type.EnabledChange:
             self._sync_send_button()
         if event.type() == QEvent.Type.WindowDeactivate and watched is self and self._voice_key_down:
@@ -1163,12 +1446,17 @@ class SpotlightApp(QMainWindow):
         self.mic_btn.setToolTip(self.ui_text("Sesli konuş · F2"))
         if text.strip():
             self.input_line.setText(text.strip())
-            self.send_message()
+            if settings_store.load().voice_review_before_send:
+                self.input_line.setFocus()
+                self.update_status(self.ui_text("Metin hazır. Düzenleyip Enter ile gönderebilirsin."))
+            else:
+                self.send_message()
         else:
             self.display_error("Ses algılanamadı. Lütfen yeniden dene.")
 
     def _render_markdown(self, text):
         # QTextDocument accepts features; QTextBrowser's convenience method does not.
+        self.render_timer.stop()
         document = self.output_browser.document()
         document.setMarkdown(text, QTextDocument.MarkdownFeature.MarkdownNoHTML)
         cursor = QTextCursor(document)
@@ -1182,6 +1470,9 @@ class SpotlightApp(QMainWindow):
             cursor.setBlockFormat(fmt)
             block = block.next()
         cursor.endEditBlock()
+        if self.speech_follow.text:
+            self.speech_follow.remap()
+            self.speech_follow.update(self.media_player.position())
 
     def _connect_current(self, worker, attribute, signal, callback):
         def deliver(*args):
@@ -1202,6 +1493,8 @@ class SpotlightApp(QMainWindow):
 
     def _stop_speech(self):
         self._audio_details.clear()
+        self._audio_timings.clear()
+        self.speech_follow.reset()
         self.speech_caption.hide()
         if self.stream_voice_worker:
             self.stream_voice_worker.stop()
@@ -1219,6 +1512,7 @@ class SpotlightApp(QMainWindow):
         self.audio_queue.clear()
 
     def _detach_response(self):
+        self.render_timer.stop()
         self._response_complete = True
         self._refresh_visual_activity()
         if self.worker:
@@ -1259,12 +1553,17 @@ class SpotlightApp(QMainWindow):
         QApplication.quit()
 
     def closeEvent(self, event):
+        self.notch_controller.stop()
+        self.accent_edge.timer.stop()
+        self.sound_feedback.stop()
         self.wake.close()
         if any(worker.isRunning() for worker in self._workers):
             event.ignore()
             self.request_quit()
             return
         self._stop_speech()
+        self.speech_timer.stop()
+        QApplication.instance().removeEventFilter(self)
         event.accept()
 
 

@@ -33,6 +33,7 @@ def test_action_cards_are_keyboard_buttons_and_retranslate(monkeypatch, qt_appli
     for name in ("analyze_clipboard", "start_research", "toggle_voice_recording"):
         monkeypatch.setattr(SpotlightApp, name, lambda self, checked=False, name=name: seen.append(name))
     window = SpotlightApp()
+    window.set_shell_mode("chat")
     window._setup_prompted = True
     window.show()
     qt_application.processEvents()
@@ -53,6 +54,7 @@ def test_action_cards_are_keyboard_buttons_and_retranslate(monkeypatch, qt_appli
 
 def test_composer_focus_ring_follows_keyboard_focus(qt_application):
     window = SpotlightApp()
+    window.set_shell_mode("chat")
     window._setup_prompted = True
     window.show()
     qt_application.processEvents()
@@ -73,6 +75,7 @@ def test_composer_focus_ring_follows_keyboard_focus(qt_application):
 @pytest.mark.parametrize("language", ["tr", "en"])
 def test_compact_main_window_keeps_cards_and_controls_inside(language, qt_application):
     window = SpotlightApp()
+    window.set_shell_mode("chat")
     window._setup_prompted = True
     window.apply_ui_language(language)
     window.setFixedSize(640, 560)

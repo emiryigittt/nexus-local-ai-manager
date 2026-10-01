@@ -5,8 +5,11 @@ alongside it. Dilini seç: İngilizce global giriş, Türkçe eş belgelerle des
 
 | Topic / Konu | English | Türkçe |
 | --- | --- | --- |
+| First source beta / İlk kaynak kod betası | [Release notes](releases/v0.3.0-beta.1.md) | [İki dilli sürüm notları](releases/v0.3.0-beta.1.md#türkçe-başlangıç) |
 | Introduction and setup / Tanıtım ve kurulum | [README](../README.md) | [README](../README.tr.md) |
+| Windows installer preview / Windows kurulum önizlemesi | [Build and use](WINDOWS_PREVIEW.md) | [Kurulum ve kullanım](WINDOWS_PREVIEW.tr.md) |
 | Usage and troubleshooting / Kullanım ve sorun giderme | [Guide](USER_GUIDE.md) | [Rehber](USER_GUIDE.tr.md) |
+| Identity and introduction / Kimlik ve tanışma | [Meet Nexus](IDENTITY.md) | [Nexus ile tanış](IDENTITY.tr.md) |
 | Privacy / Gizlilik | [Boundaries](PRIVACY.md) | [Sınırlar](PRIVACY.tr.md) |
 | Contributing / Katkı | [Contributing](../CONTRIBUTING.md) | [Katkı](../CONTRIBUTING.tr.md) |
 | Security reporting / Güvenlik bildirimi | [Security](../SECURITY.md) | [Güvenlik](../SECURITY.tr.md) |
@@ -17,6 +20,8 @@ alongside it. Dilini seç: İngilizce global giriş, Türkçe eş belgelerle des
 | Community launch / Topluluk yayını | [Plan](GITHUB_LAUNCH_PLAN.en.md) | [Plan](GITHUB_LAUNCH_PLAN.md) |
 | Demo recording / Demo çekimi | [Storyboard](DEMO_SCRIPT.md) | [Çekim planı](DEMO_SCRIPT.tr.md) |
 | Launch copy / Tanıtım metinleri | [Drafts](LAUNCH_COPY.md) | [Taslaklar](LAUNCH_COPY.tr.md) |
+| Prepared launch package / Hazırlanan tanıtım paketi | [Package](LAUNCH_PACKAGE.md) | [Paket](LAUNCH_PACKAGE.md) |
+| First-user feedback / İlk kullanıcı geri bildirimi | [Form](PILOT_FEEDBACK.md) | [Form](PILOT_FEEDBACK.md) |
 | Voice and memory evidence / Ses ve hafıza kanıtları | [Report](VOICE_AND_MEMORY_RELIABILITY.en.md) | [Rapor](VOICE_AND_MEMORY_RELIABILITY.md) |
 
 The [synthetic demo fixture](demo/project-brief.md) includes both languages.
