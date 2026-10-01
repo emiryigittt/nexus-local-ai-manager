@@ -106,7 +106,7 @@ def test_draft_refresh_requires_verified_assets_and_uses_release_id(monkeypatch,
     monkeypatch.setattr("sys.argv", ["publisher"])
     for key, value in {"GITHUB_REPOSITORY": publisher.REPOSITORY, "GITHUB_EVENT_NAME": "push", "GITHUB_REF": "refs/heads/main", "GITHUB_SHA": "a" * 40, "GITHUB_TOKEN": "synthetic"}.items():
         monkeypatch.setenv(key, value)
-    assets = [{"name": path.name, "size": path.stat().st_size, "digest": "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()} for path in folder.iterdir()]
+    assets = [{"id": index + 100, "name": path.name, "size": path.stat().st_size, "digest": "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()} for index, path in enumerate(folder.iterdir())]
     draft = {"id": 42, "tag_name": TAG, "draft": True, "target_commitish": "b" * 40, "assets": assets}
     calls = []
 
@@ -120,11 +120,13 @@ def test_draft_refresh_requires_verified_assets_and_uses_release_id(monkeypatch,
             if method == "PATCH":
                 draft.update(payload)
             return draft
+        if path.startswith("releases/assets/") and method == "DELETE":
+            return None
         raise AssertionError(path)
 
     monkeypatch.setattr(publisher, "request_api", api)
     command = Mock()
-    monkeypatch.setattr(publisher.subprocess, "run", command)
+    monkeypatch.setattr(publisher, "upload_asset", command)
     if corrupt:
         (folder / "NexusSetup.exe").write_bytes(b"modified")
         with pytest.raises(RuntimeError, match="integrity"):
@@ -134,5 +136,26 @@ def test_draft_refresh_requires_verified_assets_and_uses_release_id(monkeypatch,
     else:
         publisher.main()
         assert ("releases/42", "GET", None) in calls
-        assert ("releases/42", "PATCH", {"target_commitish": "a" * 40, "body": "Synthetic release notes"}) in calls
+        assert ("releases/42", "PATCH", {"tag_name": TAG, "target_commitish": "a" * 40, "body": "Synthetic release notes"}) in calls
         assert calls[-1] == ("releases/42", "PATCH", {"draft": False, "prerelease": True, "make_latest": "false"})
+
+
+@pytest.mark.parametrize("status", [201, 503])
+def test_release_id_upload_streams_exact_bytes_and_checks_status(monkeypatch, tmp_path, status):
+    path = tmp_path / "asset.zip"
+    content = b"synthetic" * 200000
+    path.write_bytes(content)
+    connection = Mock()
+    connection.getresponse.return_value = type("Response", (), {"status": status, "read": lambda self: b'{"id":42}'})()
+    constructor = Mock(return_value=connection)
+    monkeypatch.setattr(publisher.http.client, "HTTPSConnection", constructor)
+    if status == 201:
+        assert publisher.upload_asset(123, path, "synthetic") == {"id": 42}
+    else:
+        with pytest.raises(RuntimeError, match="HTTP 503"):
+            publisher.upload_asset(123, path, "synthetic")
+    constructor.assert_called_once_with("uploads.github.com", timeout=180)
+    assert connection.putrequest.call_args.args == ("POST", f"/repos/{publisher.REPOSITORY}/releases/123/assets?name=asset.zip")
+    assert b"".join(call.args[0] for call in connection.send.call_args_list) == content
+    assert ("Content-Length", str(len(content))) in [call.args for call in connection.putheader.call_args_list]
+    connection.close.assert_called_once()

@@ -1,12 +1,14 @@
 """Publish a pinned prerelease after verifying the entire source and installer set."""
 
 import argparse
+import http.client
 import json
 import os
 import re
-import subprocess
 import tomllib
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from urllib.parse import quote
 
 from scripts.finalize_windows_release import ASSETS, REQUIRED_CHECKS, TAG, digest
 from scripts.publish_source_beta import REPOSITORY, request_api
@@ -36,6 +38,31 @@ def find_release(token):
     if len(drafts) > 1:
         raise RuntimeError("Multiple matching release drafts; refusing publication")
     return drafts[0] if drafts else None
+
+
+def upload_asset(release_id, path, token):
+    """Stream to the release ID directly; tag-based CLI lookup excludes drafts."""
+    connection = http.client.HTTPSConnection("uploads.github.com", timeout=180)
+    endpoint = f"/repos/{REPOSITORY}/releases/{release_id}/assets?name={quote(path.name)}"
+    try:
+        connection.putrequest("POST", endpoint)
+        for name, value in {
+            "Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+            "Content-Type": "application/octet-stream", "Content-Length": str(path.stat().st_size),
+            "User-Agent": "Nexus-verified-release-publisher",
+        }.items():
+            connection.putheader(name, value)
+        connection.endheaders()
+        with path.open("rb") as stream:
+            while chunk := stream.read(1024 * 1024):
+                connection.send(chunk)
+        response = connection.getresponse()
+        content = response.read()
+        if response.status != 201:
+            raise RuntimeError(f"Release asset upload failed: HTTP {response.status}")
+        return json.loads(content)
+    finally:
+        connection.close()
 
 
 def verify_assets(folder, sha):
@@ -96,7 +123,6 @@ def main():
     folder = ROOT / "dist/release"
     verify_assets(folder, sha)
     notes = ROOT / "docs/releases/v0.3.0-beta.2.md"
-    environment = dict(os.environ, GH_TOKEN=token)
     if not existing:
         existing = request_api("releases", token, "POST", {
             "tag_name": TAG, "target_commitish": sha, "draft": True,
@@ -107,9 +133,17 @@ def main():
         # Only an unpublished draft may be refreshed, and only after the new
         # source and installer have passed verification. Published tags are fixed.
         request_api(f"releases/{existing['id']}", token, "PATCH", {
-            "target_commitish": sha, "body": notes.read_text(encoding="utf-8"),
+            "tag_name": TAG, "target_commitish": sha, "body": notes.read_text(encoding="utf-8"),
         })
-    subprocess.run(["gh", "release", "upload", TAG, "--repo", REPOSITORY, "--clobber", *[str(path) for path in sorted(folder.iterdir())]], env=environment, check=True)
+    expected_names = {path.name for path in folder.iterdir()}
+    if any(entry["name"] not in expected_names for entry in existing["assets"]):
+        raise RuntimeError("Unexpected draft assets; refusing replacement")
+    for entry in existing["assets"]:
+        request_api(f"releases/assets/{entry['id']}", token, "DELETE")
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = [pool.submit(upload_asset, existing["id"], path, token) for path in sorted(folder.iterdir())]
+        for future in futures:
+            future.result()
     # A draft is made public only after every asset is present at the expected size.
     uploaded = request_api(f"releases/{existing['id']}", token)
     if not uploaded or not uploaded["draft"] or uploaded.get("target_commitish") != sha:
