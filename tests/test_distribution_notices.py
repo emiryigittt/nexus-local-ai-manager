@@ -1,4 +1,5 @@
 import io
+import json
 import tarfile
 
 import pytest
@@ -25,6 +26,8 @@ def test_full_copyleft_texts_are_collected_and_symlinks_ignored(tmp_path):
         archive.addfile(entry)
     output = tmp_path / "notices"
     assert archive_notices(source, output) == 3
-    assert (output / "package/COPYING.LIB").read_bytes() == text
+    records = json.loads((output / "source-paths.json").read_text())
+    name = next(name for name, original in records.items() if original == "package/COPYING.LIB")
+    assert (output / name).read_bytes() == text
     assert not (tmp_path / "LICENSE").exists()
     assert not (output / "package/LICENSE-link").exists()

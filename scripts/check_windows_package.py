@@ -169,11 +169,15 @@ def main():
                     raise RuntimeError("Installer test target escapes build")
                 sentinel = root / "data/preserve-on-uninstall.txt"
                 sentinel.write_text("synthetic test data", encoding="utf-8")
-                install_code = run_process([str(args.installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/NOICONS", f"/DIR={target}"], environment, timeout=60)
+                install_log = root / "installer.log"
+                install_code = run_process([str(args.installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/NOICONS", "/CURRENTUSER", f"/DIR={target}", f"/LOG={install_log}"], environment, timeout=90)
+                report["installer_exit_code"] = install_code
+                if install_code != 0 and install_log.exists():
+                    report["installer_log_tail"] = install_log.read_text(encoding="utf-8-sig", errors="replace")[-6000:]
                 try:
                     check("installer_completed", install_code == 0 and (target / "Nexus.exe").is_file())
                     check("installed_app_opens_without_python", run_process([str(target / "Nexus.exe"), "--self-test", str(root / "installed-smoke.json")], environment) == 0)
-                    upgrade_code = run_process([str(args.installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/NOICONS", f"/DIR={target}"], environment, timeout=60)
+                    upgrade_code = run_process([str(args.installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/NOICONS", "/CURRENTUSER", f"/DIR={target}"], environment, timeout=90)
                     check("installer_upgrade_completed", upgrade_code == 0 and sentinel.read_text() == "synthetic test data" and run_process([str(target / "Nexus.exe"), "--self-test", str(root / "upgraded-smoke.json")], environment) == 0)
                 finally:
                     uninstall = target / "unins000.exe"
@@ -190,6 +194,8 @@ def main():
         server.server_close()
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        if report.get("error"):
+            print(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     return 0
 

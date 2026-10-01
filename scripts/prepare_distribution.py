@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import ssl
 import subprocess
@@ -69,9 +70,17 @@ def archive_notices(source, destination):
         nonlocal count
         if not is_notice(name) or len(content) > 2_000_000 or b"\0" in content:
             return
-        target = destination / PurePosixPath(name)
+        # Full upstream paths can exceed Win32 installation limits. Preserve the
+        # original text in a short unique filename and retain its source path index.
+        basename = re.sub(r"[^A-Za-z0-9._-]", "_", PurePosixPath(name).name)[:32]
+        short_name = hashlib.sha256(name.encode()).hexdigest()[:12] + "-" + basename + ".txt"
+        target = destination / short_name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
+        index = destination / "source-paths.json"
+        records = json.loads(index.read_text(encoding="utf-8")) if index.exists() else {}
+        records[short_name] = name
+        index.write_text(json.dumps(records, indent=2), encoding="utf-8")
         count += 1
 
     if source.name.endswith(".tar.zst"):
