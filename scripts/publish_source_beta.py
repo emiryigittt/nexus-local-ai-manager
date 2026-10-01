@@ -34,7 +34,8 @@ def request_api(path, token, method="GET", payload=None):
     )
     try:
         with urllib.request.urlopen(request, timeout=40) as response:
-            return json.load(response)
+            content = response.read()
+            return json.loads(content) if content else None
     except urllib.error.HTTPError as error:
         if method == "GET" and error.code == 404:
             return None

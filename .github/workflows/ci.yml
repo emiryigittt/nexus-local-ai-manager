@@ -9,8 +9,28 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: nexus-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  current-source:
+    name: Retire superseded main builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python -m scripts.cancel_superseded_runs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
   test:
+    needs: current-source
     runs-on: windows-latest
     timeout-minutes: 20
     strategy:

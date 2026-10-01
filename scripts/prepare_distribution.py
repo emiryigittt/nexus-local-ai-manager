@@ -114,6 +114,7 @@ def decorate_notices(output):
         shutil.copyfile(ROOT / name, output / name)
     shutil.copyfile(CATALOG, output / "dependency-sources.json")
     shutil.copyfile(ROOT / "packaging/windows-build.lock.txt", output / "windows-build.lock.txt")
+    shutil.copytree(ROOT / "packaging/licenses", output / "licenses/supplemental", dirs_exist_ok=True)
     (output / "source-notice-counts.json").write_text(json.dumps(counts, indent=2), encoding="utf-8")
     (output / "SOURCE_ACCESS.txt").write_text(
         f"Nexus {TAG}: combined Windows application under GNU GPL version 3.\n"
@@ -141,6 +142,9 @@ def prepare_sources():
             archive.write(path, "archives/" + path.name)
         for name in ("packaging/dependency-sources.json", "packaging/windows-build.lock.txt", "COPYING", "LICENSE", "DISTRIBUTION_LICENSE.md", "DISTRIBUTION_LICENSE.tr.md", "THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.tr.md", "docs/WINDOWS_PREVIEW.md", "docs/WINDOWS_PREVIEW.tr.md"):
             archive.write(ROOT / name, name)
+        for path in sorted((ROOT / "packaging/licenses").rglob("*")):
+            if path.is_file():
+                archive.write(path, path.relative_to(ROOT).as_posix())
     print(f"Mirrored {len(paths)} verified source archives")
 
 
