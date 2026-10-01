@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import os
 import threading
+import wave
 from pathlib import Path
 
 from backend.app_paths import data_dir
@@ -41,9 +42,7 @@ def model_is_ready(path: Path | None = None) -> bool:
 
 def runtime_is_ready() -> bool:
     """Model assets alone are insufficient when optional packages are absent."""
-    return model_is_ready() and all(
-        importlib.util.find_spec(name) is not None for name in ("sherpa_onnx", "soundfile")
-    )
+    return model_is_ready() and importlib.util.find_spec("sherpa_onnx") is not None
 
 
 def _create_engine():
@@ -96,8 +95,8 @@ def synthesize_to_file(text: str, output_path: str) -> bool:
         return False
 
     try:
+        import numpy as np
         import sherpa_onnx
-        import soundfile as sf
 
         from backend.user_settings import settings_store
 
@@ -112,7 +111,15 @@ def synthesize_to_file(text: str, output_path: str) -> bool:
             audio = _get_engine().generate(text, generation)
         if len(audio.samples) == 0:
             return False
-        sf.write(output_path, audio.samples, audio.sample_rate, subtype="PCM_16")
+        samples = np.asarray(audio.samples, dtype=np.float32)
+        if samples.ndim != 1 or not np.isfinite(samples).all() or audio.sample_rate <= 0:
+            return False
+        pcm = np.clip(np.floor(samples * 32768.0), -32768, 32767).astype("<i2")
+        with wave.open(output_path, "wb") as output:
+            output.setnchannels(1)
+            output.setsampwidth(2)
+            output.setframerate(audio.sample_rate)
+            output.writeframes(pcm.tobytes())
         path = Path(output_path)
         return path.is_file() and path.stat().st_size > 0
     except (ImportError, OSError, RuntimeError, TypeError, ValueError):

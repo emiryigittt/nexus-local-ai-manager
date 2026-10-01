@@ -43,7 +43,7 @@ from backend.user_settings import ProviderProfile, settings_store
 app = FastAPI(
     title="Nexus Local API",
     description="Local gateway for the Nexus desktop command center.",
-    version="0.3.0-beta.1",
+    version="0.3.0-beta.2",
 )
 app.add_middleware(
     CORSMiddleware,

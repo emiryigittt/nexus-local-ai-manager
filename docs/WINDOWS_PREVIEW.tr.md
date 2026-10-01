@@ -1,13 +1,15 @@
-# Windows kurulum önizlemesi
+# Windows kurulumu ve kaynaktan derleme
 
 **Türkçe** · [English](WINDOWS_PREVIEW.md) · [Belgeler](INDEX.md)
 
-Nexus artık yeniden üretilebilir bir Windows kurulum paketi ve üç adımlı ilk açılış
-ekranı içeriyor. Bu, yerel geliştirme önizlemesidir; yayımlanmış veya imzalanmış sürüm değildir.
+Nexus Beta 2, [GPL dağıtım koşullarıyla](../DISTRIBUTION_LICENSE.tr.md)
+Windows x64 kurulum paketi sunar. İmzasızdır ve beta aşamasındadır.
+Kurulumu ve eşleşen kaynakları
+[sürüm sayfasından](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2) indirin.
 
 ## Kullanıcı için
 
-1. Yerel olarak verilen `NexusSetup.exe` dosyasını açıp Windows hesabın için kur.
+1. Sürümdeki `NexusSetup.exe` dosyasını açıp Windows hesabın için kur.
    Python veya terminal gerekmez. Hedef Windows 10/11 x64'tür.
 2. Başlat menüsünden Nexus'u aç. Türkçe veya İngilizceyi seç.
 3. LM Studio, Ollama veya llama.cpp'yi aç; o uygulamada bir model indirip yükle.
@@ -34,12 +36,15 @@ modeli, Whisper/Supertonic ağırlıkları içermez ve model sunucusu kurmaz.
 
 ## Paketi üretme ve kontrol
 
-Temiz bir Windows Python 3.11–3.13 ortamı kullan. `requirements-dev.txt`,
-`requirements-tts.txt` ve `pyinstaller>=6.22,<7` bağımlılıklarını kur. Resmi Inno Setup 6
-derleyicisini ayrıca kur. Proje kökünde:
+Temiz Windows x64 ortamında **Python 3.12.10** ve
+[tam sürüm listesini](../packaging/windows-build.lock.txt) kullanın. Resmî Inno Setup 6
+derleyicisini ayrıca kurun. Proje kökünde:
 
 ```powershell
-python -m scripts.build_windows --compiler "C:\derleyici\Inno Setup 6\ISCC.exe"
+python -m pip install -r packaging/windows-build.lock.txt
+python -m scripts.prepare_distribution
+python -m scripts.build_windows --compiler "C:\yol\Inno Setup 6\ISCC.exe"
+python -m scripts.check_windows_package --installer dist/installer/NexusSetup.exe
 ```
 
 Çıktılar `dist/Nexus/Nexus.exe`, `dist/installer/NexusSetup.exe` ve kurulum dosyasının
@@ -60,17 +65,28 @@ testini çalıştırmaz. `build/windows-package-check.json` raporunda test edile
 dosyasının sağlama değeri bulunur. Buradaki model sunucusu sabit bir test yanıtı verir;
 yanıt kalitesini gerçek dil modeliyle ayrıca dene.
 
-## Herkese yayımlamadan önce
+## Kaynaklar, bildirimler ve sınırlar
 
-- [PyQt/Qt ve bağımlılık dağıtım incelemesini](../THIRD_PARTY_NOTICES.tr.md) tamamla.
-  Pakette Nexus kaynak kodu, bulunabilen lisans metinleri ve derleme ortamının kesin
-  sürüm listesi bulunur; bu liste tamamlanmış dağıtım denetimi değildir.
-- Temiz Windows bilgisayarında kurma, güncelleme, iptal ve kaldırmayı test et.
-- Gerçek LM Studio/Ollama yanıtını ve isteğe bağlı model indirmesi, ses çözümleme ve
-  seslendirmeyi test et.
-- Yerel kitaplıkları ve modelleri ayrı incele. Model dağıtım hakkı varsayılmaz.
-- Kurulumu imzala veya imzasız olduğunu açıkça belirtip bağımsız doğrulanabilir
-  sağlama değerleri sun. Resmi imzalı sürüm olarak tanıtma.
+Sürümde kurulumla birlikte `Nexus-source.zip`, `Nexus-dependency-sources.zip`,
+`dependency-sources.json`, `windows-package-check.json`, `release-manifest.json`
+ve `SHA256SUMS.txt` sunulur. Kaynak listesi özgün arşivlerin tam sürümlerini ve
+dosya özetlerini içerir. Bağımlılık arşivinde Python kaynakları, Qt modülleri,
+FFmpeg ve codec'ler, PyAV derleme tarifleri ve eşleşen MSYS2 çalışma zamanı
+kaynakları, yamaları ve paketleme tarifleri bulunur. Şifreleme veya imza anahtarına
+bağlı kilit yoktur.
 
-Projeye ait kaynak kod MIT olarak kalır. Bağımlılıklarla birleşen paket yalnızca MIT
-olarak tanımlanamaz. Yerel derleme, herkese dağıtımın açık kontrollerini tamamlamaz.
+Değişiklik için Nexus kaynağını çıkarın, sabitlenmiş derleme ortamını kurun ve
+yukarıdaki adımları uygulayın. Özgün arşivler derleme dosyalarını korur. Qt için
+arşivdeki CMake/configure talimatları, PyQt için SIP talimatları kullanılabilir.
+Yerel PyAV kütüphanelerinin derleme betikleri ve yamaları `pyav-ffmpeg-build`
+arşivindedir. MSYS2 paketleri PKGBUILD tariflerini, yamaları ve özgün GCC/libiconv/
+winpthreads kaynaklarını taşır. Medya yapılandırması `dependency-sources.json`
+içindedir. Uyumlu DLL'ler `_internal` içinde yetkilendirme anahtarı olmadan değiştirilebilir.
+
+Donmuş paket envanteri gerçekten paketlenen dosyalardan oluşturulur;
+`build-environment.json` ayrı bir derleme envanteridir, sertifikalı SBOM değildir.
+Yayın için birim kontrolleri, temiz kurulum, tekrar kurulum ve kaldırma kontrolleri
+başarılı olmalıdır. Fiziksel mikrofon, gerçek model kalitesi, etkileşimli kurulumun
+iptali ve tüm Windows yapılandırmaları otomatik testin kapsamı dışındadır.
+Hey Nexus algılaması deneysel kalır; F2 elle giriş için kullanılabilir.
+Bulut ses ve haricî araçlar açık onay/izin kontrollerini korur.

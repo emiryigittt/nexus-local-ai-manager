@@ -1,5 +1,5 @@
 #define Root SourcePath + ".."
-#define AppVersion "0.3.0-preview"
+#define AppVersion "0.3.0-beta.2"
 
 [Setup]
 AppId={{61E722A9-E745-41D0-BE45-9D334730D46D}
@@ -7,6 +7,7 @@ AppName=Nexus
 AppVersion={#AppVersion}
 AppPublisher=Nexus contributors
 AppPublisherURL=https://github.com/emiryigittt/nexus-local-ai-manager
+InfoBeforeFile={#Root}\build\distribution-notices\SOURCE_ACCESS.txt
 DefaultDirName={localappdata}\Programs\Nexus
 DefaultGroupName=Nexus
 PrivilegesRequired=lowest

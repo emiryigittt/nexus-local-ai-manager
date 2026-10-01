@@ -336,6 +336,8 @@ def build_interface(window):
     action(menu, "Nexus ile tanış", window.open_introduction)
     action(menu, "Hafızamı göster", window.show_remembered_context)
     action(menu, "Hafızayı yönet · adayları incele", lambda: window.open_memory_manager())
+    menu.addSeparator()
+    action(menu, "Nexus hakkında ve lisanslar", window.open_about)
     menu_button.setMenu(menu)
     tools.addWidget(menu_button)
     window.private_pill = control("shield", "Özel oturum · geçmişe kaydetme", window.toggle_private_session, "Özel oturum")

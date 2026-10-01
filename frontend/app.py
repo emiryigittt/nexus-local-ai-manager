@@ -52,6 +52,7 @@ from backend.memory import memory_repository
 from backend.runtime import resource_root
 from backend.speech_chunks import take_speech_chunks
 from backend.user_settings import settings_store
+from frontend.about_dialog import AboutDialog
 from frontend.api_client import request_json
 from frontend.appearance import AccentEdge, themed_style
 from frontend.brand import brand_icon
@@ -434,6 +435,9 @@ class SpotlightApp(QMainWindow):
             self.collapse_to_notch()
             return
         self.open_full_chat()
+
+    def open_about(self):
+        AboutDialog(self).exec()
 
     def show_welcome_state(self, *, expand=True):
         if expand:

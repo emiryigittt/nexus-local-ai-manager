@@ -1,0 +1,969 @@
+{
+  "release": "v0.3.0-beta.2",
+  "review_status": "ready",
+  "distribution_license": "GPL-3.0-only",
+  "python": "3.12.10",
+  "build_lock": "packaging/windows-build.lock.txt",
+  "scope": "Exact Python build inputs and native copyleft sources used by the pinned Windows build. Original notices are preserved; this is not a certified SBOM.",
+  "source_delivery": "Nexus-dependency-sources.zip, served alongside NexusSetup.exe in the same release. Nexus authored source is also included in the installer and Nexus-source.zip.",
+  "native_runtime_matches": [
+    {
+      "package": "mingw-w64-x86_64-gcc-libs-16.1.0-4-any.pkg.tar.zst",
+      "dlls": [
+        "libgcc",
+        "libstdc++"
+      ]
+    },
+    {
+      "package": "mingw-w64-x86_64-gcc-libs-16.1.0-3-any.pkg.tar.zst",
+      "dlls": [
+        "libgcc"
+      ]
+    },
+    {
+      "package": "mingw-w64-x86_64-gcc-libs-16.1.0-5-any.pkg.tar.zst",
+      "dlls": [
+        "libgcc",
+        "libstdc++"
+      ]
+    },
+    {
+      "package": "mingw-w64-x86_64-libwinpthread-14.0.0.r92.g818fa6510-1-any.pkg.tar.zst",
+      "dlls": [
+        "libwinpthread"
+      ]
+    },
+    {
+      "package": "mingw-w64-x86_64-libwinpthread-14.0.0.r98.g19f5121a2-1-any.pkg.tar.zst",
+      "dlls": [
+        "libwinpthread"
+      ]
+    },
+    {
+      "package": "mingw-w64-x86_64-libiconv-1.19-1-any.pkg.tar.zst",
+      "dlls": [
+        "libiconv"
+      ]
+    }
+  ],
+  "native_media": [
+    {
+      "av_version_info": "9.0.2",
+      "avutil_configuration": "--disable-static --enable-shared --libdir=/c/cibw/vendor/lib --prefix=/c/cibw/vendor --disable-programs --disable-doc --disable-libxml2 --disable-lzma --disable-libtheora --disable-libfreetype --disable-libfontconfig --disable-libbluray --disable-libopenjpeg --enable-mediafoundation --enable-version3 --disable-alsa --disable-gnutls --enable-libdav1d --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpx --enable-libwebp --disable-libxcb --enable-zlib --enable-libx265 --enable-libx264 --enable-nvenc --enable-nvdec --enable-amf --enable-libvpl --disable-encoder='avui,dca,mlp,opus,s302m,sonic,sonic_ls,truehd' --disable-decoder=sonic --disable-libjack --disable-indev=jack --disable-filter=gfxcapture",
+      "avutil_license": "LGPL version 3 or later"
+    },
+    {
+      "av_version_info": "7.1.5",
+      "avutil_configuration": "--prefix=/c/FFmpeg-n7.1.5/build/msvc/installed --disable-programs --disable-doc --disable-debug --enable-network --disable-lzma --enable-pic --disable-vulkan --disable-v4l2-m2m --disable-decoder=truemotion1 --disable-avdevice --disable-avfilter --enable-zlib --extra-cflags='-IC:/zlib-1.3.1/build/amd64' --extra-ldflags='-LIBPATH:C:/zlib-1.3.1/build/amd64' --toolchain=msvc --enable-shared --disable-static",
+      "avutil_license": "LGPL version 2.1 or later"
+    }
+  ],
+  "notes": [
+    "Runtime Qt version is 6.11.2; PyQt headers report 6.11.0.",
+    "PyAV codecs include x264 and x265; the combined distribution uses GPLv3, regardless of the FFmpeg runtime license string.",
+    "MSYS2 runtime sources include packaging patches and recipes. DLL text sections match the listed upstream packages; wheel import renaming changes PE file hashes.",
+    "Unused QtPdf/qpdf/software OpenGL, SoundFile/libsndfile and nonstandard PortAudio backends are excluded.",
+    "Silero VAD is a small MIT asset from faster-whisper. No LLM, Whisper or Supertonic weights are bundled.",
+    "Microsoft runtime redistributables are unchanged files from Python/Qt/native wheels, with their original terms; Windows system libraries are external."
+  ],
+  "archives": [
+    {
+      "name": "aiohappyeyeballs",
+      "version": "2.7.1",
+      "filename": "aiohappyeyeballs-2.7.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/ce/f4/eec0465c2f67b2664688d0240b3212d5196fd89e741df67ddb81f8d35658/aiohappyeyeballs-2.7.1.tar.gz",
+      "sha256": "065665c041c42a5938ed220bdcd7230f22527fbec085e1853d2402c8a3615d9d",
+      "bytes": 24757,
+      "kind": "python",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "aiohttp",
+      "version": "3.14.3",
+      "filename": "aiohttp-3.14.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/58/d9/22ce5786ac0c1653ae8b6c23bded02c1686d11f0dbb45b31ce128e0df985/aiohttp-3.14.3.tar.gz",
+      "sha256": "9491196535a88924a60afd5b5f434b5b203b6cc616250878dbdb223a8f7844bc",
+      "bytes": 7971213,
+      "kind": "python",
+      "license": "Apache-2.0 AND MIT"
+    },
+    {
+      "name": "aiosignal",
+      "version": "1.4.0",
+      "filename": "aiosignal-1.4.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/61/62/06741b579156360248d1ec624842ad0edf697050bbaf7c3e46394e106ad1/aiosignal-1.4.0.tar.gz",
+      "sha256": "f47eecd9468083c2029cc99945502cb7708b082c232f9aca65da147157b251c7",
+      "bytes": 25007,
+      "kind": "python",
+      "license": "Apache 2.0"
+    },
+    {
+      "name": "altgraph",
+      "version": "0.17.5",
+      "filename": "altgraph-0.17.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/7e/f8/97fdf103f38fed6792a1601dbc16cc8aac56e7459a9fff08c812d8ae177a/altgraph-0.17.5.tar.gz",
+      "sha256": "c87b395dd12fabde9c99573a9749d67da8d29ef9de0125c7f536699b4a9bc9e7",
+      "bytes": 48428,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "amf-headers",
+      "version": "1.5.2",
+      "url": "https://github.com/GPUOpen-LibrariesAndSDKs/AMF/releases/download/v1.5.2/AMF-headers-v1.5.2.tar.gz",
+      "filename": "amf-headers-pyav-build.tar.gz",
+      "sha256": "d3c12eb324edf05e214608b6a395a51dd95770ed9d45520185d6c3a206811c99",
+      "bytes": 83716,
+      "kind": "native"
+    },
+    {
+      "name": "annotated-doc",
+      "version": "0.0.5",
+      "filename": "annotated-doc-0.0.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5a/8e/38aa427ed5402449e226975b649c5dc73ccadfefeb95e6aecb8f8ea4b6b6/annotated_doc-0.0.5.tar.gz",
+      "sha256": "c7e58ce09192557605d8bbd92836d7e1d520ac9580096042c0bfd197efacf1bb",
+      "bytes": 10758,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "filename": "annotated-types-0.8.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/5f/56/a8120250d128bed162cd73c76d45f6ef9991f3e068f62a8ee060afa3104a/annotated_types-0.8.0.tar.gz",
+      "sha256": "13b2beaad985e05e2d6407ee4c4f35590b11f8d693a258a561055cac8f64cab7",
+      "bytes": 15893,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "filename": "anyio-4.15.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a9/d2/f4d173e22df740bc37b1db102b386ba719b66e95b0f0d751f556b387e6d2/anyio-4.15.1.tar.gz",
+      "sha256": "9f28306018cbd6d329e64a36d58256edff76dd996fe423bc957326e578b82a94",
+      "bytes": 276966,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "attrs",
+      "version": "26.1.0",
+      "filename": "attrs-26.1.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/9a/8e/82a0fe20a541c03148528be8cac2408564a6c9a0cc7e9171802bc1d26985/attrs-26.1.0.tar.gz",
+      "sha256": "d03ceb89cb322a8fd706d4fb91940737b6642aa36998fe130a9bc96c985eff32",
+      "bytes": 952055,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "av",
+      "version": "19.0.0",
+      "filename": "av-19.0.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/cd/df/0a05835bf588932b7c87ad13ac8ffc781215a3071c755edf084a67331923/av-19.0.0.tar.gz",
+      "sha256": "f04d31a42570cb8ec8216569b94491e91848cdac2ac8e7591c6141fda6cc86ee",
+      "bytes": 4301713,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "filename": "certifi-2026.7.22.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a3/c2/24167ea9858356b47a87a50d39908bfdb72ceeefe0041586e704e5376b3a/certifi-2026.7.22.tar.gz",
+      "sha256": "741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55",
+      "bytes": 138112,
+      "kind": "python",
+      "license": "MPL-2.0"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "filename": "cffi-2.1.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz",
+      "sha256": "dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be",
+      "bytes": 530807,
+      "kind": "python",
+      "license": "MIT-0"
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "filename": "click-8.5.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/c7/0e/7fa0ef50764b67090eca4114772a2abf8b6148198475e54c660b97caeee6/click-8.5.0.tar.gz",
+      "sha256": "ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34",
+      "bytes": 382235,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "filename": "colorama-0.4.6.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz",
+      "sha256": "08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44",
+      "bytes": 27697,
+      "kind": "python",
+      "license": "See archive notices"
+    },
+    {
+      "name": "comtypes",
+      "version": "1.4.17",
+      "filename": "comtypes-1.4.17.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/0e/ff/c7836bd0d78fc615281016f154f514e9d523d7cb9ab9e8b4d344adc5f5e7/comtypes-1.4.17.tar.gz",
+      "sha256": "3d9c1e92ad8daf7600d371e76ee16161a627a5fb70c3144f6e52e78af6034363",
+      "bytes": 262743,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "cpython",
+      "version": "3.12.10",
+      "url": "https://www.python.org/ftp/python/3.12.10/Python-3.12.10.tar.xz",
+      "filename": "cpython-3.12.10.tar.xz",
+      "sha256": "07ab697474595e06f06647417d3c7fa97ded07afc1a7e4454c5639919b46eaea",
+      "bytes": 20520960,
+      "kind": "native"
+    },
+    {
+      "name": "ctranslate2",
+      "version": "4.8.2",
+      "filename": "ctranslate2-4.8.2.tar.gz",
+      "url": "https://codeload.github.com/OpenNMT/CTranslate2/tar.gz/refs/tags/v4.8.2",
+      "sha256": "a15fdd27842ac80e73c4a0e2ae8ee32c990db88563b6b012db009128872ab730",
+      "bytes": 3433424,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "dav1d",
+      "version": "1.5.4",
+      "url": "https://code.videolan.org/videolan/dav1d/-/archive/1.5.4/dav1d-1.5.4.tar.bz2",
+      "filename": "dav1d-pyav-build.tar.bz2",
+      "sha256": "2abfb0c89212e6e4733a54e0ae509ec00a5b845a6360946f918806e14aedb011",
+      "bytes": 1228274,
+      "kind": "native"
+    },
+    {
+      "name": "ddgs",
+      "version": "9.16.0",
+      "filename": "ddgs-9.16.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/68/30/dd2ff7d817573e30836fb99bdc04e167ce03ac5b878072b3e9e892aa810b/ddgs-9.16.0.tar.gz",
+      "sha256": "161ca8e78ea08d40cd3f83fb12279b49322ffb342d981368bfa39bed9847d874",
+      "bytes": 38018,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "edge-tts",
+      "version": "7.2.8",
+      "filename": "edge-tts-7.2.8.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/3f/60/afbf548b43c78355e03926c6b1fff7500303a2da4d84db9e1324119e21ae/edge_tts-7.2.8.tar.gz",
+      "sha256": "fcf185a0d527a0d2d003f9d5841facc1d5e0e7b3b88d5df9c32990402c6b8cd0",
+      "bytes": 27875,
+      "kind": "python",
+      "license": "See archive notices"
+    },
+    {
+      "name": "fastapi",
+      "version": "0.142.2",
+      "filename": "fastapi-0.142.2.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/56/4f/f7c30a73127e0a8bbffe788369b8359e530b01ae06e2757936fa35bc5e6d/fastapi-0.142.2.tar.gz",
+      "sha256": "06366626f2e70576367714d9ab2fe8472e6c8456dba69b399f9f797ab5e92570",
+      "bytes": 466721,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "faster-whisper",
+      "version": "1.2.1",
+      "url": "https://codeload.github.com/SYSTRAN/faster-whisper/tar.gz/v1.2.1",
+      "filename": "faster-whisper-v1.2.1.tar.gz",
+      "sha256": "ff0b5428b3a074cd63f580ae73fa21f7d9fd3bba28e0e2e097868d78d5b06f2f",
+      "bytes": 21407900,
+      "kind": "native"
+    },
+    {
+      "name": "ffmpeg",
+      "version": "9.0.2",
+      "url": "https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz",
+      "filename": "ffmpeg-pyav-build.tar.xz",
+      "sha256": "8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e",
+      "bytes": 12040788,
+      "kind": "native"
+    },
+    {
+      "name": "ffmpeg-qt",
+      "version": "7.1.5",
+      "url": "https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz",
+      "filename": "ffmpeg-qt-7.1.5.tar.xz",
+      "sha256": "de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f",
+      "bytes": 11050340,
+      "kind": "native"
+    },
+    {
+      "name": "filelock",
+      "version": "4.0.7",
+      "filename": "filelock-4.0.7.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/35/f5/14097cca69f53794270d8c7970b48321636302affe3154c7e0ba114eeff9/filelock-4.0.7.tar.gz",
+      "sha256": "da5915714a70b55d167fdc7e251ad91302b0a36816fb574dfafae8f4f2c9bb21",
+      "bytes": 248489,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "flatbuffers",
+      "version": "25.12.19",
+      "filename": "flatbuffers-25.12.19.tar.gz",
+      "url": "https://codeload.github.com/google/flatbuffers/tar.gz/refs/tags/v25.12.19",
+      "sha256": "f81c3162b1046fe8b84b9a0dbdd383e24fdbcf88583b9cb6028f90d04d90696a",
+      "bytes": 2355743,
+      "kind": "python",
+      "license": "Apache 2.0"
+    },
+    {
+      "name": "frozenlist",
+      "version": "1.8.0",
+      "filename": "frozenlist-1.8.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/2d/f5/c831fac6cc817d26fd54c7eaccd04ef7e0288806943f7cc5bbf69f3ac1f0/frozenlist-1.8.0.tar.gz",
+      "sha256": "3ede829ed8d842f6cd48fc7081d7a41001a56f1f38603f9d49bf3020d59a31ad",
+      "bytes": 45875,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "fsspec",
+      "version": "2026.9.0",
+      "filename": "fsspec-2026.9.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/77/cd/9be253869fc42e764de7f3dedd6969af7d44ff9c3375214a3442a6f3fc08/fsspec-2026.9.0.tar.gz",
+      "sha256": "0f08147951c8cb31d844c3547d631053b127863b60be04cf06e121333ee0e2fe",
+      "bytes": 333545,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "filename": "h11-0.16.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz",
+      "sha256": "4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1",
+      "bytes": 101250,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "hf-xet",
+      "version": "1.6.0",
+      "filename": "hf-xet-1.6.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/1b/ab/522a2ab67f27971a9d48ca666d4fca85ef7d5282d142e31fd087e27b1bbe/hf_xet-1.6.0.tar.gz",
+      "sha256": "2e58454a340b3556dfa4972d5451aff4fba8dd42a236600ba1a1d2b1514f0fef",
+      "bytes": 920527,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "filename": "httpcore-1.0.9.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/06/94/82699a10bca87a5556c9c59b5963f2d039dbd239f25bc2a63907a05a14cb/httpcore-1.0.9.tar.gz",
+      "sha256": "6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8",
+      "bytes": 85484,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "filename": "httpx-0.28.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/b1/df/48c586a5fe32a0f01324ee087459e112ebb7224f646c0b5023f5e79e9956/httpx-0.28.1.tar.gz",
+      "sha256": "75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc",
+      "bytes": 141406,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "huggingface_hub",
+      "version": "1.33.0",
+      "filename": "huggingface_hub-1.33.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/25/2a/484d112c0d8fc5f665d7b65137ac9cdb2953c982391598c3597968a12ee7/huggingface_hub-1.33.0.tar.gz",
+      "sha256": "367be21a201db9523eddf8aeac7048f2602c1b308691c97640d5e72ed188007e",
+      "bytes": 1043548,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "idna",
+      "version": "3.20",
+      "filename": "idna-3.20.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/f5/08/8eea9d4b8302028f3abb2c0813953f7aec26d33b7a8960ed760e65ff29fa/idna-3.20.tar.gz",
+      "sha256": "a7db850025b95ded1eae8a46181a1a6c56c92c96f0e2b005d9ff8dc0210cab44",
+      "bytes": 216463,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "keyboard",
+      "version": "0.13.5",
+      "filename": "keyboard-0.13.5.zip",
+      "url": "https://files.pythonhosted.org/packages/79/75/c969f2258e908c39aadfc57d1cb78247dc49e6d36371bb3a48c194640c01/keyboard-0.13.5.zip",
+      "sha256": "63ed83305955939ca5c9a73755e5cc43e8242263f5ad5fd3bb7e0b032f3d308b",
+      "bytes": 71798,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "lamer",
+      "version": "3.101.0",
+      "url": "https://github.com/basswood-io/lamer/archive/refs/tags/v3.101.0.tar.gz",
+      "filename": "lamer-pyav-build.tar.gz",
+      "sha256": "81839b16fdc401e20b73389d05f32a7656008f43bcb960feff290d6f08fc109e",
+      "bytes": 404497,
+      "kind": "native"
+    },
+    {
+      "name": "libiconv",
+      "version": "1.19",
+      "url": "https://ftp.gnu.org/gnu/libiconv/libiconv-1.19.tar.gz",
+      "filename": "libiconv-1.19.tar.gz",
+      "sha256": "88dd96a8c0464eca144fc791ae60cd31cd8ee78321e67397e25fc095c4a19aa6",
+      "bytes": 5921103,
+      "kind": "native"
+    },
+    {
+      "name": "libsvtav1",
+      "version": "4.2.0",
+      "url": "https://gitlab.com/AOMediaCodec/SVT-AV1/-/archive/v4.2.0/SVT-AV1-v4.2.0.tar.bz2",
+      "filename": "libsvtav1-pyav-build.tar.bz2",
+      "sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "bytes": 10334915,
+      "kind": "native"
+    },
+    {
+      "name": "libvmaf",
+      "version": "3.2.1",
+      "url": "https://github.com/Netflix/vmaf/archive/refs/tags/v3.2.1.tar.gz",
+      "filename": "libvmaf-pyav-build.tar.gz",
+      "sha256": "5df7386911bc15fd1ca783132528748d219768ae4fc5f8e0b61184f041648092",
+      "bytes": 18590364,
+      "kind": "native"
+    },
+    {
+      "name": "libvpl",
+      "version": "2.16.0",
+      "url": "https://github.com/intel/libvpl/archive/refs/tags/v2.16.0.tar.gz",
+      "filename": "libvpl-pyav-build.tar.gz",
+      "sha256": "d60931937426130ddad9f1975c010543f0da99e67edb1c6070656b7947f633b6",
+      "bytes": 12968334,
+      "kind": "native"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "filename": "lxml-6.1.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/23/ad/28ecd7cb894d172f3c9c80a075eeeb2017ac62e3632cee05a5f9493547eb/lxml-6.1.3.tar.gz",
+      "sha256": "45222d94ddd511536f3b2f7d9deae3b2339b4ce0f075f1ca25703b07cad9dd21",
+      "bytes": 4211198,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "mingw-w64-gcc-16.1.0-5",
+      "version": "msys2",
+      "url": "https://repo.msys2.org/mingw/sources/mingw-w64-gcc-16.1.0-5.src.tar.zst",
+      "filename": "mingw-w64-gcc-16.1.0-5-msys2.tar.zst",
+      "sha256": "947166ed372d28ab8ffa25a66bc5e37a60a42e96a686424ce58cad304fcaea15",
+      "bytes": 102479270,
+      "kind": "native"
+    },
+    {
+      "name": "mingw-w64-libiconv-1.19-1",
+      "version": "msys2",
+      "url": "https://repo.msys2.org/mingw/sources/mingw-w64-libiconv-1.19-1.src.tar.zst",
+      "filename": "mingw-w64-libiconv-1.19-1-msys2.tar.zst",
+      "sha256": "74428280c17094da5b702c29b2e1a0abae59556ea5dfdd65705cc8ccc1e000fb",
+      "bytes": 5131029,
+      "kind": "native"
+    },
+    {
+      "name": "mingw-w64-winpthreads",
+      "version": "14.0.0.r92.g818fa6510-1",
+      "url": "https://repo.msys2.org/mingw/sources/mingw-w64-winpthreads-14.0.0.r92.g818fa6510-1.src.tar.zst",
+      "filename": "mingw-w64-winpthreads-14.0.0.r92.g818fa6510-1.tar.zst",
+      "sha256": "735596688e3a141240488a0146fa10ce93c7c60469c583efebc18329921c42fe",
+      "bytes": 51672584,
+      "kind": "native"
+    },
+    {
+      "name": "mingw-w64-winpthreads",
+      "version": "14.0.0.r98.g19f5121a2-1",
+      "url": "https://repo.msys2.org/mingw/sources/mingw-w64-winpthreads-14.0.0.r98.g19f5121a2-1.src.tar.zst",
+      "filename": "mingw-w64-winpthreads-14.0.0.r98.g19f5121a2-1.tar.zst",
+      "sha256": "b1444443b523b4e5264b40737d57f0e02eef957ca6ca05d771a033ecc8a81e4e",
+      "bytes": 51762230,
+      "kind": "native"
+    },
+    {
+      "name": "multidict",
+      "version": "6.9.1",
+      "filename": "multidict-6.9.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/d6/99/1d4d69c3512d0ddbfa3a1b69cfd9a151012ab2eb4eabbb096201b1f0b7d8/multidict-6.9.1.tar.gz",
+      "sha256": "0f06e60fa190aa7abd0914c2a766736fdc8e9f34878c4346338534b73d1b20e2",
+      "bytes": 182404,
+      "kind": "python",
+      "license": "Apache License 2.0"
+    },
+    {
+      "name": "nasm",
+      "version": "2.16.03",
+      "url": "https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/nasm-2.16.03.tar.xz",
+      "filename": "nasm-pyav-build.tar.xz",
+      "sha256": "1412a1c760bbd05db026b6c0d1657affd6631cd0a63cddb6f73cc6d4aa616148",
+      "bytes": 1032388,
+      "kind": "native"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.3",
+      "filename": "numpy-2.5.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/13/01/11703282db468b85f6f7b8c7f22d058de5970d5c7e60a3a8aaa313c3de36/numpy-2.5.3.tar.gz",
+      "sha256": "df2d5874ff183595a4ba404edd04f6bd9b5505c1d7708573f6a6c17489a67563",
+      "bytes": 20791231,
+      "kind": "python",
+      "license": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0"
+    },
+    {
+      "name": "nv-codec-headers",
+      "version": "13.0.19.0",
+      "url": "https://github.com/FFmpeg/nv-codec-headers/archive/refs/tags/n13.0.19.0.tar.gz",
+      "filename": "nv-codec-headers-pyav-build.tar.gz",
+      "sha256": "86d15d1a7c0ac73a0eafdfc57bebfeba7da8264595bf531cf4d8db1c22940116",
+      "bytes": 83385,
+      "kind": "native"
+    },
+    {
+      "name": "onnxruntime",
+      "version": "1.30.0",
+      "url": "https://codeload.github.com/microsoft/onnxruntime/tar.gz/v1.30.0",
+      "filename": "onnxruntime-v1.30.0.tar.gz",
+      "sha256": "f6681ecbddf53898adf0cc9e8e9e84657485b84d2eca3c8aa353de6d7dd417ef",
+      "bytes": 278619110,
+      "kind": "native"
+    },
+    {
+      "name": "opentelemetry-api",
+      "version": "1.45.0",
+      "filename": "opentelemetry-api-1.45.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/1f/dc/e12c1fe1ed8a7b7149777127b1a0e12ce5bd5a81d97408bedc2128c260f5/opentelemetry_api-1.45.0.tar.gz",
+      "sha256": "711ede81773c8025c2c03dac0450bc89f3d30aea6eabcc815c570d4e35a963f7",
+      "bytes": 72115,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "opus",
+      "version": "1.6.1",
+      "url": "https://downloads.xiph.org/releases/opus/opus-1.6.1.tar.gz",
+      "filename": "opus-pyav-build.tar.gz",
+      "sha256": "6ffcb593207be92584df15b32466ed64bbec99109f007c82205f0194572411a1",
+      "bytes": 10472813,
+      "kind": "native"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "filename": "packaging-26.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/7d/fa/3944b40b07da9ce895c0e6303a5ab7d53da063554f534556b134a54d6093/packaging-26.3.tar.gz",
+      "sha256": "94edc256424af38762eb31306eed28beb9f0efc50a8837492c9d6fd6004aed79",
+      "bytes": 313412,
+      "kind": "python",
+      "license": "Apache-2.0 OR BSD-2-Clause"
+    },
+    {
+      "name": "png",
+      "version": "1.6.58",
+      "url": "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.58/libpng-1.6.58.tar.xz",
+      "filename": "png-pyav-build.tar.xz",
+      "sha256": "28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775",
+      "bytes": 1070096,
+      "kind": "native"
+    },
+    {
+      "name": "primp",
+      "version": "2.0.1",
+      "filename": "primp-2.0.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/c7/01/c2a43378aaaf29539971766a007f3185fbe3f208f431b0969fa85c5a2111/primp-2.0.1.tar.gz",
+      "sha256": "82ba17b077bef19a189d9ec8d77ca632496cb444e0f4fa37e27e90041cf0da8f",
+      "bytes": 1124282,
+      "kind": "python",
+      "license": "MIT License"
+    },
+    {
+      "name": "propcache",
+      "version": "0.5.4",
+      "filename": "propcache-0.5.4.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/b3/9a/9fbf4e4ec0c2d7f1c32519fff782ef467859b8faa9fbc5331a96f6395d43/propcache-0.5.4.tar.gz",
+      "sha256": "ff6b113f50bc066a698db5d944d2c6dc7507168dd3341e255a8892fd0715a558",
+      "bytes": 61545,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "protobuf",
+      "version": "7.36.2",
+      "filename": "protobuf-7.36.2.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/d9/89/5b8517baa72f84a67b8a307ba953c91057af618bf40bf676f3c03551f8f0/protobuf-7.36.2.tar.gz",
+      "sha256": "497d0463ff3316681da6c0b9e8d06cb465d61abce00b613ab42226175644d1bb",
+      "bytes": 512737,
+      "kind": "python",
+      "license": "3-Clause BSD License"
+    },
+    {
+      "name": "pyav-ffmpeg-build",
+      "version": "bac889417e26be29615cb6a3f38318151fed55cd",
+      "url": "https://codeload.github.com/PyAV-Org/pyav-ffmpeg/tar.gz/bac889417e26be29615cb6a3f38318151fed55cd",
+      "filename": "pyav-ffmpeg-build-bac889417e26be29615cb6a3f38318151fed55cd.tar.gz",
+      "sha256": "18cb507f2651902bbd824aec838262a6ac2c85a9883b629360322acadd4c4bfd",
+      "bytes": 20729,
+      "kind": "native"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.0",
+      "filename": "pycparser-3.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/1b/7d/92392ff7815c21062bea51aa7b87d45576f649f16458d78b7cf94b9ab2e6/pycparser-3.0.tar.gz",
+      "sha256": "600f49d217304a5902ac3c37e1281c9fe94e4d0489de643a9504c5cdfdfc6b29",
+      "bytes": 103492,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "filename": "pydantic-2.13.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/53/ef/fc4f868f4e2cee79f863883abffceff107875f569b848507319842d2a681/pydantic-2.13.5.tar.gz",
+      "sha256": "51a9c5f7b2f8e636f04c6cada605d9b6a3bf1348fdf945a3d8869b19bba0ee08",
+      "bytes": 845750,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "pydantic_core",
+      "version": "2.46.5",
+      "filename": "pydantic_core-2.46.5.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/af/f9/8a06bea35ef8daf588f707784c973a7046e0034c8d8cfb08828eeffb8b75/pydantic_core-2.46.5.tar.gz",
+      "sha256": "10416c15b8839ecc4ef4d0885da76da6fd0f67333a0eb8aff6d93c4b8f2910fc",
+      "bytes": 472262,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "pyinstaller",
+      "version": "6.22.3",
+      "filename": "pyinstaller-6.22.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/63/41/f90302845945abd4ed647933ff5ee7c6ac93983187be67f897b6cb613331/pyinstaller-6.22.3.tar.gz",
+      "sha256": "05eb2f5615503e72939a7224d68b4aff572c6b0438ee4a17d0a4b481f399362d",
+      "bytes": 4437180,
+      "kind": "python",
+      "license": "GPLv2-or-later with a special exception which allows to use PyInstaller to build and distribute non-free programs (including commercial ones)"
+    },
+    {
+      "name": "pyinstaller-hooks-contrib",
+      "version": "2026.8",
+      "filename": "pyinstaller-hooks-contrib-2026.8.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/c9/3b/fab1a12a21bf9223af012e5dd002b7d4265683d21d9fabbd0ccb347316e4/pyinstaller_hooks_contrib-2026.8.tar.gz",
+      "sha256": "4d825786ad7a9b7dbcc52d612748a34562fe273461bcfd88f4d549c594bbf8f9",
+      "bytes": 176955,
+      "kind": "python",
+      "license": "See archive notices"
+    },
+    {
+      "name": "pypdf",
+      "version": "6.19.0",
+      "filename": "pypdf-6.19.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/1f/ac/63d71aaedb59acbcdef491e6ca6469165e3771c9c74358204818fd9bc5a6/pypdf-6.19.0.tar.gz",
+      "sha256": "bbc43aca292369ccc6cbc8a921991ecf2538a3587ab5a116eff06c321d647155",
+      "bytes": 7033266,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "PyQt6",
+      "version": "6.11.0",
+      "filename": "PyQt6-6.11.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/8b/47/b25c13eca5bebc6505394d0223e46d7ebf0c57dcac2ed908d7d19b18ab6b/pyqt6-6.11.0.tar.gz",
+      "sha256": "45dd60aa69976de1918b5ced6b4e7b6a25abd2a919ecef5fd5826ecc76718889",
+      "bytes": 1087430,
+      "kind": "python",
+      "license": "GPL-3.0-only"
+    },
+    {
+      "name": "PyQt6_sip",
+      "version": "13.12.0",
+      "filename": "PyQt6_sip-13.12.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/d1/23/16c583dbb6b53e0494dfcf7d1a44778c82e324edda62326727b37f1a5b34/pyqt6_sip-13.12.0.tar.gz",
+      "sha256": "a7ad45c1e3cec3a2473d37ea9870b6c3baeccc560298623c8eb59265714c06e2",
+      "bytes": 93979,
+      "kind": "python",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "python-docx",
+      "version": "1.2.0",
+      "filename": "python-docx-1.2.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a9/f7/eddfe33871520adab45aaa1a71f0402a2252050c14c7e3009446c8f4701c/python_docx-1.2.0.tar.gz",
+      "sha256": "7bc9d7b7d8a69c9c02ca09216118c86552704edc23bac179283f2e38f86220ce",
+      "bytes": 5723256,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "filename": "python-dotenv-1.2.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/6a/53/ed9d74092561d4b01a2ef1349d52cdbc135e526c245f366b089cfca6de49/python_dotenv-1.2.3.tar.gz",
+      "sha256": "a20a594dabeaa385725aa239d5244871c143ecb356add8a20fcf23773a6c3a35",
+      "bytes": 58945,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "pyttsx3",
+      "version": "2.99",
+      "filename": "pyttsx3-2.99.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/94/4e/a37786f666f4f084fc45e026ca1e63f7b49ac0d90b53fa35ae62b73c96a8/pyttsx3-2.99.tar.gz",
+      "sha256": "a18a5601530a570c43491b4112887fc34c47e118fc937287db8d21905da1f74e",
+      "bytes": 33968,
+      "kind": "python",
+      "license": "MPL-2.0"
+    },
+    {
+      "name": "pywin32",
+      "version": "312",
+      "url": "https://codeload.github.com/mhammond/pywin32/tar.gz/b312",
+      "filename": "pywin32-b312.tar.gz",
+      "sha256": "71d959a9f18cf86001e5dca1e30d5046c187eabbb08112cb6ff01e04689f6f7b",
+      "bytes": 4807297,
+      "kind": "native"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3",
+      "filename": "PyYAML-6.0.3.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/05/8e/961c0007c59b8dd7729d542c61a4d537767a59645b82a0b521206e1e25c2/pyyaml-6.0.3.tar.gz",
+      "sha256": "d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f",
+      "bytes": 130960,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "qtbase",
+      "version": "6.11.2",
+      "url": "https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/submodules/qtbase-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtbase-6.11.2.tar.xz",
+      "sha256": "5b2e00eccaf5a4d8c14134ffa0ea8dfd0a35ae1ffc7f8d87fa4305a1ed23cf22",
+      "bytes": 50582668,
+      "kind": "native"
+    },
+    {
+      "name": "qtimageformats",
+      "version": "6.11.2",
+      "url": "https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/submodules/qtimageformats-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtimageformats-6.11.2.tar.xz",
+      "sha256": "cecd8900f34b6550076309bc94f62f828008b633a4239e0a08c86788f41001f8",
+      "bytes": 2050424,
+      "kind": "native"
+    },
+    {
+      "name": "qtmultimedia",
+      "version": "6.11.2",
+      "url": "https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/submodules/qtmultimedia-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtmultimedia-6.11.2.tar.xz",
+      "sha256": "967b5e02ec6b793cdb360622cd6e703132836af983208d678dae4b50f109cd9f",
+      "bytes": 10255120,
+      "kind": "native"
+    },
+    {
+      "name": "qtsvg",
+      "version": "6.11.2",
+      "url": "https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/submodules/qtsvg-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtsvg-6.11.2.tar.xz",
+      "sha256": "d594337feca84c26fb67fe87b85e6a5c12fda404b611d905f9d138210c311876",
+      "bytes": 2341860,
+      "kind": "native"
+    },
+    {
+      "name": "qttranslations",
+      "version": "6.11.2",
+      "url": "https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/submodules/qttranslations-everywhere-src-6.11.2.tar.xz",
+      "filename": "qttranslations-6.11.2.tar.xz",
+      "sha256": "021684c1a7937a9fabc3b056a6698ad5978794caf9ac190fd6cc11399e67c014",
+      "bytes": 1691056,
+      "kind": "native"
+    },
+    {
+      "name": "setuptools",
+      "version": "84.0.0",
+      "filename": "setuptools-84.0.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/6d/44/f5da03a8ef95d369145c5bb53050e7877c9f3d312e128605fd9504829143/setuptools-84.0.0.tar.gz",
+      "sha256": "f4695c21257f0d9b537ec2692c941d02ee143b7cc1276941349a546573b2ef73",
+      "bytes": 1168449,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "sherpa-onnx-core",
+      "version": "1.13.8",
+      "filename": "sherpa-onnx-core-1.13.8.tar.gz",
+      "url": "https://codeload.github.com/k2-fsa/sherpa-onnx/tar.gz/refs/tags/v1.13.8",
+      "sha256": "b0374cc56dbc186d442ae73d5de743bb092470b640c4c50ce7b029044c0c4fa8",
+      "bytes": 11642707,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "sherpa_onnx",
+      "version": "1.13.8",
+      "filename": "sherpa_onnx-1.13.8.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/f9/5d/9c19acbe7eebd09cee4b69408532f44dc09e71b6025518ed7dd9c0509d6d/sherpa_onnx-1.13.8.tar.gz",
+      "sha256": "68e638f745df120a7fae268b7bae0eaab2362b5ad76fe3389bece1d3cd63272c",
+      "bytes": 1057541,
+      "kind": "python",
+      "license": "Apache licensed, as found in the LICENSE file"
+    },
+    {
+      "name": "sounddevice",
+      "version": "0.5.6",
+      "filename": "sounddevice-0.5.6.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/ec/db/0c890e2d9aab9ba284021efc02e1d3aebfecab1b611762d7434602209bcf/sounddevice-0.5.6.tar.gz",
+      "sha256": "8ec9fbfde2e32f020b167e348f3ab3bac6625a5f15af524d790108ac7147a410",
+      "bytes": 1120094,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "starlette",
+      "version": "1.7.0",
+      "filename": "starlette-1.7.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/7b/2b/3850dc6bf7ef71b088962eba31dafc6cffd2f96e577ebb0bb316df96da3e/starlette-1.7.0.tar.gz",
+      "sha256": "c79f74ea63cff761804fbbfb182f1e0b440c2d07b164d24700c5a1bab5d6ff5d",
+      "bytes": 2736246,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "tabulate",
+      "version": "0.10.0",
+      "filename": "tabulate-0.10.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/46/58/8c37dea7bbf769b20d58e7ace7e5edfe65b849442b00ffcdd56be88697c6/tabulate-0.10.0.tar.gz",
+      "sha256": "e2cfde8f79420f6deeffdeda9aaec3b6bc5abce947655d17ac662b126e48a60d",
+      "bytes": 91754,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "tokenizers",
+      "version": "0.23.2",
+      "filename": "tokenizers-0.23.2.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/18/1e/bc6587c5ab643b2e17776cace9070a2ae73549c86bffac9934a600bf3c31/tokenizers-0.23.2.tar.gz",
+      "sha256": "7f0f085686b9de0d0079e6f874ae053600db64c5d13049e0bbc0119926d25aac",
+      "bytes": 385745,
+      "kind": "python",
+      "license": "See archive notices"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.70.1",
+      "filename": "tqdm-4.70.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/0d/ea/b2a5bd54b28a324dae8211928b2d730b6547500342c7e6c6dea08bd0a485/tqdm-4.70.1.tar.gz",
+      "sha256": "cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4",
+      "bytes": 171846,
+      "kind": "python",
+      "license": "MPL-2.0 AND MIT"
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "filename": "typing-inspection-0.4.4.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/a3/26/b09b8010994eccc3c09092e6b34058f36a460eea2d4c3e8b910c695975a0/typing_inspection-0.4.4.tar.gz",
+      "sha256": "547274fa6b0a561ccf549cc9524b999a578e737d015d8709d021f9d0d13bea47",
+      "bytes": 76928,
+      "kind": "python",
+      "license": "MIT"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "filename": "typing_extensions-4.16.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/f6/cc/6253133b5bb138fc3306cebfbda2c520f545d36b5be2c7255cc528bb45d6/typing_extensions-4.16.0.tar.gz",
+      "sha256": "dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5",
+      "bytes": 113555,
+      "kind": "python",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.54.0",
+      "filename": "uvicorn-0.54.0.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz",
+      "sha256": "a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620",
+      "bytes": 112283,
+      "kind": "python",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "vpx",
+      "version": "1.17.0",
+      "url": "https://github.com/webmproject/libvpx/archive/refs/tags/v1.17.0.tar.gz",
+      "filename": "vpx-pyav-build.tar.gz",
+      "sha256": "1020f184046187baa2985dbde38e0691f49c44088bca7a1842b0236c6081dc0a",
+      "bytes": 5670546,
+      "kind": "native"
+    },
+    {
+      "name": "webp",
+      "version": "1.6.0",
+      "url": "https://github.com/webmproject/libwebp/archive/refs/tags/v1.6.0.tar.gz",
+      "filename": "webp-pyav-build.tar.gz",
+      "sha256": "93a852c2b3efafee3723efd4636de855b46f9fe1efddd607e1f42f60fc8f2136",
+      "bytes": 3833512,
+      "kind": "native"
+    },
+    {
+      "name": "x264",
+      "version": "b35605ace3ddf7c1a5d67a2eb553f034aef41d55",
+      "url": "https://code.videolan.org/videolan/x264/-/archive/b35605ace3ddf7c1a5d67a2eb553f034aef41d55/x264-b35605ace3ddf7c1a5d67a2eb553f034aef41d55.tar.bz2",
+      "filename": "x264-pyav-build.tar.bz2",
+      "sha256": "6eeb82934e69fd51e043bd8c5b0d152839638d1ce7aa4eea65a3fedcf83ff224",
+      "bytes": 848719,
+      "kind": "native"
+    },
+    {
+      "name": "x265",
+      "version": "4.3",
+      "url": "https://github.com/Multicorewareinc/x265/releases/download/4.3/x265_4.3.tar.gz",
+      "filename": "x265-pyav-build.tar.gz",
+      "sha256": "83c53e4c8bbb8f1e33ed59e10a7d621d1d7801ca853910c3eb41f038b8ffb121",
+      "bytes": 2052112,
+      "kind": "native"
+    },
+    {
+      "name": "yarl",
+      "version": "1.25.1",
+      "filename": "yarl-1.25.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/75/16/e8be8e2fb175bbf41a0680381a319f1199fae256588241a2ac8677eafb49/yarl-1.25.1.tar.gz",
+      "sha256": "03dd38de09bc213e9a8b29761eec33ee1d5318dac0e49d8af36e4d27830e23a7",
+      "bytes": 246245,
+      "kind": "python",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "zlib",
+      "version": "1.3.1",
+      "url": "https://zlib.net/fossils/zlib-1.3.1.tar.gz",
+      "filename": "zlib-1.3.1.tar.gz",
+      "sha256": "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23",
+      "bytes": 1512791,
+      "kind": "native"
+    }
+  ]
+}

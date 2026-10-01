@@ -26,18 +26,21 @@ interface chimes under **Settings → Appearance**. Review memory in its new car
 Nexus connects to an existing model server; it is not another hosted chatbot
 and does not bundle a language model.
 
-**0.3.0 Beta 1 · Public source beta · Windows-first.**
-[Release and ZIP download](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1).
-Install 64-bit Python 3.11–3.13, extract the source ZIP, then double-click
-**Nexus Baslat.bat**. A running local model server is required.
+**0.3.0 Beta 2 · Windows installer · Open source.**
+[Download NexusSetup.exe](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/NexusSetup.exe)
+from the [release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2).
+Run the installer and open Nexus from Start. Python and a terminal are not required.
+Connect a running Ollama, LM Studio or llama.cpp server and select a model.
 
-The main window
-and General/Privacy settings support English and Turkish. Voice, history, memory
-dialogs and some status/error messages still include Turkish; full localization is unfinished.
-A [local Windows installer build](docs/WINDOWS_PREVIEW.md) is available as a
-development preview for testing. No public installer is included in this beta; the
-PyQt/Qt distribution decision and dependency review remain open.
-Known limits are described below.
+The installer is unsigned; Windows may display a publisher warning. Verify it with
+the release's `SHA256SUMS.txt`. The combined Windows application is distributed
+under [GNU GPL v3](DISTRIBUTION_LICENSE.md), with matching source archives and
+dependency notices. Nexus-authored source remains MIT. No LLM, Whisper or Supertonic
+weights are bundled; optional speech models are prepared explicitly in Settings.
+
+The main window and General/Privacy settings support English and Turkish.
+Some voice, history, memory and status messages still include Turkish.
+See the [installer and build guide](docs/WINDOWS_PREVIEW.md) and the limits below.
 
 Switch the interface under **Settings → General → Language → Save** (`Ctrl + ,`).
 The first-run wizard also lets you choose the language and test a local model.
@@ -160,7 +163,7 @@ expose it to a LAN, proxy, or public tunnel. [Privacy and security boundaries](d
 | Local speech | Two segments completed real Qt playback; naturalness needs listening tests |
 | Memory | Candidate persistence/approval tested; current live-model recall check awaits a running server |
 | Hey Nexus | Opt-in experiment; missed triggers and CPU use remain. Use `F2` as fallback |
-| Compatibility | Windows 10/11 x64 target; clean-PC installation testing pending. No public installer or macOS/Linux support claim |
+| Compatibility | Windows 10/11 x64 target; automated clean-runner installation, repeated installation and uninstall checks. Physical microphone and model quality need user testing; no macOS/Linux support claim |
 
 Speech uses text segments rather than true PCM streaming. Captions follow playback;
 cloud word timings are supplied by the service and local word alignment is approximate.
@@ -185,10 +188,10 @@ Never attach your database, credentials, private documents, or unredacted logs.
 
 ## License
 
-Nexus-authored source is available under [MIT](LICENSE). Dependencies, models, and
-voices are **not relicensed by this repository**. PyQt6's GPL/commercial terms and
-model licenses require separate consideration before distribution; no bundled
-binary is offered. See [third-party notices and release gates](THIRD_PARTY_NOTICES.md).
+Nexus-authored source is available under [MIT](LICENSE). The combined Windows
+distribution is offered under [GNU GPL v3](DISTRIBUTION_LICENSE.md), with notices
+and corresponding source archives. Dependencies, models and voices retain their
+own terms. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 If Nexus helps with your daily work, a star or concrete usage report helps others
 discover it. Neither requires sharing personal data.

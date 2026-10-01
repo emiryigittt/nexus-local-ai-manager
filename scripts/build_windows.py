@@ -1,4 +1,4 @@
-"""Build a local Windows preview; use a clean Python 3.11–3.13 environment for releases."""
+"""Build the GPL Windows beta with the pinned Python 3.12 environment."""
 
 import argparse
 import hashlib
@@ -45,6 +45,13 @@ def prepare_notices():
         "This package is unsigned. Verify the installer hash against the local build manifest.\n",
         encoding="utf-8",
     )
+    from scripts.prepare_distribution import decorate_notices
+
+    decorate_notices(output)
+    for candidate in (Path(sys.base_prefix) / "LICENSE.txt", Path(sys.base_prefix) / "LICENSE"):
+        if candidate.is_file():
+            shutil.copyfile(candidate, output / "licenses/Python-runtime-LICENSE.txt")
+            break
     # Git-visible source includes current reviewed changes, never ignored runtime files.
     files = subprocess.run(["git", "-c", f"safe.directory={ROOT.as_posix()}", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=ROOT, check=True, capture_output=True).stdout.decode("utf-8").split("\0")
     from scripts.check_public_repo import path_problem
@@ -75,12 +82,16 @@ def main():
     if sys.platform != "win32":
         raise SystemExit("Build on Windows")
     if args.installer_only and args.refresh_notices:
+        existing_inventory = ROOT / "dist/Nexus/_internal/distribution-notices/frozen-files.json"
+        inventory_bytes = existing_inventory.read_bytes() if existing_inventory.is_file() else None
         prepare_notices()
         destination = ROOT / "dist/Nexus/_internal/distribution-notices"
         if not destination.is_dir() or not destination.resolve().is_relative_to((ROOT / "dist/Nexus").resolve()):
             raise RuntimeError("Existing desktop notice directory not found")
         shutil.rmtree(destination)
         shutil.copytree(ROOT / "build/distribution-notices", destination)
+        if inventory_bytes is not None:
+            (destination / "frozen-files.json").write_bytes(inventory_bytes)
     if not args.installer_only:
         prepare_notices()
         environment = os.environ.copy()
@@ -95,7 +106,7 @@ def main():
         subprocess.run([str(args.compiler), str(ROOT / "packaging/Nexus.iss")], cwd=ROOT, check=True)
         installer = ROOT / "dist/installer/NexusSetup.exe"
         manifest = {"file": installer.name, "sha256": hashlib.file_digest(installer.open("rb"), "sha256").hexdigest(), "bytes": installer.stat().st_size,
-                    "python": sys.version.split()[0], "status": "local-preview", "signed": False, "models_bundled": False}
+                    "python": sys.version.split()[0], "status": "unpublished-beta-build", "distribution_license": "GPL-3.0-only", "signed": False, "models_bundled": False}
         installer.with_name("build-manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return 0
 

@@ -1,5 +1,26 @@
 # Local publication check / Yerel yayın kontrolü
 
+## 2 October 2026 Windows Beta 2 preparation / 2 Ekim 2026 Windows Beta 2 hazırlığı
+
+- Python 3.12.14: 399 tests and Ruff passed. The frozen desktop passed 15 isolated
+  checks, including source/license resources, native exclusions, synthetic model
+  connection and document ingestion. No physical microphone or real inference claim.
+- The owner approved GPL open-source distribution. The combined Windows package
+  uses GPLv3; Nexus-authored source remains MIT. 93 dependency/native source archives
+  were downloaded and SHA-256 checked, with original notices and build recipes.
+- Windows installer publication is gated on the three Python test jobs and a clean
+  Windows runner's installation, repeated installation, uninstall and data-retention
+  checks. Binary and corresponding source assets are uploaded to a draft first.
+  The draft becomes public only after the full verified asset set is present.
+- The installer remains unsigned; optional model weights are separate downloads.
+
+Türkçe: 399 test, Ruff ve paketli uygulamada 15 yalıtılmış kontrol geçti. GPL açık
+kaynak dağıtımı onaylandı; birleşik paket GPLv3, Nexus kaynağı MIT olarak kalır.
+93 kaynak arşivi tam sürümleriyle indirildi ve özetleri doğrulandı. Yayın için temiz
+Windows ortamında kurma, tekrar kurma, kaldırma ve veri koruma kontrolleri de geçmelidir.
+Kurulum ve kaynaklar önce taslağa yüklenir; eksiksiz doğrulama sonrası yayımlanır.
+Fiziksel mikrofon/model kalitesi bu kontrollerle doğrulanmaz; kurulum imzasızdır.
+
 ## 1 October 2026 beta preparation / 1 Ekim 2026 beta hazırlığı
 
 - The local Windows Python 3.12.14 build environment passed 377 tests, Ruff, and

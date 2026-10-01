@@ -80,7 +80,7 @@ class MCPClient:
             {
                 "protocolVersion": PROTOCOL_VERSION,
                 "capabilities": {},
-                "clientInfo": {"name": "Nexus", "version": "0.3.0-beta.1"},
+                "clientInfo": {"name": "Nexus", "version": "0.3.0-beta.2"},
             },
         )
         await self.notify("notifications/initialized", {})

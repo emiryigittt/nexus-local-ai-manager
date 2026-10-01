@@ -26,16 +26,22 @@ rengini, isteğe bağlı kenar ışığını, mini bot veya kediyi ve ses efektl
 Hafıza kayıtlarını yenilenen kart görünümünden incele, onayla ve düzenle.
 Nexus bir model sunucusuna bağlanır; bulut sohbet hizmeti değildir ve dil modeli içermez.
 
-**0.3.0 Beta 1 · Herkese açık kaynak kod betası · Windows odaklı.**
-[Sürüm ve ZIP indirme](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1).
-64 bit Python 3.11–3.13 kur, kaynak ZIP'ini çıkar ve **Nexus Baslat.bat** dosyasına
-çift tıkla. Çalışan yerel model sunucusu gerekir.
+**0.3.0 Beta 2 · Windows kurulum paketi · Açık kaynak.**
+[NexusSetup.exe dosyasını indir](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/NexusSetup.exe)
+veya [sürüm sayfasını aç](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2).
+Kurulumu çalıştır ve Başlat menüsünden Nexus'u aç. Python veya terminal gerekmez.
+Çalışan Ollama, LM Studio veya llama.cpp sunucusuna bağlanıp modelini seç.
 
-[Yerel Windows kurulum paketi](docs/WINDOWS_PREVIEW.tr.md) geliştirme testleri için
-hazırlandı. Bu beta herkese açık kurulum paketi içermiyor; PyQt/Qt dağıtım kararı
-ve bağımlılık incelemesi açık. Ana pencere ve Genel/Gizlilik ayarları Türkçe ve İngilizceyi
-destekliyor. Ses, geçmiş, hafıza pencereleri ve bazı durum/hata mesajları hâlâ
-Türkçe içeriyor; tam arayüz çevirisi tamamlanmadı.
+Kurulum imzasızdır; Windows yayıncı uyarısı gösterebilir. Dosyayı sürümdeki
+`SHA256SUMS.txt` ile doğrulayabilirsin. Birleşik Windows uygulaması
+[GNU GPL v3](DISTRIBUTION_LICENSE.tr.md) kapsamında; eşleşen kaynak arşivleri ve
+bağımlılık bildirimleriyle sunulur. Nexus'un kendi kaynak kodu MIT lisansını korur.
+LLM, Whisper ve Supertonic ağırlıkları pakete dahil değildir; isteğe bağlı konuşma
+modelleri Ayarlar bölümünden açık bir işlemle hazırlanır.
+
+Ana pencere ve Genel/Gizlilik ayarları Türkçe ve İngilizceyi destekler.
+Bazı ses, geçmiş, hafıza ve durum mesajları hâlâ Türkçedir.
+[Kurulum ve derleme rehberine](docs/WINDOWS_PREVIEW.tr.md) ve aşağıdaki sınırlara bak.
 
 **Ayarlar → Genel → Dil → Kaydet** (`Ctrl + ,`) üzerinden dili değiştirebilirsin.
 İlk açılış sihirbazı da dili seçip yerel modelini test etmeni sağlar.
@@ -84,7 +90,7 @@ Nexus bu sunucuları kurmaz veya başlatmaz. RAM/GPU ihtiyacı seçtiğin modele
 Windows ve **64 bit Python 3.11–3.13** gerekir. Önceki GitHub Windows CI kontrolleri
 bu sürümlerde geçti; yeni beta yayını güncel CI başarısına bağlıdır. Python 3.14'te
 testler sırasında aralıklı yerel erişim ihlalleri ve işlem kapanış uyarıları var.
-Temiz bilgisayarda kurulum testi bekliyor. [Son yerel doğrulama](docs/PREPUBLICATION_CHECK.md).
+Kurulum, tekrar kurulum ve kaldırma otomatik olarak temiz Windows ortamında kontrol edilir. [Son yerel doğrulama](docs/PREPUBLICATION_CHECK.md).
 
 [Beta sürümünün](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.1)
 **Source code (zip)** dosyasını indir, tamamen çıkar ve **Nexus Baslat.bat** dosyasına
@@ -158,7 +164,7 @@ yerel ağa veya herkese açık tünele açma. [Gizlilik sınırları](docs/PRIVA
 - Konuşma girişi ayarlanabilir duraklamadan sonra biter, zayıf sesi dengeler ve
   göndermeden önce metin kontrolü sunar. Gerçek mikrofon doğruluğu kullanıcı testi bekliyor.
 - Hedef Windows 10/11 x64; temiz bilgisayar testi bekliyor. Windows dışı destek
-  ve herkese açık kurulum paketi taahhüdü yok.
+  desteği taahhüt edilmez. Windows paketi beta olarak sunulur.
 
 Sorun yaşarsan [kullanım ve sorun giderme rehberine](docs/USER_GUIDE.tr.md) bak.
 Hatalı model yanıtları mümkündür; önemli bilgileri doğrula.
@@ -171,8 +177,9 @@ katkı verebilirsin. [Katkı rehberi](CONTRIBUTING.tr.md) ve
 Veritabanını, özel belgelerini, anahtarlarını veya temizlenmemiş kayıtları paylaşma.
 
 Nexus'un kendi kaynak kodu [MIT](LICENSE) lisanslıdır. Bağımlılıklar ve modeller
-ayrı koşullara tabidir; özellikle PyQt6 ve model lisansları dağıtım öncesi
-incelenmelidir. [Üçüncü taraf notları](THIRD_PARTY_NOTICES.tr.md).
+ayrı koşullara tabidir. Birleşik Windows dağıtımı [GNU GPL v3](DISTRIBUTION_LICENSE.tr.md)
+kapsamında, bildirimler ve eşleşen kaynak arşivleriyle sunulur.
+[Üçüncü taraf notları](THIRD_PARTY_NOTICES.tr.md).
 
 İşine yarıyorsa yıldız vermen veya somut kullanım geri bildirimi paylaşman projenin
 keşfedilmesine yardımcı olur. Kişisel verilerini paylaşman gerekmez.

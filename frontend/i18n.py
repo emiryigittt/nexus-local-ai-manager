@@ -5,6 +5,7 @@ from weakref import ref
 from PyQt6 import sip
 
 ENGLISH = {
+    "Nexus hakkında ve lisanslar": "About Nexus and licenses",
     "Dengeli · hızlı yerel model": "Balanced · fast local model",
     "Göndermeden önce metni kontrol et": "Review text before sending",
     "Metin hazır. Düzenleyip Enter ile gönderebilirsin.": "Text is ready. Edit it and press Enter to send.",

@@ -109,6 +109,10 @@ def main():
 
             smoke = root / "smoke.json"
             check("desktop_imports_and_resources", run_process([app, "--self-test", str(smoke)], environment) == 0)
+            internal = args.application.resolve().parent / "_internal"
+            notices = internal / "distribution-notices"
+            check("packaged_distribution_notices", all((notices / name).is_file() for name in ("COPYING", "LICENSE", "SOURCE_ACCESS.txt", "dependency-sources.json", "nexus-source.zip")))
+            check("unneeded_native_libraries_excluded", not any(path.name.lower() in {"qpdf.dll", "qt6pdf.dll", "opengl32sw.dll"} or (path.name.lower().startswith("libportaudio") and path.name.lower() != "libportaudio64bit.dll") for path in internal.rglob("*.dll")))
             payload = json.loads(smoke.read_text())
             check("frozen_three_step_wizard", payload["frozen"] and payload["wizard_steps"] == 3)
             check("frozen_top_edge_and_customization", payload["top_edge_notch"] and payload["appearance_controls"])
@@ -169,6 +173,8 @@ def main():
                 try:
                     check("installer_completed", install_code == 0 and (target / "Nexus.exe").is_file())
                     check("installed_app_opens_without_python", run_process([str(target / "Nexus.exe"), "--self-test", str(root / "installed-smoke.json")], environment) == 0)
+                    upgrade_code = run_process([str(args.installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/NOICONS", f"/DIR={target}"], environment, timeout=60)
+                    check("installer_upgrade_completed", upgrade_code == 0 and sentinel.read_text() == "synthetic test data" and run_process([str(target / "Nexus.exe"), "--self-test", str(root / "upgraded-smoke.json")], environment) == 0)
                 finally:
                     uninstall = target / "unins000.exe"
                     if uninstall.is_file():

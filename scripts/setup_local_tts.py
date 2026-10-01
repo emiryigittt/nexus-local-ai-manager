@@ -56,7 +56,7 @@ def main(argv=None) -> int:
     parser.add_argument("--download", action="store_true")
     args = parser.parse_args(argv)
     report("checking")
-    if not all(importlib.util.find_spec(name) for name in ("sherpa_onnx", "soundfile")):
+    if not importlib.util.find_spec("sherpa_onnx"):
         report("runtime_missing")
         return 1
     try:

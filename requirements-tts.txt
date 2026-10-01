@@ -1,3 +1,2 @@
 # Optional natural, fully local neural voice backend
 sherpa-onnx>=1.12.20
-soundfile>=0.13,<1
