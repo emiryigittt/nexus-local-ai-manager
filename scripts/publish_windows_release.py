@@ -25,6 +25,19 @@ def trusted_context():
     return sha
 
 
+def find_release(token):
+    release = request_api(f"releases/tags/{TAG}", token)
+    if release:
+        return release
+    # GitHub's tag endpoint excludes unpublished drafts. Resolve their IDs from
+    # the authenticated release list instead of treating them as missing.
+    drafts = [item for item in request_api("releases?per_page=100", token)
+              if item["tag_name"] == TAG]
+    if len(drafts) > 1:
+        raise RuntimeError("Multiple matching release drafts; refusing publication")
+    return drafts[0] if drafts else None
+
+
 def verify_assets(folder, sha):
     expected = ASSETS | {"release-manifest.json", "SHA256SUMS.txt"}
     if {path.name for path in folder.iterdir()} != expected or any((folder / name).is_symlink() for name in expected):
@@ -62,7 +75,7 @@ def main():
         print("Windows beta publisher skipped: project version has advanced")
         return
     token = os.environ["GITHUB_TOKEN"]
-    existing = request_api(f"releases/tags/{TAG}", token)
+    existing = find_release(token)
     if existing and not existing["draft"]:
         print("Existing public release preserved")
         if args.check_only:
@@ -74,8 +87,6 @@ def main():
     tag = request_api(f"git/ref/tags/{TAG}", token)
     if tag and (tag["object"]["type"] != "commit" or tag["object"]["sha"] != sha):
         raise RuntimeError("Existing tag does not match verified commit; refusing publication")
-    if existing and existing.get("target_commitish") != sha:
-        raise RuntimeError("Existing draft belongs to another source commit")
     if args.check_only:
         output = os.environ.get("GITHUB_OUTPUT")
         if output:
@@ -87,10 +98,22 @@ def main():
     notes = ROOT / "docs/releases/v0.3.0-beta.2.md"
     environment = dict(os.environ, GH_TOKEN=token)
     if not existing:
-        subprocess.run(["gh", "release", "create", TAG, "--repo", REPOSITORY, "--target", sha, "--draft", "--prerelease", "--title", "Nexus 0.3.0 Beta 2 — Windows installer", "--notes-file", str(notes)], env=environment, check=True)
+        existing = request_api("releases", token, "POST", {
+            "tag_name": TAG, "target_commitish": sha, "draft": True,
+            "prerelease": True, "name": "Nexus 0.3.0 Beta 2 — Windows installer",
+            "body": notes.read_text(encoding="utf-8"),
+        })
+    elif existing.get("target_commitish") != sha:
+        # Only an unpublished draft may be refreshed, and only after the new
+        # source and installer have passed verification. Published tags are fixed.
+        request_api(f"releases/{existing['id']}", token, "PATCH", {
+            "target_commitish": sha, "body": notes.read_text(encoding="utf-8"),
+        })
     subprocess.run(["gh", "release", "upload", TAG, "--repo", REPOSITORY, "--clobber", *[str(path) for path in sorted(folder.iterdir())]], env=environment, check=True)
     # A draft is made public only after every asset is present at the expected size.
-    uploaded = request_api(f"releases/tags/{TAG}", token)
+    uploaded = request_api(f"releases/{existing['id']}", token)
+    if not uploaded or not uploaded["draft"] or uploaded.get("target_commitish") != sha:
+        raise RuntimeError("Release draft source changed; refusing publication")
     expected = {path.name: path.stat().st_size for path in folder.iterdir()}
     actual = {entry["name"]: entry["size"] for entry in uploaded["assets"]}
     if actual != expected:
