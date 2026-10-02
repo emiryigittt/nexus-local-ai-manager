@@ -12,6 +12,8 @@ A local-first Windows desktop assistant for Ollama, LM Studio and llama.cpp — 
 
 [![Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml)
 
+[▶ Watch Nexus · English / Türkçe · 50s](#watch-nexus-in-50-seconds)
+
 </div>
 
 ![Nexus compact desktop panel](docs/assets/companion/en/dock.png)
@@ -50,6 +52,35 @@ In Turkish: **Ayarlar → Genel → Dil → Kaydet**. No restart is needed.
 [Privacy](docs/PRIVACY.md) · [Contribute](CONTRIBUTING.md) · [Roadmap](ROADMAP.md)
 
 [All documentation — English / Türkçe](docs/INDEX.md)
+
+## Watch Nexus in 50 seconds
+
+Meet the compact desktop panel, your companion, RGB themes and memory. Choose a language below.
+
+<table>
+<tr>
+<td align="center"><a href="https://github.com/user-attachments/assets/3bb373f0-6cb6-415b-8d06-8b5dfdbcdb64"><img src="docs/assets/promo/nexus-social-cover-en.webp" alt="Nexus — English · 50s" width="180"></a><br><a href="https://github.com/user-attachments/assets/3bb373f0-6cb6-415b-8d06-8b5dfdbcdb64"><strong>▶ English · 50s</strong></a></td>
+<td align="center"><a href="https://github.com/user-attachments/assets/5f4b67f6-b371-467c-84b4-4c32fdb32fe2"><img src="docs/assets/promo/nexus-social-cover-tr.webp" alt="Nexus — Türkçe · 50s" width="180"></a><br><a href="https://github.com/user-attachments/assets/5f4b67f6-b371-467c-84b4-4c32fdb32fe2"><strong>▶ Türkçe · 50s</strong></a></td>
+</tr>
+</table>
+
+<details>
+<summary>Play here — English · 50s</summary>
+
+https://github.com/user-attachments/assets/3bb373f0-6cb6-415b-8d06-8b5dfdbcdb64
+
+</details>
+
+<details>
+<summary>Play here — Türkçe · 50s</summary>
+
+https://github.com/user-attachments/assets/5f4b67f6-b371-467c-84b4-4c32fdb32fe2
+
+</details>
+
+*Real Nexus interface with synthetic example content and activity; not a recorded model response. Music and sound effects, no narration.*
+
+Download original videos: [English](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/nexus-social-film-en-50s-v2.mp4) · [Türkçe](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/nexus-social-film-tr-50s-v2.mp4)
 
 ## What you can do
 
