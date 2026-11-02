@@ -44,7 +44,9 @@ models/
 /pano_ozelligi.png
 # Personal document-generation outputs are not Nexus publication assets.
 /output/pdf/
-/tmp/pdfs/
+# Scratch diagnostic output (audit logs, one-off scripts) embeds local absolute
+# paths and the local Windows account name, so the whole directory stays local.
+/tmp/
 # Rendered launch videos are delivered locally, outside source commits.
 /output/launch/
 
