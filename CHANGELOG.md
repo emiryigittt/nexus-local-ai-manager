@@ -5,6 +5,15 @@ All notable changes to Nexus are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Stopping the local API now also stops the MCP servers it started, so a clean exit
+  no longer leaves helper processes such as `node`/`npx` running in the background.
+  A hard stop is covered as well: the launcher keeps its whole process tree inside one
+  Windows job, and closing it releases everything still running.
+- An MCP server that writes a lot to stderr no longer stalls its own session, and a
+  request that times out now reports what that server last printed.
+
 ## [0.3.0-beta.1] - 2026-10-01
 
 First public source beta. Windows installer distribution remains pending the

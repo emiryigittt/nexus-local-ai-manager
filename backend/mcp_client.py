@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import sys
+from collections import deque
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -13,6 +15,9 @@ from backend.app_paths import ensure_data_dirs, mcp_settings_path
 from backend.tool_registry import ToolRegistry, tool_registry
 
 PROTOCOL_VERSION = "2025-06-18"
+REQUEST_TIMEOUT = 15.0
+STDERR_TAIL_LINES = 40
+STDERR_CHUNK_BYTES = 4096
 
 
 @dataclass(slots=True)
@@ -59,6 +64,8 @@ class MCPClient:
     def __init__(self, config: MCPServerConfig):
         self.config = config
         self.process: asyncio.subprocess.Process | None = None
+        self.stderr_tail: deque[str] = deque(maxlen=STDERR_TAIL_LINES)
+        self._stderr_task: asyncio.Task | None = None
         self._request_id = 0
         self._lock = asyncio.Lock()
 
@@ -75,6 +82,8 @@ class MCPClient:
             stderr=asyncio.subprocess.PIPE,
             env=environment,
         )
+        self.stderr_tail.clear()
+        self._stderr_task = asyncio.create_task(self._drain_stderr(self.process))
         await self.request(
             "initialize",
             {
@@ -94,6 +103,49 @@ class MCPClient:
         )
         await self.process.stdin.drain()
 
+    async def _drain_stderr(self, process: asyncio.subprocess.Process) -> None:
+        """Read the child's stderr until it closes, keeping the last lines.
+
+        ``start()`` asks for a stderr pipe, and an OS pipe holds only a few dozen
+        kilobytes. A server that logs to stderr - most of them do - blocks in
+        ``write(2)`` once that buffer is full, which then surfaces as a timeout on
+        an unrelated request rather than as the harmless noise it really is.
+        Reading keeps the buffer empty and keeps hold of the reason a server died.
+
+        Chunks are read rather than lines: a chunk boundary can split a line, and
+        that is only cosmetic here, whereas a line longer than the reader's limit
+        would abort the drain and re-open the original deadlock.
+        """
+        stream = process.stderr
+        if stream is None:
+            return
+        while True:
+            try:
+                chunk = await stream.read(STDERR_CHUNK_BYTES)
+            except (ConnectionResetError, ValueError):
+                return  # The pipe is gone; the process is on its way out anyway.
+            if not chunk:
+                return
+            for line in chunk.decode("utf-8", errors="replace").splitlines():
+                if line.strip():
+                    self.stderr_tail.append(line.strip()[:500])
+
+    def recent_stderr(self, limit: int = 3) -> str:
+        """The tail of the server's stderr, newest last, for error reporting."""
+        return " | ".join(list(self.stderr_tail)[-limit:])
+
+    async def _stop_draining_stderr(self) -> None:
+        """Let the reader finish now that the child is gone, without blocking."""
+        task, self._stderr_task = self._stderr_task, None
+        if task is None:
+            return
+        try:
+            await asyncio.wait_for(asyncio.shield(task), timeout=0.5)
+        except (TimeoutError, asyncio.CancelledError):
+            task.cancel()
+        except Exception:
+            pass  # Losing the tail must never be what breaks a shutdown.
+
     async def request(self, method: str, params: dict[str, Any]) -> dict[str, Any]:
         async with self._lock:
             self._request_id += 1
@@ -104,7 +156,15 @@ class MCPClient:
             if not self.process or not self.process.stdout:
                 raise RuntimeError("MCP server is not running.")
             while True:
-                raw = await asyncio.wait_for(self.process.stdout.readline(), timeout=15.0)
+                try:
+                    raw = await asyncio.wait_for(
+                        self.process.stdout.readline(), timeout=REQUEST_TIMEOUT
+                    )
+                except TimeoutError as exc:
+                    raise TimeoutError(
+                        f"'{self.config.id}' sent nothing for {REQUEST_TIMEOUT:.0f}s. "
+                        f"stderr: {self.recent_stderr() or 'empty'}"
+                    ) from exc
                 if not raw:
                     raise RuntimeError("MCP server closed its output stream.")
                 message = json.loads(raw.decode("utf-8"))
@@ -148,6 +208,7 @@ class MCPClient:
                 await process.stdin.wait_closed()
             except (BrokenPipeError, ConnectionResetError):
                 pass
+        await self._stop_draining_stderr()
         self.process = None
 
 
@@ -183,6 +244,33 @@ class MCPManager:
         if client:
             await client.stop()
         self.registry.remove_server(server_id)
+
+    async def shutdown(self) -> None:
+        """Stop every connected client and drop its tools from the registry.
+
+        The application calls this once while it is shutting down, which is the only
+        path that reaps children nobody disconnected explicitly. Clients are stopped
+        concurrently because :meth:`MCPClient.stop` waits up to three seconds per
+        child before escalating to ``kill()``; one wedged server would otherwise add
+        three seconds to every exit. Failures are reported instead of raised so a
+        single unresponsive child cannot keep the remaining ones running.
+        """
+        clients = list(self.clients.items())
+        # Drop the references first: a stop that raises must not leave a client
+        # behind that a later connect() would treat as still live.
+        self.clients.clear()
+        results = await asyncio.gather(
+            *(client.stop() for _, client in clients),
+            return_exceptions=True,
+        )
+        for (server_id, _), result in zip(clients, results, strict=True):
+            if isinstance(result, BaseException):
+                print(
+                    f"MCP server '{server_id}' did not stop cleanly: {result!r}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            self.registry.remove_server(server_id)
 
 
 mcp_config_store = MCPConfigStore()

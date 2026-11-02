@@ -23,6 +23,7 @@ alongside it. Dilini seç: İngilizce global giriş, Türkçe eş belgelerle des
 | Prepared launch package / Hazırlanan tanıtım paketi | [Package](LAUNCH_PACKAGE.md) | [Paket](LAUNCH_PACKAGE.md) |
 | First-user feedback / İlk kullanıcı geri bildirimi | [Form](PILOT_FEEDBACK.md) | [Form](PILOT_FEEDBACK.md) |
 | Voice and memory evidence / Ses ve hafıza kanıtları | [Report](VOICE_AND_MEMORY_RELIABILITY.en.md) | [Rapor](VOICE_AND_MEMORY_RELIABILITY.md) |
+| New launch kit / Yeni tanıtım kiti | [Kit](COMPANION_LAUNCH.md) | [Paket](COMPANION_LAUNCH.tr.md) |
 
 The [synthetic demo fixture](demo/project-brief.md) includes both languages.
 [Örnek demo belgesi](demo/project-brief.md) iki dili aynı dosyada içerir.
@@ -37,8 +38,10 @@ Ses, geçmiş, hafıza pencereleri ve bazı durum/hata mesajları kısmen Türk�
 belge çevirisi tüm uygulamanın çevrildiği anlamına gelmez.
 
 Technical working records remain in their original language:
+[architecture map](ARCHITECTURE.md) for agents and maintainers,
 [Roadmap](../ROADMAP.md), [changelog](../CHANGELOG.md),
-[AI reliability history](AI_RELIABILITY.md), [UI design](UI_DESIGN.md).
+[AI reliability history](AI_RELIABILITY.md), [UI design](UI_DESIGN.md) and the
+[pre-publication checklist](PREPUBLICATION_CHECK.md).
 Teknik çalışma kayıtları özgün dilindedir; bu sayfa onların tam çevirisini vaat etmez.
 
 ## Maintaining translations / Çevirileri sürdürme
@@ -50,3 +53,23 @@ check verifies file presence and reciprocal language links, not translation accu
 Eş belgeleri birlikte güncelle; özellikle izinler, kurulum, sınırlamalar, sayılar ve
 yayın durumu eşleşmeli. `languages.json` eşleri listeler; yayın kontrolü dosyaları ve
 karşılıklı dil bağlantılarını doğrular, çeviri doğruluğunu değil.
+
+## Gate status / Kapı durumu
+
+Measured on 2 November 2026 in this working tree / bu çalışma ağacında ölçüldü:
+
+| Check / Kontrol | Result / Sonuç |
+| --- | --- |
+| Publication gate findings (`scripts/check_public_repo.py`) / Yayın kapısı bulguları | 0 findings / 0 bulgu |
+| Collected tests / Toplanan testler | 413 tests in 43 files / 43 dosyada 413 test |
+| Localhost routes in `backend/main.py` / Yerel ağ rotaları | 35 (17 GET, 11 POST, 4 DELETE, 2 PUT, 1 PATCH) |
+| Registered built-in tools / Kayıtlı yerleşik araçlar | 1 static (`local:file.read`); MCP tools register dynamically / MCP araçları dinamik kaydolur |
+| Built-in safe actions / Yerleşik güvenli eylemler | 5 |
+| Maintained bilingual pairs in `docs/languages.json` / İki dilli belge çifti | 17 |
+| Links resolved from this page / Bu sayfadan çözümlenen bağlantı | 47 of 47 |
+
+Only the gate result binds a release; the other rows move with the code and must be
+re-measured before they are quoted elsewhere.
+Yayın için yalnızca kapı sonucu bağlayıcıdır; diğer satırlar kodla birlikte değişir ve
+başka bir yerde alıntılanmadan önce yeniden ölçülmelidir.
+

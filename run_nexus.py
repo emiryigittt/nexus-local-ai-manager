@@ -12,6 +12,7 @@ from pathlib import Path
 
 from backend.app_paths import ensure_data_dirs
 from backend.config import settings
+from backend.process_job import ProcessJob
 from backend.runtime import frozen, resource_root
 
 PROJECT_ROOT = resource_root()
@@ -134,6 +135,13 @@ def _stop(process: subprocess.Popen | None) -> None:
 
 
 def main() -> int:
+    # The gateway starts MCP servers of its own, so terminate() on the gateway is
+    # not enough to stop what the gateway started. A kill-on-close job holds the
+    # whole tree: closing it at the end of this function makes the OS reap any
+    # member a terminate() or a hard kill left behind.
+    job = ProcessJob()
+    if not job.open() and os.name == "nt":
+        print(f"Nexus could not contain its child processes: {job.reason}", file=sys.stderr)
     backend_process = None
     frontend_process = None
     try:
@@ -153,6 +161,7 @@ def main() -> int:
                 env=os.environ.copy(),
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
             )
+            job.assign(backend_process)
         _wait_for_backend(backend_process)
 
         frontend_process = subprocess.Popen(
@@ -161,6 +170,7 @@ def main() -> int:
             env=os.environ.copy(),
             creationflags=subprocess.CREATE_NO_WINDOW if frozen() and os.name == "nt" else 0,
         )
+        job.assign(frontend_process)
         return frontend_process.wait()
     except KeyboardInterrupt:
         return 0
@@ -176,6 +186,7 @@ def main() -> int:
     finally:
         _stop(frontend_process)
         _stop(backend_process)
+        job.close()
 
 
 if __name__ == "__main__":

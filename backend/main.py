@@ -6,6 +6,7 @@ import asyncio
 import json
 import re
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -40,10 +41,19 @@ from backend.tool_security import (
 )
 from backend.user_settings import ProviderProfile, settings_store
 
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    """Reap MCP children spawned by this process before it exits."""
+    yield
+    await mcp_manager.shutdown()
+
+
 app = FastAPI(
     title="Nexus Local API",
     description="Local gateway for the Nexus desktop command center.",
     version="0.3.0-beta.2",
+    lifespan=lifespan,
 )
 app.add_middleware(
     CORSMiddleware,
