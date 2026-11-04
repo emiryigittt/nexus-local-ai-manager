@@ -5,13 +5,6 @@ All notable changes to Nexus are documented here. The project follows
 
 ## [Unreleased]
 
-### Fixed
-
-- Opening a conversation from a memory source link no longer depends on how many
-  conversations exist. A single record is now read by id instead of filtering the
-  500 most recent conversations, so an older conversation that is not pinned no longer
-  answers `GET /api/v1/conversations/{id}` with "Conversation not found."
-
 ## [0.3.0-beta.3] - 2026-11-04
 
 Maintenance beta. Release notes: [docs/releases/v0.3.0-beta.3.md](docs/releases/v0.3.0-beta.3.md).
@@ -38,6 +31,10 @@ Maintenance beta. Release notes: [docs/releases/v0.3.0-beta.3.md](docs/releases/
   Windows job, and closing it releases everything still running.
 - An MCP server that writes a lot to stderr no longer stalls its own session, and a
   request that times out now reports what that server last printed.
+- Opening a conversation from a memory source link no longer depends on how many
+  conversations exist. A single record is now read by id instead of filtering the
+  500 most recent conversations, so an older conversation that is not pinned no longer
+  answers `GET /api/v1/conversations/{id}` with "Conversation not found."
 
 ### Verification
 
