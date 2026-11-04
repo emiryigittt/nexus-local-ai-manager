@@ -828,10 +828,10 @@ async def list_conversations(
 
 @app.get("/api/v1/conversations/{conversation_id}")
 async def get_conversation(conversation_id: str) -> dict[str, Any]:
-    rows = [item for item in conversation_repository.list(limit=500) if item["id"] == conversation_id]
-    if not rows:
+    conversation = conversation_repository.get(conversation_id)
+    if conversation is None:
         raise HTTPException(status_code=404, detail="Conversation not found.")
-    return {"conversation": rows[0], "messages": conversation_repository.messages(conversation_id)}
+    return {"conversation": conversation, "messages": conversation_repository.messages(conversation_id)}
 
 
 @app.patch("/api/v1/conversations/{conversation_id}")

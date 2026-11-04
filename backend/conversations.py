@@ -160,6 +160,13 @@ class ConversationRepository:
                 ).fetchall()
         return [dict(row) for row in rows]
 
+    def get(self, conversation_id: str) -> dict[str, Any] | None:
+        with self._connection() as connection:
+            row = connection.execute(
+                "SELECT * FROM conversations WHERE id = ?", (conversation_id,)
+            ).fetchone()
+        return dict(row) if row else None
+
     def messages(self, conversation_id: str) -> list[dict[str, Any]]:
         with self._connection() as connection:
             rows = connection.execute(

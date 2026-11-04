@@ -1,4 +1,23 @@
+import sqlite3
+
 from backend.conversations import ConversationRepository
+
+
+def test_get_finds_conversations_outside_the_list_window(tmp_path):
+    repository = ConversationRepository(tmp_path / "window.db")
+    oldest = repository.create("Eski konuşma", conversation_id="oldest")
+    for index in range(505):
+        repository.create(f"Konuşma {index}")
+    # Pencere dışında kaldığını kesinleştirmek için en eski kaydı sabit bir tarihe çek.
+    with sqlite3.connect(repository.path) as connection:
+        connection.execute(
+            "UPDATE conversations SET updated_at = ? WHERE id = ?",
+            ("2020-01-01T00:00:00+00:00", oldest),
+        )
+
+    assert oldest not in {item["id"] for item in repository.list(limit=500)}
+    assert repository.get(oldest)["title"] == "Eski konuşma"
+    assert repository.get("missing") is None
 
 
 def test_conversation_lifecycle_and_search(tmp_path):

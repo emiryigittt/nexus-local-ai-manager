@@ -1,4 +1,5 @@
 import json
+import sqlite3
 
 import httpx
 import pytest
@@ -139,6 +140,30 @@ def test_deleting_conversation_also_removes_its_summary(chat_environment):
     repository.upsert_summary("conversation", "deleted", "Must be forgotten", 2)
     repository.delete("deleted")
     assert repository.summary("conversation", "deleted") is None
+
+
+@pytest.mark.asyncio
+async def test_get_conversation_reaches_records_beyond_the_list_window(chat_environment):
+    _, repository = chat_environment
+    repository.create("Eski konuşma", conversation_id="oldest")
+    for index in range(505):
+        repository.create(f"Konuşma {index}")
+    repository.add_message("oldest", "user", "Hafızaya kaynaklık eden soru")
+    # Hafıza bağlantıları bu kaydın ekranın 500 satırlık listesine girmesini beklemez.
+    with sqlite3.connect(repository.path) as connection:
+        connection.execute(
+            "UPDATE conversations SET updated_at = ? WHERE id = 'oldest'",
+            ("2020-01-01T00:00:00+00:00",),
+        )
+    assert "oldest" not in {item["id"] for item in repository.list(limit=500)}
+
+    result = await main.get_conversation("oldest")
+
+    assert result["conversation"]["id"] == "oldest"
+    assert [m["content"] for m in result["messages"]] == ["Hafızaya kaynaklık eden soru"]
+    with pytest.raises(main.HTTPException) as excinfo:
+        await main.get_conversation("missing")
+    assert excinfo.value.status_code == 404
 
 
 @pytest.mark.asyncio
