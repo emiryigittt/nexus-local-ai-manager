@@ -10,6 +10,10 @@ All notable changes to Nexus are documented here. The project follows
 - The corresponding-source mirror now retries a dropped download up to three times
   and refetches an archive whose checksum does not match, so one unreachable
   upstream host no longer stops the verified Windows installer build.
+- The `lamer` corresponding source is read from the renamed upstream repository and
+  pinned to its commit. A tag link there returns a tarball that the host regenerates,
+  and the repository rename changed its bytes, so the recorded SHA-256 no longer
+  matched a fresh download.
 
 ## [0.3.0-beta.3] - 2026-11-04
 

@@ -414,10 +414,10 @@
     {
       "name": "lamer",
       "version": "3.101.0",
-      "url": "https://github.com/basswood-io/lamer/archive/refs/tags/v3.101.0.tar.gz",
+      "url": "https://github.com/basswood-io/bwlame/archive/3ffd14f5531e0e5078e31eba4b2fb6ccc277b843.tar.gz",
       "filename": "lamer-pyav-build.tar.gz",
-      "sha256": "81839b16fdc401e20b73389d05f32a7656008f43bcb960feff290d6f08fc109e",
-      "bytes": 404497,
+      "sha256": "b9b255f8b58e99c052eb7cfc78daea096d967d08c080fe74455b212e00132995",
+      "bytes": 404880,
       "kind": "native"
     },
     {
