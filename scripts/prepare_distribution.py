@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import re
 import shutil
 import ssl
 import subprocess
 import tarfile
+import time
+import urllib.error
 import urllib.request
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
@@ -38,20 +41,56 @@ def source_catalog():
     return data
 
 
+DOWNLOAD_ATTEMPTS = 3
+RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
+
+
+def download_source(entry, target):
+    """Fetch one archive into the mirror cache, tolerating a transient host failure.
+
+    A fresh release runner pulls roughly 800 MB from a dozen independent hosts, so
+    one dropped connection must not fail the whole installer build. A permanent
+    answer such as a removed file fails immediately with the status that explains it.
+    """
+    partial = target.with_name(target.name + ".partial")
+    for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
+        try:
+            request = urllib.request.Request(entry["url"], headers={"User-Agent": "Nexus-source-distribution"})
+            with urllib.request.urlopen(request, context=ssl.create_default_context(cafile=certifi.where()), timeout=120) as response, partial.open("wb") as stream:
+                shutil.copyfileobj(response, stream)
+            partial.replace(target)
+            return
+        except urllib.error.HTTPError as error:
+            partial.unlink(missing_ok=True)
+            if error.code not in RETRY_STATUS or attempt == DOWNLOAD_ATTEMPTS:
+                raise RuntimeError(f"Source download failed: {entry['name']}: HTTP {error.code}") from error
+        except (OSError, http.client.HTTPException) as error:
+            # DNS, TLS, reset or truncated body; the checksum below still guards content.
+            partial.unlink(missing_ok=True)
+            if attempt == DOWNLOAD_ATTEMPTS:
+                raise RuntimeError(f"Source download failed: {entry['name']}: {error}") from error
+        time.sleep(2 * attempt)
+
+
+def verified_archive(target, entry):
+    if not target.exists() or target.stat().st_size != entry["bytes"]:
+        return False
+    with target.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    return digest == entry["sha256"]
+
+
 def checked_source(entry):
     CACHE.mkdir(parents=True, exist_ok=True)
     target = CACHE / entry["filename"]
-    if not target.exists():
-        partial = target.with_name(target.name + ".partial")
-        request = urllib.request.Request(entry["url"], headers={"User-Agent": "Nexus-source-distribution"})
-        with urllib.request.urlopen(request, context=ssl.create_default_context(cafile=certifi.where()), timeout=120) as response, partial.open("wb") as stream:
-            shutil.copyfileobj(response, stream)
-        partial.replace(target)
-    with target.open("rb") as stream:
-        digest = hashlib.file_digest(stream, "sha256").hexdigest()
-    if digest != entry["sha256"] or target.stat().st_size != entry["bytes"]:
-        raise RuntimeError("Source archive integrity failure: " + entry["name"])
-    return target
+    for _ in (1, 2):
+        if not target.exists():
+            download_source(entry, target)
+        if verified_archive(target, entry):
+            return target
+        # A half-written or substituted file must never reach a release asset.
+        target.unlink(missing_ok=True)
+    raise RuntimeError("Source archive integrity failure: " + entry["name"])
 
 
 def is_notice(name):

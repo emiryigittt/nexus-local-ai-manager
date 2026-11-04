@@ -5,6 +5,12 @@ All notable changes to Nexus are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- The corresponding-source mirror now retries a dropped download up to three times
+  and refetches an archive whose checksum does not match, so one unreachable
+  upstream host no longer stops the verified Windows installer build.
+
 ## [0.3.0-beta.3] - 2026-11-04
 
 Maintenance beta. Release notes: [docs/releases/v0.3.0-beta.3.md](docs/releases/v0.3.0-beta.3.md).
