@@ -277,10 +277,11 @@ launcher's `terminate()` — that is [G3](#g3--the-launcher-kills-the-backend-wi
 
 ### G2 — `MCPManager` had no shutdown path (closed)
 
-**Closed.** `MCPManager.shutdown()` exists (`mcp_client.py:188-214`). The manager
-still has no `stop()`, deliberately: `MCPClient.stop()` reaps one child, and giving
-the manager the same verb invites the `await mcp_manager.stop()` call that used to
-raise `AttributeError` at the worst possible moment.
+**Closed.** `MCPManager.shutdown()` exists (`mcp_client.py:248-274`) and
+`MCPManager.stop()` (`mcp_client.py:275-281`) is a thin alias that awaits it, so
+`await mcp_manager.stop()` — the call that used to raise `AttributeError` — now reaps
+the children exactly like `shutdown()` does. `tests/test_tools.py` starts a real stdio
+server and asserts the alias closes it.
 
 ### G3 — the launcher kills the backend with `terminate()` (closed)
 
@@ -387,7 +388,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Nexus Local API",
     description="Local gateway for the Nexus desktop command center.",
-    version="0.3.0-beta.2",
+    version="0.3.0-beta.3",
     lifespan=lifespan,
 )
 ```

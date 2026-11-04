@@ -695,7 +695,9 @@ class SpotlightApp(QMainWindow):
 
     def open_history(self):
         if self.private_session:
-            QMessageBox.information(self, "Özel oturum", "Geçmişi açmak için özel oturumdan çıkın.")
+            QMessageBox.information(
+                self, self.ui_text("Özel oturum"), self.ui_text("Geçmişi açmak için özel oturumdan çıkın.")
+            )
             return
         dialog = HistoryDialog(parent=self)
         if dialog.exec() != QDialog.DialogCode.Accepted or not dialog.selected_conversation_id:
@@ -705,7 +707,7 @@ class SpotlightApp(QMainWindow):
         messages = conversation_repository.messages(self.current_conversation_id)
         rendered: list[str] = []
         for message in messages:
-            label = "Sen" if message["role"] == "user" else "Nexus"
+            label = self.ui_text("Sen") if message["role"] == "user" else "Nexus"
             rendered.append(f"### {label}\n\n{message['content']}")
         self.streaming_text = "\n\n---\n\n".join(rendered)
         self._show_output()
@@ -719,22 +721,22 @@ class SpotlightApp(QMainWindow):
     def show_remembered_context(self):
         if self.private_session:
             QMessageBox.information(
-                self, "Özel oturum", "Özel oturum mevcut hafızayı okumaz."
+                self, self.ui_text("Özel oturum"), self.ui_text("Özel oturum mevcut hafızayı okumaz.")
             )
             return
         memories = memory_repository.for_context()
         summary = memory_repository.profile_summary()
         lines = [f"- {item['content']}" for item in memories]
-        content = "## Nexus'un hatırladıkları\n\n"
+        content = self.ui_text("## Nexus'un hatırladıkları") + "\n\n"
         if summary:
             content += f"{summary}\n\n"
-        content += "\n".join(lines) if lines else "Henüz etkin bir hafıza yok."
+        content += "\n".join(lines) if lines else self.ui_text("Henüz etkin bir hafıza yok.")
         candidates = sum(item["status"] == "candidate" for item in memory_repository.list())
         if candidates:
-            content += (
-                f"\n\n**{candidates} aday kayıt onayınızı bekliyor.** "
-                "Araçlar → Hafızayı yönet → Adayı etkinleştir ile inceleyebilirsiniz. "
-                "Onaylanmayan adaylar yanıtlarda kullanılmaz."
+            content += "\n\n" + self.ui_text(
+                "**{count} aday kayıt onayınızı bekliyor.** Araçlar → Hafızayı yönet → "
+                "Adayı etkinleştir ile inceleyebilirsiniz. Onaylanmayan adaylar yanıtlarda kullanılmaz.",
+                count=candidates,
             )
         self.streaming_text = content
         self._show_output()
@@ -744,14 +746,16 @@ class SpotlightApp(QMainWindow):
     def forget_last_memory_source(self):
         if not self.active_memory_sources:
             QMessageBox.information(
-                self, "Unutulacak hafıza yok", "Son yanıtta kullanılan bir hafıza kaynağı bulunmuyor."
+                self,
+                self.ui_text("Unutulacak hafıza yok"),
+                self.ui_text("Son yanıtta kullanılan bir hafıza kaynağı bulunmuyor."),
             )
             return
         source = self.active_memory_sources[0]
         answer = QMessageBox.question(
             self,
-            "Bu hafızayı unut",
-            f"Şu kayıt kalıcı olarak silinsin mi?\n\n{source.get('content', '')}",
+            self.ui_text("Bu hafızayı unut"),
+            self.ui_text("Şu kayıt kalıcı olarak silinsin mi?") + "\n\n" + source.get("content", ""),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
             QMessageBox.StandardButton.Cancel,
         )
@@ -767,7 +771,9 @@ class SpotlightApp(QMainWindow):
                 memory_id = str(self.active_memory_sources[index]["id"])
         if not any(item["id"] == memory_id for item in memory_repository.list()):
             QMessageBox.information(
-                self, "Hafıza bulunamadı", "Kaynak numarasını veya hafıza kimliğini kontrol edin."
+                self,
+                self.ui_text("Hafıza bulunamadı"),
+                self.ui_text("Kaynak numarasını veya hafıza kimliğini kontrol edin."),
             )
             return
         self.open_memory_manager(memory_id)
@@ -803,7 +809,9 @@ class SpotlightApp(QMainWindow):
             self,
             self.ui_text("Nexus'a yerel belge ekle"),
             "",
-            "Belgeler (*.pdf *.docx *.txt *.md *.rst *.py *.js *.ts *.json *.yaml *.yml *.toml);;Tüm dosyalar (*)",
+            self.ui_text(
+                "Belgeler (*.pdf *.docx *.txt *.md *.rst *.py *.js *.ts *.json *.yaml *.yml *.toml);;Tüm dosyalar (*)"
+            ),
         )
         if not path:
             return
@@ -848,8 +856,8 @@ class SpotlightApp(QMainWindow):
         if not preferences.web_consent:
             answer = QMessageBox.question(
                 self,
-                "Web erişimi",
-                "Bu özellik arama sorgusunu internete gönderir. Web araştırmasına izin verilsin mi?",
+                self.ui_text("Web erişimi"),
+                self.ui_text("Bu özellik arama sorgusunu internete gönderir. Web araştırmasına izin verilsin mi?"),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
             if answer != QMessageBox.StandardButton.Yes:
@@ -970,10 +978,10 @@ class SpotlightApp(QMainWindow):
         if text and not self.private_session:
             self.input_line.add_to_history(text)
         if self.active_image_b64:
-            prompt = text or "Bu görseli incele ve önemli detayları açıkla."
+            prompt = text or self.ui_text("Bu görseli incele ve önemli detayları açıkla.")
             self.trigger_analysis(
                 prompt,
-                f"Görsel analizi · {self.active_image_name}",
+                self.ui_text("Görsel analizi") + " · " + (self.active_image_name or ""),
                 self.active_image_b64,
             )
             return
@@ -984,7 +992,7 @@ class SpotlightApp(QMainWindow):
             return
         if text.startswith("/remember ") or text.startswith("/hatırla "):
             if self.private_session:
-                self.display_error("Özel oturumda kalıcı hafızaya kayıt yapılmaz.")
+                self.display_error(self.ui_text("Özel oturumda kalıcı hafızaya kayıt yapılmaz."))
                 return
             value = text.split(" ", 1)[1].strip()
             if value:
@@ -997,7 +1005,9 @@ class SpotlightApp(QMainWindow):
                 settings_store.update(memory_enabled=True)
                 self.input_line.clear()
                 QMessageBox.information(
-                    self, "Hafızaya kaydedildi", "Bu bilgi yerel ve düzenlenebilir hafızaya eklendi."
+                    self,
+                    self.ui_text("Hafızaya kaydedildi"),
+                    self.ui_text("Bu bilgi yerel ve düzenlenebilir hafızaya eklendi."),
                 )
             return
         normalized = text.casefold().strip(" ?.!")
@@ -1014,7 +1024,7 @@ class SpotlightApp(QMainWindow):
             return
         if text.startswith("/correct ") or text.startswith("/düzelt "):
             if self.private_session:
-                self.display_error("Özel oturumda kalıcı hafıza düzenlenmez.")
+                self.display_error(self.ui_text("Özel oturumda kalıcı hafıza düzenlenmez."))
                 return
             self.open_memory_correction(text.split(" ", 1)[1])
             self.input_line.clear()
@@ -1042,15 +1052,19 @@ class SpotlightApp(QMainWindow):
             return True
         if policy == "never":
             QMessageBox.information(
-                self, "Pano erişimi kapalı", "Pano erişimini Ayarlar bölümünden açabilirsiniz."
+                self,
+                self.ui_text("Pano erişimi kapalı"),
+                self.ui_text("Pano erişimini Ayarlar bölümünden açabilirsiniz."),
             )
             return False
         dialog = QMessageBox(self)
-        dialog.setWindowTitle("Pano izni")
-        dialog.setText("Nexus panodaki içeriği okuyup seçili yerel modele gönderebilir mi?")
-        once = dialog.addButton("Bir kez izin ver", QMessageBox.ButtonRole.AcceptRole)
-        always = dialog.addButton("Her zaman izin ver", QMessageBox.ButtonRole.YesRole)
-        dialog.addButton("İptal", QMessageBox.ButtonRole.RejectRole)
+        dialog.setWindowTitle(self.ui_text("Pano izni"))
+        dialog.setText(
+            self.ui_text("Nexus panodaki içeriği okuyup seçili yerel modele gönderebilir mi?")
+        )
+        once = dialog.addButton(self.ui_text("Bir kez izin ver"), QMessageBox.ButtonRole.AcceptRole)
+        always = dialog.addButton(self.ui_text("Her zaman izin ver"), QMessageBox.ButtonRole.YesRole)
+        dialog.addButton(self.ui_text("İptal"), QMessageBox.ButtonRole.RejectRole)
         dialog.exec()
         if dialog.clickedButton() is always:
             settings_store.update(clipboard_policy="always")
@@ -1067,21 +1081,21 @@ class SpotlightApp(QMainWindow):
             return
         image = clipboard.image()
         if not image.isNull() and image.width() > 10 and image.height() > 10:
-            prompt = instruction or "Bu görseli incele ve önemli detayları açıkla."
-            self.trigger_analysis(prompt, "Panodaki görsel", encode_image(image))
+            prompt = instruction or self.ui_text("Bu görseli incele ve önemli detayları açıkla.")
+            self.trigger_analysis(prompt, self.ui_text("Panodaki görsel"), encode_image(image))
             return
         text = clipboard.text().strip()
         if text:
-            prompt = f"Aşağıdaki içeriği incele ve yardımcı ol:\n\n{text}"
+            prompt = self.ui_text("Aşağıdaki içeriği incele ve yardımcı ol:") + "\n\n" + text
             if instruction:
-                prompt += f"\n\nEk talimat: {instruction}"
-            self.trigger_analysis(prompt, "Panodaki içeriği incele")
+                prompt += "\n\n" + self.ui_text("Ek talimat:") + " " + instruction
+            self.trigger_analysis(prompt, self.ui_text("Panodaki içeriği incele"))
 
     def analyze_selected_text(self):
         self.show()
         self.raise_()
         self.activateWindow()
-        self.analyze_clipboard("Seçili metin üzerinde yardımcı ol", explicit=True)
+        self.analyze_clipboard(self.ui_text("Seçili metin üzerinde yardımcı ol"), explicit=True)
 
     def update_status(self, status: str):
         self.dock_status.setText(status)
@@ -1144,18 +1158,18 @@ class SpotlightApp(QMainWindow):
         if self._shell_mode == "chat":
             self.input_line.setFocus()
         if not self.streaming_text:
-            self.display_error("Yerel model boş bir yanıt döndürdü.")
+            self.display_error(self.ui_text("Yerel model boş bir yanıt döndürdü."))
         elif self.active_memory_sources:
             source_lines = []
             for index, source in enumerate(self.active_memory_sources, 1):
-                label = str(source.get("content", "Hafıza kaynağı"))[:90]
+                label = str(source.get("content", self.ui_text("Hafıza kaynağı")))[:90]
                 conversation_id = source.get("source_conversation_id")
                 if conversation_id:
                     url = f"{settings.backend_url}/api/v1/conversations/{conversation_id}"
                     source_lines.append(f"{index}. [{label}]({url})")
                 else:
                     source_lines.append(f"{index}. {label}")
-            self.streaming_text += "\n\n---\n\n**Kullanılan hafıza kaynakları**\n\n" + "\n".join(
+            self.streaming_text += self._memory_sources_marker() + "\n\n" + "\n".join(
                 source_lines
             )
             self._render_markdown(self.streaming_text)
@@ -1178,13 +1192,17 @@ class SpotlightApp(QMainWindow):
         self._response_complete = True
         self._refresh_visual_activity()
         if self.streaming_text:
-            self.streaming_text += "\n\n*Yanıt kullanıcı tarafından durduruldu.*"
+            self.streaming_text += self.ui_text("\n\n*Yanıt kullanıcı tarafından durduruldu.*")
             self._render_markdown(self.streaming_text)
         self.stop_btn.hide()
         self.input_line.setEnabled(True)
         if self._shell_mode == "chat":
             self.input_line.setFocus()
         self.refresh_privacy_badge()
+
+    def _memory_sources_marker(self) -> str:
+        """Translated heading that separates an answer from its memory sources."""
+        return self.ui_text("\n\n---\n\n**Kullanılan hafıza kaynakları**\n\n").rstrip("\n")
 
     def display_error(self, message: str):
         self._response_complete = True
@@ -1194,8 +1212,8 @@ class SpotlightApp(QMainWindow):
         self.input_line.setEnabled(True)
         self.input_line.setFocus()
         self.output_browser.setHtml(
-            "<div style='color:#fb7185;font-size:11px;font-weight:600'>BAĞLANTI HATASI</div>"
-            f"<div style='color:#ddd8e6;margin-top:12px'>{html.escape(message)}</div>"
+            self.ui_text("<div style='color:#fb7185;font-size:11px;font-weight:600'>BAĞLANTI HATASI</div>")
+            + f"<div style='color:#ddd8e6;margin-top:12px'>{html.escape(self.ui_text(message))}</div>"
         )
         self._stop_speech()
         self.refresh_privacy_badge()
@@ -1206,10 +1224,12 @@ class SpotlightApp(QMainWindow):
         try:
             settings_store.update(tts_enabled=self.tts_enabled)
         except OSError:
-            self.voice_error("Ses tercihi kaydedilemedi; yalnızca bu oturumda uygulanacak.")
+            self.voice_error(self.ui_text("Ses tercihi kaydedilemedi; yalnızca bu oturumda uygulanacak."))
         self.speaker_btn.setChecked(self.tts_enabled)
-        state = "açık" if self.tts_enabled else "kapalı"
-        self.speaker_btn.setToolTip(f"Seslendirme {state} · {self.tts_backend}")
+        self.speaker_btn.setToolTip(self.ui_text(
+            "Seslendirme açık · {backend}" if self.tts_enabled else "Seslendirme kapalı · {backend}",
+            backend=self.tts_backend,
+        ))
         if not self.tts_enabled:
             self._stop_speech()
         elif self.streaming_text.strip() or not self._response_complete:
@@ -1217,7 +1237,7 @@ class SpotlightApp(QMainWindow):
             self._start_speech()
             # Enabling after an answer reads that answer; during streaming, keep
             # accumulating it so the remaining tokens are spoken exactly once.
-            self.speech_buffer = self.streaming_text.split("\n\n---\n\n**Kullanılan hafıza kaynakları**", 1)[0]
+            self.speech_buffer = self.streaming_text.split(self._memory_sources_marker(), 1)[0]
             if self._response_complete:
                 self.stream_voice_worker.enqueue(self.speech_buffer)
                 self.stream_voice_worker.finish()
@@ -1242,12 +1262,14 @@ class SpotlightApp(QMainWindow):
             self.stream_voice_worker.error_received, self.voice_error,
         )
         self._track_worker(self.stream_voice_worker)
-        self.speaker_btn.setToolTip(f"Seslendirme açık · {self.stream_voice_worker.speaker.backend}")
+        self.speaker_btn.setToolTip(self.ui_text("Seslendirme açık · {backend}", backend=self.stream_voice_worker.speaker.backend))
         self.stream_voice_worker.start()
 
     def _speech_chunk_ready(self, path, text, seconds, backend):
         self._audio_details[path] = (text, backend)
-        self.speaker_btn.setToolTip(f"{backend} · son ses parçası {seconds:.2f} sn içinde üretildi")
+        self.speaker_btn.setToolTip(self.ui_text(
+            "{backend} · son ses parçası {seconds} sn içinde üretildi",
+            backend=backend, seconds=f"{seconds:.2f}"))
 
     def _speech_timing_ready(self, path, timings):
         self._audio_timings[path] = timings
@@ -1275,7 +1297,7 @@ class SpotlightApp(QMainWindow):
                            if bytes(device.id()).hex() == wanted), None)
         if output is None or output.isNull():
             self._stop_speech()
-            self.voice_error("Seçili hoparlör bulunamadı. Ayarlardan bağlı bir çıkış seçin.")
+            self.voice_error(self.ui_text("Seçili hoparlör bulunamadı. Ayarlardan bağlı bir çıkış seçin."))
             return
         self.audio_output.setDevice(output)
         self.current_audio_path = self.audio_queue.pop(0)
@@ -1302,13 +1324,13 @@ class SpotlightApp(QMainWindow):
         if error == QMediaPlayer.Error.NoError:
             return
         self._stop_speech()
-        self.voice_error(f"Ses oynatılamadı: {message}")
+        self.voice_error(self.ui_text("Ses oynatılamadı:") + " " + str(message))
 
     def toggle_voice_recording(self, checked=False, *, wake_triggered=False):
         if self._quitting:
             return
         if self.wake.defer_microphone(lambda: self.toggle_voice_recording(wake_triggered=wake_triggered)):
-            self.update_status("Hey Nexus mikrofonu bırakıyor…")
+            self.update_status(self.ui_text("Hey Nexus mikrofonu bırakıyor…"))
             return
         if self.voice_record_worker and self.voice_record_worker.isRunning():
             self.mic_btn.setChecked(False)
@@ -1319,7 +1341,7 @@ class SpotlightApp(QMainWindow):
             return
 
         if any(isinstance(worker, VoiceRecordWorker) and worker.isRunning() for worker in self._workers):
-            self.voice_error("Önceki ses işlemi durduruluyor. Biraz sonra yeniden deneyin.")
+            self.voice_error(self.ui_text("Önceki ses işlemi durduruluyor. Biraz sonra yeniden deneyin."))
             return
 
         # An explicit new recording interrupts both generation and speech playback.
@@ -1383,7 +1405,8 @@ class SpotlightApp(QMainWindow):
         self.update_status(self.ui_text(status))
 
     def _voice_level(self, level):
-        self.mic_btn.setToolTip(f"Dinleniyor · ses düzeyi %{min(100, int(level * 100))} · Esc iptal")
+        self.mic_btn.setToolTip(self.ui_text(
+            "Dinleniyor · ses düzeyi %{level} · Esc iptal", level=min(100, int(level * 100))))
 
     def _voice_input_error(self, message):
         self._recording_ready = False
@@ -1404,7 +1427,7 @@ class SpotlightApp(QMainWindow):
             self.mic_btn.setChecked(False)
             self.mic_btn.setToolTip(self.ui_text("Sesli konuş · F2"))
             self.input_line.setEnabled(True)
-            self.update_status("Ses kaydı iptal edildi.")
+            self.update_status(self.ui_text("Ses kaydı iptal edildi."))
 
     def hideEvent(self, event):
         self.notch_controller.stop()
@@ -1456,7 +1479,7 @@ class SpotlightApp(QMainWindow):
             else:
                 self.send_message()
         else:
-            self.display_error("Ses algılanamadı. Lütfen yeniden dene.")
+            self.display_error(self.ui_text("Ses algılanamadı. Lütfen yeniden dene."))
 
     def _render_markdown(self, text):
         # QTextDocument accepts features; QTextBrowser's convenience method does not.
@@ -1526,8 +1549,11 @@ class SpotlightApp(QMainWindow):
         self.stop_btn.hide()
 
     def voice_error(self, message):
+        # Worker and client errors arrive as catalog keys; translate here, where the
+        # window owns the language, and leave unknown backend detail untouched.
+        message = self.ui_text(message)
         self.mic_btn.setChecked(False)
-        self.model_status.setText(f"Ses hatası: {message[:100]}")
+        self.model_status.setText(self.ui_text("Ses hatası:") + " " + message[:100])
         self.model_status.setToolTip(message)
         self.speaker_btn.setToolTip(message)
 

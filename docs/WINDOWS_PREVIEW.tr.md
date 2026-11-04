@@ -2,10 +2,10 @@
 
 **Türkçe** · [English](WINDOWS_PREVIEW.md) · [Belgeler](INDEX.md)
 
-Nexus Beta 2, [GPL dağıtım koşullarıyla](../DISTRIBUTION_LICENSE.tr.md)
+Nexus Beta 3, [GPL dağıtım koşullarıyla](../DISTRIBUTION_LICENSE.tr.md)
 Windows x64 kurulum paketi sunar. İmzasızdır ve beta aşamasındadır.
 Kurulumu ve eşleşen kaynakları
-[sürüm sayfasından](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2) indirin.
+[sürüm sayfasından](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3) indirin.
 
 ## Kullanıcı için
 

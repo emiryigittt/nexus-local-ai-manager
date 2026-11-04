@@ -20,7 +20,7 @@ import certifi
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / "build/source-cache"
 CATALOG = ROOT / "packaging/dependency-sources.json"
-TAG = "v0.3.0-beta.2"
+TAG = "v0.3.0-beta.3"
 
 
 def source_catalog():

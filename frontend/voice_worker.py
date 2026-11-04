@@ -61,6 +61,7 @@ class VoiceRecordWorker(QThread):
                     self.recorder.poll_endpoint()
                 stream = getattr(self.recorder, "stream", None)
                 if stream is not None and not stream.active:
+                    # Catalog key: the window translates it through its UI language.
                     raise RuntimeError("Mikrofon bağlantısı kesildi. Cihazı kontrol edip yeniden deneyin.")
                 if hasattr(self.recorder, "activity"):
                     self.level_changed.emit(self.recorder.activity.level)
@@ -179,6 +180,7 @@ class StreamingVoiceWorker(QThread):
             started = time.monotonic()
             try:
                 if not self.speaker.speak_to_file(sentence, path):
+                    # Catalog key translated by the owning window.
                     raise RuntimeError(self.speaker.last_error or "Ses üretilemedi. Yerel ses motorunu kontrol edin.")
                 if not self.isInterruptionRequested():
                     self.chunk_ready.emit(path, sentence, time.monotonic() - started, self.speaker.backend)

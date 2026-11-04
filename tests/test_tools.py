@@ -103,6 +103,30 @@ async def test_manager_shutdown_reaps_every_connected_server(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_manager_stop_is_an_alias_for_shutdown(tmp_path):
+    registry = ToolRegistry()
+    manager = MCPManager(_fake_store(tmp_path, "fake"), registry)
+    await manager.connect("fake")
+    process = manager.clients["fake"].process
+
+    await manager.stop()
+
+    assert manager.clients == {}
+    assert registry.all() == []
+    assert process.returncode is not None
+
+
+def test_tool_definition_marks_legacy_authorization_fields_deprecated():
+    fields = ToolDefinition.__dataclass_fields__
+
+    for name in ("risk", "requires_confirmation"):
+        assert "deprecated" in fields[name].metadata
+    # Kept for backwards compatibility: authorization reads the SQLite store instead.
+    assert fields["risk"].default == "sensitive"
+    assert fields["requires_confirmation"].default is True
+
+
+@pytest.mark.asyncio
 async def test_manager_shutdown_stops_the_rest_when_one_child_is_wedged(tmp_path):
     class WedgedClient:
         process = None

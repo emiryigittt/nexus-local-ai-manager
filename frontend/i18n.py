@@ -325,8 +325,8 @@ ENGLISH = {
     "Çalışan sağlayıcı bulunamadı. LM Studio, Ollama veya llama.cpp'yi başlatıp yeniden tara.":
         "No running provider found. Start LM Studio, Ollama or llama.cpp and scan again.",
     "{count} çalışan yerel sağlayıcı bulundu.": "Found {count} running local providers.",
-    "Dil değişikliği Kaydet ile uygulanır. Ses, geçmiş ve hafıza pencerelerinin bazı metinleri henüz çevrilmedi.":
-        "Language changes apply on Save. Some voice, history and memory dialog text is not yet translated.",
+    "Dil değişikliği Kaydet ile uygulanır. Karşılama sihirbazı dilini ilk açılışta seçer.":
+        "Language changes apply on Save. The first-run wizard picks its language on first launch.",
     "Yerel model düşünüyor…": "The local model is thinking…",
     "Yanıtını hazırlıyorum…": "Preparing your response…",
     "  ·  Görsel dahil": "  ·  Image included",
@@ -339,6 +339,97 @@ ENGLISH = {
         "The Nexus connection closed before the response completed. Please try again.",
     "İşlemler durduruluyor…": "Stopping active tasks…",
     "Yanıt uzunluk sınırına ulaştı": "Response length limit reached",
+    "Geçmişi açmak için özel oturumdan çıkın.": "Leave the private session to open history.",
+    "Konuşma geçmişi": "Conversation history",
+    "Yerel konuşmalar": "Local conversations",
+    "Konuşmalarda ara…": "Search conversations…",
+    "Sil": "Delete",
+    "Aç": "Open",
+    "Özel oturum mevcut hafızayı okumaz.": "A private session does not read existing memory.",
+    "## Nexus'un hatırladıkları": "## What Nexus remembers",
+    "Henüz etkin bir hafıza yok.": "No active memory yet.",
+    "**{count} aday kayıt onayınızı bekliyor.** Araçlar → Hafızayı yönet → Adayı etkinleştir ile inceleyebilirsiniz. Onaylanmayan adaylar yanıtlarda kullanılmaz.":
+        "**{count} suggested records are awaiting your approval.** Review them via Tools → Manage memory → Activate suggestion. Unapproved suggestions are not used in answers.",
+    "Unutulacak hafıza yok": "No memory to forget",
+    "Son yanıtta kullanılan bir hafıza kaynağı bulunmuyor.": "The last answer did not use a memory source.",
+    "Bu hafızayı unut": "Forget this memory",
+    "Şu kayıt kalıcı olarak silinsin mi?": "Delete this record permanently?",
+    "Hafıza bulunamadı": "Memory not found",
+    "Kaynak numarasını veya hafıza kimliğini kontrol edin.": "Check the source number or memory ID.",
+    "Web erişimi": "Web access",
+    "Bu özellik arama sorgusunu internete gönderir. Web araştırmasına izin verilsin mi?":
+        "This feature sends the search query to the internet. Allow web research?",
+    "Bu görseli incele ve önemli detayları açıkla.": "Inspect this image and explain the key details.",
+    "Görsel analizi": "Image analysis",
+    "Özel oturumda kalıcı hafızaya kayıt yapılmaz.": "Persistent memory is not saved in a private session.",
+    "Hafızaya kaydedildi": "Saved to memory",
+    "Bu bilgi yerel ve düzenlenebilir hafızaya eklendi.": "This information was added to your local, editable memory.",
+    "Özel oturumda kalıcı hafıza düzenlenmez.": "Persistent memory is not edited in a private session.",
+    "Pano erişimi kapalı": "Clipboard access is off",
+    "Pano erişimini Ayarlar bölümünden açabilirsiniz.": "You can enable clipboard access in Settings.",
+    "Pano izni": "Clipboard permission",
+    "Nexus panodaki içeriği okuyup seçili yerel modele gönderebilir mi?":
+        "May Nexus read the clipboard and send it to the selected local model?",
+    "Bir kez izin ver": "Allow once",
+    "İptal": "Cancel",
+    "Seçili metin üzerinde yardımcı ol": "Help with the selected text",
+    "Panodaki görsel": "Clipboard image",
+    "Panodaki içeriği incele": "Inspect clipboard content",
+    "Aşağıdaki içeriği incele ve yardımcı ol:": "Inspect the following content and help me:",
+    "Ek talimat:": "Extra instruction:",
+    "Yerel model boş bir yanıt döndürdü.": "The local model returned an empty response.",
+    "\n\n---\n\n**Kullanılan hafıza kaynakları**\n\n": "\n\n---\n\n**Memory sources used**\n\n",
+    "Hafıza kaynağı": "Memory source",
+    "\n\n*Yanıt kullanıcı tarafından durduruldu.*": "\n\n*Response stopped by the user.*",
+    "Sen": "You",
+    "<div style='color:#fb7185;font-size:11px;font-weight:600'>BAĞLANTI HATASI</div>":
+        "<div style='color:#fb7185;font-size:11px;font-weight:600'>CONNECTION ERROR</div>",
+    "Ses tercihi kaydedilemedi; yalnızca bu oturumda uygulanacak.":
+        "The speech preference could not be saved; it applies to this session only.",
+    "Seslendirme açık · {backend}": "Read aloud on · {backend}",
+    "Seslendirme kapalı · {backend}": "Read aloud off · {backend}",
+    "{backend} · son ses parçası {seconds} sn içinde üretildi": "{backend} · last audio chunk generated in {seconds} s",
+    "Seçili hoparlör bulunamadı. Ayarlardan bağlı bir çıkış seçin.":
+        "The selected speaker was not found. Choose a connected output in Settings.",
+    "Ses oynatılamadı:": "Audio playback failed:",
+    "Hey Nexus mikrofonu bırakıyor…": "Hey Nexus is releasing the microphone…",
+    "Önceki ses işlemi durduruluyor. Biraz sonra yeniden deneyin.":
+        "The previous audio task is stopping. Try again shortly.",
+    "Dinleniyor · ses düzeyi %{level} · Esc iptal": "Listening · level {level}% · Esc to cancel",
+    "Ses kaydı iptal edildi.": "Voice recording cancelled.",
+    "Ses algılanamadı. Lütfen yeniden dene.": "No speech detected. Please try again.",
+    "Ses hatası:": "Speech error:",
+    "Arka plandaki hafıza işleminin durumunu ve yeni adayları getirir.":
+        "Fetches the background memory task status and any new suggestions.",
+    "Son işlem başladı; sonuç henüz kaydedilmedi. Uygulama kapandıysa işlem yarım kalmış olabilir.":
+        "The latest task started; its result is not saved yet. If the app closed, the task may have been interrupted.",
+    "Son işlem başarısız: model bağlantısını ve JSON desteğini kontrol edin.":
+        "The latest task failed: check the model connection and JSON support.",
+    "Hafıza kaydedilemedi: yerel model sunucusuna ulaşılamıyor.":
+        "Memory could not be saved: the local model server is unreachable.",
+    "Hafıza çıkarma zaman aşımına uğradı; model yükünü kontrol edin.":
+        "Memory extraction timed out; check the model load.",
+    "Hafıza kaydedilemedi: model beklenen JSON biçimini döndürmedi.":
+        "Memory could not be saved: the model did not return the expected JSON.",
+    "Son işlem iptal edildi.": "The latest task was cancelled.",
+    "Hafıza kaydedilemedi": "Memory could not be saved",
+    "Hafızayı dışa aktar": "Export memory",
+    "Tüm hafızayı sil": "Delete all memory",
+    "Hafıza özeti, kayıtlar ve sürüm geçmişi kalıcı olarak silinecek.":
+        "The memory summary, records and version history will be deleted permanently.",
+    "Elle kaydedildi": "Saved manually",
+    "Mikrofon bağlantısı kesildi. Cihazı kontrol edip yeniden deneyin.":
+        "The microphone connection was lost. Check the device and try again.",
+    "Ses üretilemedi. Yerel ses motorunu kontrol edin.": "Speech could not be generated. Check the local speech engine.",
+    "Nexus yerel servisine ulaşılamadı.": "Could not reach the local Nexus service.",
+    "Nexus servisi geçersiz bir yanıt döndürdü.": "The Nexus service returned an invalid response.",
+    "Belgeler (*.pdf *.docx *.txt *.md *.rst *.py *.js *.ts *.json *.yaml *.yml *.toml);;Tüm dosyalar (*)":
+        "Documents (*.pdf *.docx *.txt *.md *.rst *.py *.js *.ts *.json *.yaml *.yml *.toml);;All files (*)",
+    "Nexus hakkında": "About Nexus",
+    "<p>Windows için kişisel yapay zekâ yardımcın.</p><p>Birleşik Windows dağıtımı GNU GPL sürüm 3 kapsamındadır. Nexus tarafından yazılan kaynak kod MIT lisansını korur; bağımlılıkların telif ve lisans bildirimleri geçerlidir.</p><p>Uygulamayı ilgili lisansların koşullarıyla inceleyebilir, değiştirebilir ve yeniden dağıtabilirsin. Uygulama garanti verilmeden sunulur.</p>":
+        "<p>Your personal AI companion for Windows.</p><p>The combined Windows distribution is licensed under GNU GPL version 3. Nexus-authored source retains its MIT license; dependencies retain their copyright and license notices.</p><p>You may study, modify and redistribute the application under the applicable licenses. The application is provided without warranty.</p>",
+    "Kaynak arşivleri ve sürüm dosyaları": "Source archives and release files",
+    "Lisansları ve ekli kaynak kodu aç": "Open licenses and included source",
 }
 
 

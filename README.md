@@ -16,9 +16,11 @@ A local-first Windows desktop assistant for Ollama, LM Studio and llama.cpp — 
 
 </div>
 
-![Nexus compact desktop panel](docs/assets/companion/en/dock.png)
+<p align="center">
+<img src="docs/assets/promo/nexus-demo-en.webp" alt="Nexus demo: the top-edge strip opens the panel, a document is added and Nexus answers in Chat" width="600">
+</p>
 
-*Actual interface rendered with synthetic example content; not a recorded model response.*
+*Real Nexus interface with synthetic example content and activity; not a recorded model response.*
 
 Nexus rests in a small strip at the top edge of your screen. Hover to reveal quick
 tools, pin the mini panel, or click to open Chat. `Alt + Space` opens Chat or returns
@@ -28,9 +30,9 @@ interface chimes under **Settings → Appearance**. Review memory in its new car
 Nexus connects to an existing model server; it is not another hosted chatbot
 and does not bundle a language model.
 
-**0.3.0 Beta 2 · Windows installer · Open source.**
-[Download NexusSetup.exe](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/NexusSetup.exe)
-from the [release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2).
+**0.3.0 Beta 3 · Windows installer · Open source.**
+[Download NexusSetup.exe](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.3/NexusSetup.exe)
+from the [release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3).
 Run the installer and open Nexus from Start. Python and a terminal are not required.
 Connect a running Ollama, LM Studio or llama.cpp server and select a model.
 
@@ -40,8 +42,9 @@ under [GNU GPL v3](DISTRIBUTION_LICENSE.md), with matching source archives and
 dependency notices. Nexus-authored source remains MIT. No LLM, Whisper or Supertonic
 weights are bundled; optional speech models are prepared explicitly in Settings.
 
-The main window and General/Privacy settings support English and Turkish.
-Some voice, history, memory and status messages still include Turkish.
+The interface supports English and Turkish: the main window, settings, memory, history,
+about, voice status and tray text follow **Settings → General → Language**. The
+first-run wizard and the introduction keep their own bilingual copy.
 See the [installer and build guide](docs/WINDOWS_PREVIEW.md) and the limits below.
 
 Switch the interface under **Settings → General → Language → Save** (`Ctrl + ,`).

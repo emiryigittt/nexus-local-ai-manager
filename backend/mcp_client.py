@@ -89,7 +89,7 @@ class MCPClient:
             {
                 "protocolVersion": PROTOCOL_VERSION,
                 "capabilities": {},
-                "clientInfo": {"name": "Nexus", "version": "0.3.0-beta.2"},
+                "clientInfo": {"name": "Nexus", "version": "0.3.0-beta.3"},
             },
         )
         await self.notify("notifications/initialized", {})
@@ -271,6 +271,14 @@ class MCPManager:
                     flush=True,
                 )
             self.registry.remove_server(server_id)
+
+    async def stop(self) -> None:
+        """Alias for :meth:`shutdown` so callers can use the same verb as the clients.
+
+        ``MCPClient`` already exposes ``stop()``; mirroring it on the manager keeps
+        ``await mcp_manager.stop()`` working instead of raising ``AttributeError``.
+        """
+        await self.shutdown()
 
 
 mcp_config_store = MCPConfigStore()

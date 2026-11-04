@@ -115,7 +115,7 @@ class SetupDialog(QDialog):
         self.reduced_motion.setToolTip(tr("Logo ve pencere animasyonlarını kapatır; durum bilgileri görünür kalır."))
         model_card.addWidget(self.reduced_motion)
         language_note = QLabel(tr(
-            "Dil değişikliği Kaydet ile uygulanır. Ses, geçmiş ve hafıza pencerelerinin bazı metinleri henüz çevrilmedi."))
+            "Dil değişikliği Kaydet ile uygulanır. Karşılama sihirbazı dilini ilk açılışta seçer."))
         language_note.setWordWrap(True)
         language_note.setObjectName("settingsNote")
         layout.addWidget(language_note)
@@ -194,7 +194,7 @@ class SetupDialog(QDialog):
         try:
             discovered = request_json("POST", "/api/v1/providers/discover")
         except RuntimeError as exc:
-            self.status.setText(str(exc))
+            self.status.setText(self.ui_text(str(exc)))
             return
         self.results = {item["id"]: item for item in discovered}
         healthy = [item for item in discovered if item.get("healthy")]

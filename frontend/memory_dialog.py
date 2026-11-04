@@ -246,7 +246,7 @@ class MemoryDialog(QDialog):
         footer.addWidget(self.counts)
         footer.addStretch()
         refresh = QPushButton(ui("Yenile"))
-        refresh.setToolTip("Arka plandaki hafıza işleminin durumunu ve yeni adayları getirir.")
+        refresh.setToolTip(ui("Arka plandaki hafıza işleminin durumunu ve yeni adayları getirir."))
         refresh.clicked.connect(self.refresh)
         footer.addWidget(refresh)
         export = QPushButton(ui("Dışa aktar"))
@@ -284,13 +284,13 @@ class MemoryDialog(QDialog):
         detail = self.ui("Henüz bir otomatik hafıza işlemi yok.")
         if job:
             detail = {
-                "running": "Son işlem başladı; sonuç henüz kaydedilmedi. Uygulama kapandıysa işlem yarım kalmış olabilir.",
+                "running": self.ui("Son işlem başladı; sonuç henüz kaydedilmedi. Uygulama kapandıysa işlem yarım kalmış olabilir."),
                 "completed": self.ui("Son işlem: {count} yeni aday. Adayları seçip etkinleştirin.", count=job["count"]),
-                "failed": "Son işlem başarısız: model bağlantısını ve JSON desteğini kontrol edin.",
-                "model_unavailable": "Hafıza kaydedilemedi: yerel model sunucusuna ulaşılamıyor.",
-                "timeout": "Hafıza çıkarma zaman aşımına uğradı; model yükünü kontrol edin.",
-                "invalid_output": "Hafıza kaydedilemedi: model beklenen JSON biçimini döndürmedi.",
-                "cancelled": "Son işlem iptal edildi.",
+                "failed": self.ui("Son işlem başarısız: model bağlantısını ve JSON desteğini kontrol edin."),
+                "model_unavailable": self.ui("Hafıza kaydedilemedi: yerel model sunucusuna ulaşılamıyor."),
+                "timeout": self.ui("Hafıza çıkarma zaman aşımına uğradı; model yükünü kontrol edin."),
+                "invalid_output": self.ui("Hafıza kaydedilemedi: model beklenen JSON biçimini döndürmedi."),
+                "cancelled": self.ui("Son işlem iptal edildi."),
             }.get(job["state"], "")
         self.learning_status.setText(self.ui(
             "Hafıza: {enabled} · Otomatik öneriler: {learning}",
@@ -350,7 +350,7 @@ class MemoryDialog(QDialog):
         self.confidence.setValue(float(memory["confidence"]))
         self.importance.setValue(float(memory["importance"]))
         self.pinned.setChecked(bool(memory["pinned"]))
-        source = memory.get("source_conversation_id") or "Elle kaydedildi"
+        source = memory.get("source_conversation_id") or self.ui("Elle kaydedildi")
         self.source.setText(str(source))
 
     def save_selected(self) -> None:
@@ -374,7 +374,7 @@ class MemoryDialog(QDialog):
             )
             self.repository.set_profile_summary(self.summary.toPlainText())
         except ValueError as exc:
-            QMessageBox.warning(self, "Hafıza kaydedilemedi", str(exc))
+            QMessageBox.warning(self, self.ui("Hafıza kaydedilemedi"), str(exc))
             return
         self.refresh()
 
@@ -390,7 +390,7 @@ class MemoryDialog(QDialog):
 
     def export_json(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Hafızayı dışa aktar", "nexus-memory.json", "JSON (*.json)"
+            self, self.ui("Hafızayı dışa aktar"), "nexus-memory.json", "JSON (*.json)"
         )
         if path:
             payload = {
@@ -404,8 +404,8 @@ class MemoryDialog(QDialog):
     def delete_everything(self) -> None:
         answer = QMessageBox.warning(
             self,
-            "Tüm hafızayı sil",
-            "Hafıza özeti, kayıtlar ve sürüm geçmişi kalıcı olarak silinecek.",
+            self.ui("Tüm hafızayı sil"),
+            self.ui("Hafıza özeti, kayıtlar ve sürüm geçmişi kalıcı olarak silinecek."),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
             QMessageBox.StandardButton.Cancel,
         )

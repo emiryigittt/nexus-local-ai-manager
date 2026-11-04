@@ -1,5 +1,5 @@
 #define Root SourcePath + ".."
-#define AppVersion "0.3.0-beta.2"
+#define AppVersion "0.3.0-beta.3"
 
 [Setup]
 AppId={{61E722A9-E745-41D0-BE45-9D334730D46D}

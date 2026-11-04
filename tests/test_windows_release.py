@@ -10,6 +10,12 @@ from scripts.finalize_windows_release import ASSETS, REQUIRED_CHECKS, TAG
 from scripts.publish_windows_release import trusted_context, verify_assets
 
 
+def project_version(tag: str) -> str:
+    """Map a release tag such as v0.3.0-beta.3 to its PEP 440 project version."""
+    version, beta = tag.lstrip("v").split("-beta.")
+    return f"{version}b{beta}"
+
+
 @pytest.fixture
 def release(tmp_path):
     def write(name, data):
@@ -98,10 +104,10 @@ def test_draft_refresh_requires_verified_assets_and_uses_release_id(monkeypatch,
     for file in source.iterdir():
         if file.is_file():
             shutil.copyfile(file, folder / file.name)
-    (repository / "pyproject.toml").write_text('[project]\nversion="0.3.0b2"\n')
+    (repository / "pyproject.toml").write_text(f'[project]\nversion="{project_version(TAG)}"\n')
     notes = repository / "docs/releases"
     notes.mkdir(parents=True)
-    (notes / "v0.3.0-beta.2.md").write_text("Synthetic release notes")
+    (notes / f"{TAG}.md").write_text("Synthetic release notes")
     monkeypatch.setattr(publisher, "ROOT", repository)
     monkeypatch.setattr("sys.argv", ["publisher"])
     for key, value in {"GITHUB_REPOSITORY": publisher.REPOSITORY, "GITHUB_EVENT_NAME": "push", "GITHUB_REF": "refs/heads/main", "GITHUB_SHA": "a" * 40, "GITHUB_TOKEN": "synthetic"}.items():

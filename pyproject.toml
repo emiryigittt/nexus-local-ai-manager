@@ -1,6 +1,6 @@
 [project]
 name = "nexus-local-ai"
-version = "0.3.0b2"
+version = "0.3.0b3"
 description = "A private, Spotlight-style AI command center for Windows"
 readme = "README.md"
 requires-python = ">=3.11"

@@ -5,6 +5,7 @@ alongside it. Dilini seç: İngilizce global giriş, Türkçe eş belgelerle des
 
 | Topic / Konu | English | Türkçe |
 | --- | --- | --- |
+| Windows installer beta / Windows kurulum betası | [Release notes](releases/v0.3.0-beta.3.md) | [İki dilli sürüm notları](releases/v0.3.0-beta.3.md#türkçe) |
 | First source beta / İlk kaynak kod betası | [Release notes](releases/v0.3.0-beta.1.md) | [İki dilli sürüm notları](releases/v0.3.0-beta.1.md#türkçe-başlangıç) |
 | Introduction and setup / Tanıtım ve kurulum | [README](../README.md) | [README](../README.tr.md) |
 | Windows installer preview / Windows kurulum önizlemesi | [Build and use](WINDOWS_PREVIEW.md) | [Kurulum ve kullanım](WINDOWS_PREVIEW.tr.md) |
@@ -30,12 +31,17 @@ The [synthetic demo fixture](demo/project-brief.md) includes both languages.
 
 [Logo and visual identity / Logo ve görsel kimlik](BRAND.md) is bilingual / iki dillidir.
 
-The main window and General/Privacy settings now support English and Turkish.
-Voice, history, memory dialogs and some status/error messages remain partly Turkish;
-documentation translation does not mean full application localization.
-Ana pencere ve Genel/Gizlilik ayarları artık Türkçe ve İngilizceyi destekliyor.
-Ses, geçmiş, hafıza pencereleri ve bazı durum/hata mesajları kısmen Türkçe;
-belge çevirisi tüm uygulamanın çevrildiği anlamına gelmez.
+The interface supports English and Turkish. The main window, settings, memory, history,
+About, clipboard consent, voice status, tray menu and error messages follow
+**Settings → General → Language**; the first-run wizard, the introduction and local
+speech setup keep their own bilingual copy. Answers, saved memory text and user input
+are never translated. Documentation translation does not mean full application
+localization.
+Arayüz Türkçe ve İngilizceyi destekler. Ana pencere, ayarlar, hafıza, geçmiş, hakkında,
+pano izni, ses durumu, sistem tepsisi menüsü ve hata mesajları
+**Ayarlar → Genel → Dil** seçimini izler; karşılama sihirbazı, tanışma ve yerel ses
+kurulumu kendi çift dilli metinlerini kullanır. Yanıtlar, kayıtlı hafıza metinleri ve
+kullanıcı girdisi çevrilmez; belge çevirisi tüm uygulamanın çevrildiği anlamına gelmez.
 
 Technical working records remain in their original language:
 [architecture map](ARCHITECTURE.md) for agents and maintainers,
@@ -56,17 +62,17 @@ karşılıklı dil bağlantılarını doğrular, çeviri doğruluğunu değil.
 
 ## Gate status / Kapı durumu
 
-Measured on 2 November 2026 in this working tree / bu çalışma ağacında ölçüldü:
+Measured on 4 November 2026 in this working tree / bu çalışma ağacında ölçüldü:
 
 | Check / Kontrol | Result / Sonuç |
 | --- | --- |
 | Publication gate findings (`scripts/check_public_repo.py`) / Yayın kapısı bulguları | 0 findings / 0 bulgu |
-| Collected tests / Toplanan testler | 413 tests in 43 files / 43 dosyada 413 test |
+| Collected tests / Toplanan testler | 415 tests in 43 files / 43 dosyada 415 test |
 | Localhost routes in `backend/main.py` / Yerel ağ rotaları | 35 (17 GET, 11 POST, 4 DELETE, 2 PUT, 1 PATCH) |
 | Registered built-in tools / Kayıtlı yerleşik araçlar | 1 static (`local:file.read`); MCP tools register dynamically / MCP araçları dinamik kaydolur |
 | Built-in safe actions / Yerleşik güvenli eylemler | 5 |
 | Maintained bilingual pairs in `docs/languages.json` / İki dilli belge çifti | 17 |
-| Links resolved from this page / Bu sayfadan çözümlenen bağlantı | 47 of 47 |
+| Links resolved from this page / Bu sayfadan çözümlenen bağlantı | 49 links, 46 unique targets / 49 bağlantı, 46 benzersiz hedef |
 
 Only the gate result binds a release; the other rows move with the code and must be
 re-measured before they are quoted elsewhere.

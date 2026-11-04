@@ -5,10 +5,13 @@ from weakref import ref
 import httpx
 import pytest
 from PyQt6 import sip
-from PyQt6.QtWidgets import QApplication, QDialogButtonBox, QLabel
+from PyQt6.QtWidgets import QApplication, QDialogButtonBox, QLabel, QTextBrowser
 
+from backend.conversations import ConversationRepository
 from backend.user_settings import SettingsStore
+from frontend.about_dialog import AboutDialog
 from frontend.app import ChatWorker, SpotlightApp
+from frontend.history_dialog import HistoryDialog
 from frontend.i18n import ENGLISH, UiText
 from frontend.setup_dialog import SetupDialog
 
@@ -165,3 +168,26 @@ async def test_worker_translates_status_not_user_text(monkeypatch):
     assert chunks == ["Aynı yanıt"]
     assert captured[0]["text"] == "Aynı soru"
     assert captured[0]["private"] is False
+
+
+def test_history_and_about_dialogs_follow_the_window_language(language_store, tmp_path):
+    app = QApplication.instance() or QApplication([])
+    window = SpotlightApp()
+    history = about = turkish = None
+    try:
+        history = HistoryDialog(ConversationRepository(tmp_path / "history.db"), parent=window)
+        assert history.windowTitle() == "Conversation history"
+        assert history.search.placeholderText() == "Search conversations…"
+        about = AboutDialog(window)
+        assert about.windowTitle() == "About Nexus"
+        assert "Your personal AI companion for Windows." in about.findChild(QTextBrowser).toPlainText()
+        # A dialog raised without the window falls back to the Turkish source text.
+        turkish = HistoryDialog(ConversationRepository(tmp_path / "turkish.db"))
+        assert turkish.windowTitle() == "Konuşma geçmişi"
+    finally:
+        for dialog in (history, about, turkish):
+            if dialog is not None:
+                dialog.close()
+        window.close()
+        app.processEvents()
+

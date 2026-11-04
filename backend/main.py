@@ -52,7 +52,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Nexus Local API",
     description="Local gateway for the Nexus desktop command center.",
-    version="0.3.0-beta.2",
+    version="0.3.0-beta.3",
     lifespan=lifespan,
 )
 app.add_middleware(

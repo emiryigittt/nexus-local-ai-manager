@@ -42,16 +42,16 @@ triple-backtick fences is not link-checked.
 
 * `MCPManager.shutdown()` (`mcp_client.py:248-274`) stops every connected client, and
   `main.py:45-49` calls it from the ASGI lifespan, so a clean backend exit reaps its
-  MCP children. There is still **no** `MCPManager.stop()` — writing
-  `await mcp_manager.stop()` raises `AttributeError`.
+  MCP children. `MCPManager.stop()` (`mcp_client.py:275-281`) is an alias that awaits
+  `shutdown()`, so either verb works.
 * `run_nexus.py` stops the backend with `terminate()`, which skips all Python-level
   cleanup. What reaps the survivors is a Windows kill-on-close job
   (`backend/process_job.py`), not the shutdown handler.
 * MCP stderr is drained into a bounded tail by a background task. Never read
   `process.stderr` yourself: a pipe nobody reads fills and the child blocks in
   `write(2)`.
-* `ToolDefinition.risk` and `requires_confirmation` are never read by the
-  authorizer. Authorization depends only on the `consent` request field and the
+* `ToolDefinition.risk` and `requires_confirmation` are **deprecated**: the authorizer
+  never reads them. Authorization depends only on the `consent` request field and the
   stored `tool_permissions` row.
 * A tool call with no stored permission returns **HTTP 409**, not 403. A client must
   prompt and retry with `consent`. `consent: "once"` is not persisted.
@@ -63,6 +63,16 @@ triple-backtick fences is not link-checked.
   `local:file.read` as an import side effect.
 * Search results are polluted by `.pytest-tmp/`, `.pytest_cache/` and `tmp/`
   fixtures. Scope greps to `backend/` and `frontend/`.
+* UI text is keyed by its Turkish source string in the `ENGLISH` catalog
+  (`frontend/i18n.py`). `tests/test_i18n.py` fails when a key is missing or when the
+  `{fields}` differ between the two languages, so add both sides in one edit.
+* Background workers and `api_client` raise Turkish **catalog keys** instead of
+  translating: the window owns the language and passes them through `UiText` at its
+  boundary. Never translate answers, saved memory, user input, or provider, model,
+  voice and command identifiers.
+* `UiText` runs `str.format` only when keyword values are passed, so arbitrary text
+  must be concatenated rather than embedded as a `{placeholder}` — a filename, clipboard
+  snippet or model error containing braces would otherwise raise `KeyError`.
 
 ## Where things live
 
@@ -73,6 +83,7 @@ triple-backtick fences is not link-checked.
 | Tool metadata and ids | `backend/tool_registry.py` |
 | MCP config, stdio client, manager | `backend/mcp_client.py` |
 | Data directory and file locations | `backend/app_paths.py` |
+| UI language catalog (`UiText`, `ENGLISH`) | `frontend/i18n.py` |
 | Environment-backed settings | `backend/config.py` |
 | Launcher and process supervision | `run_nexus.py` |
 | Windows job object that reaps the tree | `backend/process_job.py` |

@@ -5,6 +5,24 @@ All notable changes to Nexus are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.3] - 2026-11-04
+
+Maintenance beta. Release notes: [docs/releases/v0.3.0-beta.3.md](docs/releases/v0.3.0-beta.3.md).
+
+### Changed
+
+- One UI catalog now drives the desktop language. History, memory, About, clipboard
+  consent, image and clipboard prompts, voice status, tooltips, tray menu and error
+  messages follow **Settings → General → Language** instead of staying Turkish.
+  The first-run wizard, the introduction and local speech setup keep their own
+  bilingual copy; provider, model, voice and command identifiers stay untranslated.
+- English arrives only in the English interface: answers, saved memory text, drafts
+  and user input are never translated.
+- The memory-source heading and the speech buffer marker share one translated string,
+  so read-aloud still stops exactly where an answer ends.
+- The language note in settings now describes the first-run wizard instead of the
+  dialogs that are translated.
+
 ### Fixed
 
 - Stopping the local API now also stops the MCP servers it started, so a clean exit
@@ -13,6 +31,37 @@ All notable changes to Nexus are documented here. The project follows
   Windows job, and closing it releases everything still running.
 - An MCP server that writes a lot to stderr no longer stalls its own session, and a
   request that times out now reports what that server last printed.
+
+### Verification
+
+- `tests/test_i18n.py` checks catalog key parity, format fields, live language
+  bindings and the English main window; the full suite passes on Windows.
+
+## [0.3.0-beta.2] - 2026-10-02
+
+First Windows installer beta. Release notes: [docs/releases/v0.3.0-beta.2.md](docs/releases/v0.3.0-beta.2.md).
+
+### Added
+
+- `NexusSetup.exe` Windows installer; Python and a terminal are not required.
+  The combined Windows application is distributed under GNU GPL v3; Nexus-authored
+  source remains MIT and original dependency notices are preserved.
+- Corresponding Nexus and dependency source archives, pinned build inputs, license
+  texts and SHA-256 checksums published alongside the installer.
+- **Tools → About Nexus and licenses** opens local notices and source access.
+
+### Changed
+
+- Local neural speech writes standard mono PCM16 WAV, rejects invalid samples and
+  no longer needs SoundFile/libsndfile. Unused native plugins are excluded.
+- Release publishing resolves unpublished drafts by ID, streams verified assets and
+  prevents superseded builds from publishing.
+
+### Verification
+
+- Automated checks cover the frozen desktop, a synthetic local model connection,
+  the API, documents, clean installation, repeated installation and
+  uninstall/data retention. The installer is unsigned.
 
 ## [0.3.0-beta.1] - 2026-10-01
 

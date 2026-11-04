@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TAG = "v0.3.0-beta.2"
+TAG = "v0.3.0-beta.3"
 ASSETS = {"NexusSetup.exe", "Nexus-source.zip", "Nexus-dependency-sources.zip", "windows-package-check.json", "dependency-sources.json"}
 REQUIRED_CHECKS = {"installer_completed", "installed_app_opens_without_python", "installer_upgrade_completed", "uninstaller_completed", "uninstall_preserves_user_data", "uninstall_removes_test_registration", "packaged_distribution_notices", "unneeded_native_libraries_excluded"}
 

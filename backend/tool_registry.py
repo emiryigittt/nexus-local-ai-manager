@@ -5,17 +5,31 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+DEPRECATED_NOTICE = "informational only; the authorizer never reads this field"
+
 
 @dataclass(frozen=True, slots=True)
 class ToolDefinition:
+    """Metadata for one built-in or MCP-provided tool.
+
+    ``risk`` and ``requires_confirmation`` are **deprecated**. They are kept so
+    existing call sites keep working, and ``risk`` is still validated by
+    :meth:`ToolRegistry.register`, but authorization depends only on the stored
+    ``tool_permissions`` row and the ``consent`` request field. Do not build consent
+    UI or policy on these attributes; read
+    :class:`backend.tool_security.ToolSecurityStore` instead.
+    """
+
     id: str
     name: str
     description: str
     input_schema: dict[str, Any] = field(default_factory=lambda: {"type": "object"})
     source: str = "built-in"
     server_id: str = ""
-    risk: str = "sensitive"
-    requires_confirmation: bool = True
+    risk: str = field(default="sensitive", metadata={"deprecated": DEPRECATED_NOTICE})
+    requires_confirmation: bool = field(
+        default=True, metadata={"deprecated": DEPRECATED_NOTICE}
+    )
 
     def public(self) -> dict[str, Any]:
         return asdict(self)

@@ -14,6 +14,7 @@ from PyQt6.QtWidgets import (
 )
 
 from backend.conversations import ConversationRepository, conversation_repository
+from frontend.i18n import UiText
 
 
 class HistoryDialog(QDialog):
@@ -21,28 +22,31 @@ class HistoryDialog(QDialog):
         super().__init__(parent)
         self.repository = repository
         self.selected_conversation_id: str | None = None
-        self.setWindowTitle("Konuşma geçmişi")
+        inherited = getattr(parent, "ui_text", None)
+        self.ui_text = inherited if isinstance(inherited, UiText) else UiText()
+        ui = self.ui_text
+        self.setWindowTitle(ui("Konuşma geçmişi"))
         self.setMinimumSize(560, 430)
         layout = QVBoxLayout(self)
-        title = QLabel("Yerel konuşmalar")
+        title = QLabel(ui("Yerel konuşmalar"))
         title.setObjectName("dialogTitle")
         layout.addWidget(title)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Konuşmalarda ara…")
+        self.search.setPlaceholderText(ui("Konuşmalarda ara…"))
         self.search.textChanged.connect(self.refresh)
         layout.addWidget(self.search)
         self.list = QListWidget()
         self.list.itemDoubleClicked.connect(self.open_selected)
         layout.addWidget(self.list, 1)
         buttons = QHBoxLayout()
-        delete = QPushButton("Sil")
+        delete = QPushButton(ui("Sil"))
         delete.clicked.connect(self.delete_selected)
         buttons.addWidget(delete)
         buttons.addStretch()
-        close = QPushButton("Kapat")
+        close = QPushButton(ui("Kapat"))
         close.clicked.connect(self.reject)
         buttons.addWidget(close)
-        open_button = QPushButton("Aç")
+        open_button = QPushButton(ui("Aç"))
         open_button.clicked.connect(self.open_selected)
         buttons.addWidget(open_button)
         layout.addLayout(buttons)

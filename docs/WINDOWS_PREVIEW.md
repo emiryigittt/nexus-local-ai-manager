@@ -2,10 +2,10 @@
 
 **English** · [Türkçe](WINDOWS_PREVIEW.tr.md) · [Documentation](INDEX.md)
 
-Nexus Beta 2 provides a Windows x64 installer under the
+Nexus Beta 3 provides a Windows x64 installer under the
 [GPL distribution terms](../DISTRIBUTION_LICENSE.md). It is unsigned and remains a beta.
 Download the installer and corresponding sources from the
-[release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2).
+[release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3).
 
 ## For users
 

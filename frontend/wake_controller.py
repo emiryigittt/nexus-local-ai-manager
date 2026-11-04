@@ -30,7 +30,7 @@ class WakeController(QObject):
         self.tray = QSystemTrayIcon(self)
         self._tray_active = None
         self.menu = QMenu(window)
-        self.status_action = self.menu.addAction("Hey Nexus · Kapalı")
+        self.status_action = self.menu.addAction(window.ui_text("○ Hey Nexus · Kapalı"))
         self.status_action.setEnabled(False)
         self.toggle_action = self.menu.addAction("Hey Nexus: devam et", self.toggle)
         self.snooze_action = self.menu.addAction("15 dakika ertele", self.snooze)

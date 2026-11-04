@@ -98,7 +98,7 @@ def main():
     args = parser.parse_args()
     sha = trusted_context()
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    if project["project"]["version"] != "0.3.0b2":
+    if project["project"]["version"] != "0.3.0b3":
         print("Windows beta publisher skipped: project version has advanced")
         return
     token = os.environ["GITHUB_TOKEN"]
@@ -122,11 +122,11 @@ def main():
         return
     folder = ROOT / "dist/release"
     verify_assets(folder, sha)
-    notes = ROOT / "docs/releases/v0.3.0-beta.2.md"
+    notes = ROOT / "docs/releases/v0.3.0-beta.3.md"
     if not existing:
         existing = request_api("releases", token, "POST", {
             "tag_name": TAG, "target_commitish": sha, "draft": True,
-            "prerelease": True, "name": "Nexus 0.3.0 Beta 2 — Windows installer",
+            "prerelease": True, "name": "Nexus 0.3.0 Beta 3 — Windows installer",
             "body": notes.read_text(encoding="utf-8"),
         })
     elif existing.get("target_commitish") != sha:

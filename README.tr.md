@@ -16,9 +16,11 @@ Ollama, LM Studio ve llama.cpp ile sohbet, belgeler, ses ve kontrolü sende olan
 
 </div>
 
-![Nexus masaüstü paneli](docs/assets/companion/tr/dock.png)
+<p align="center">
+<img src="docs/assets/promo/nexus-demo-tr.webp" alt="Nexus tanıtımı: üst kenar şeridi paneli açar, belge eklenir ve Nexus sohbette yanıt verir" width="600">
+</p>
 
-*Gerçek arayüzün yapay örnek içerikle oluşturulmuş görüntüsüdür; kaydedilmiş bir model yanıtı değildir.*
+*Gerçek Nexus arayüzü, yapay örnek içerik ve etkinlikle; kaydedilmiş bir model yanıtı değildir.*
 
 Nexus ekranın üst kenarında küçük bir şerit olarak durur. Üzerine gelince araçları
 görürsün; mini paneli sabitleyebilir veya tıklayıp sohbeti açabilirsin. `Alt + Space`
@@ -28,9 +30,9 @@ rengini, isteğe bağlı kenar ışığını, mini bot veya kediyi ve ses efektl
 Hafıza kayıtlarını yenilenen kart görünümünden incele, onayla ve düzenle.
 Nexus bir model sunucusuna bağlanır; bulut sohbet hizmeti değildir ve dil modeli içermez.
 
-**0.3.0 Beta 2 · Windows kurulum paketi · Açık kaynak.**
-[NexusSetup.exe dosyasını indir](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.2/NexusSetup.exe)
-veya [sürüm sayfasını aç](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.2).
+**0.3.0 Beta 3 · Windows kurulum paketi · Açık kaynak.**
+[NexusSetup.exe dosyasını indir](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.3/NexusSetup.exe)
+veya [sürüm sayfasını aç](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3).
 Kurulumu çalıştır ve Başlat menüsünden Nexus'u aç. Python veya terminal gerekmez.
 Çalışan Ollama, LM Studio veya llama.cpp sunucusuna bağlanıp modelini seç.
 
@@ -41,8 +43,9 @@ bağımlılık bildirimleriyle sunulur. Nexus'un kendi kaynak kodu MIT lisansın
 LLM, Whisper ve Supertonic ağırlıkları pakete dahil değildir; isteğe bağlı konuşma
 modelleri Ayarlar bölümünden açık bir işlemle hazırlanır.
 
-Ana pencere ve Genel/Gizlilik ayarları Türkçe ve İngilizceyi destekler.
-Bazı ses, geçmiş, hafıza ve durum mesajları hâlâ Türkçedir.
+Ana pencere, ayarlar, hafıza, geçmiş, hakkında, ses durumu ve sistem tepsisi metinleri
+Türkçe ve İngilizceyi destekler; **Ayarlar → Genel → Dil** ile değiştirilir.
+Karşılama sihirbazı ve tanışma kendi çift dilli metinlerini kullanır.
 [Kurulum ve derleme rehberine](docs/WINDOWS_PREVIEW.tr.md) ve aşağıdaki sınırlara bak.
 
 **Ayarlar → Genel → Dil → Kaydet** (`Ctrl + ,`) üzerinden dili değiştirebilirsin.
