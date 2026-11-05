@@ -6,55 +6,38 @@
 
 ### Your local model. One shortcut away.
 
-A local-first Windows desktop assistant for Ollama, LM Studio and llama.cpp — conversations, documents, voice, and memory you control.
+**A desktop home for the AI models you run yourself.**
+
+Nexus brings **Ollama, LM Studio and llama.cpp** into one Windows assistant — with chat, document search, voice and memory you can inspect and control.
 
 **English** · [Türkçe](README.tr.md)
 
 [![Windows CI](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/emiryigittt/nexus-local-ai-manager/actions/workflows/ci.yml)
 
-[▶ Watch Nexus · English / Türkçe · 50s](#watch-nexus-in-50-seconds)
+[**⬇ Download for Windows**](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3) · [▶ Watch the 50-second demo](#watch-nexus-in-50-seconds)
 
 </div>
 
 <p align="center">
-<img src="docs/assets/promo/nexus-demo-en.webp" alt="Nexus demo: the top-edge strip opens the panel, a document is added and Nexus answers in Chat" width="600">
+<img src="docs/assets/promo/nexus-demo-en.webp" alt="Nexus Windows desktop assistant showing its compact panel and document chat" width="600">
 </p>
 
 *Real Nexus interface with synthetic example content and activity; not a recorded model response.*
 
-Nexus rests in a small strip at the top edge of your screen. Hover to reveal quick
-tools, pin the mini panel, or click to open Chat. `Alt + Space` opens Chat or returns
-to the strip. Drop PDF, DOCX or text files to add them to your local library.
-Choose an RGB accent, optional slow rainbow glow, mini bot or cat, and optional
-interface chimes under **Settings → Appearance**. Review memory in its new card view.
-Nexus connects to an existing model server; it is not another hosted chatbot
-and does not bundle a language model.
+### Why Nexus?
 
-**0.3.0 Beta 3 · Windows installer · Open source.**
-[Download NexusSetup.exe](https://github.com/emiryigittt/nexus-local-ai-manager/releases/download/v0.3.0-beta.3/NexusSetup.exe)
-from the [release page](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3).
-Run the installer and open Nexus from Start. Python and a terminal are not required.
-Connect a running Ollama, LM Studio or llama.cpp server and select a model.
+- **Use your models:** connect to an existing Ollama, LM Studio or llama.cpp server.
+- **Ask your documents:** work with PDF, DOCX, Markdown, text and code files.
+- **Keep control of memory:** inspect, edit and approve what Nexus remembers.
+- **Work your way:** use voice, keyboard shortcuts, prompt actions and conversation history.
 
-The installer is unsigned; Windows may display a publisher warning. Verify it with
-the release's `SHA256SUMS.txt`. The combined Windows application is distributed
-under [GNU GPL v3](DISTRIBUTION_LICENSE.md), with matching source archives and
-dependency notices. Nexus-authored source remains MIT. No LLM, Whisper or Supertonic
-weights are bundled; optional speech models are prepared explicitly in Settings.
+Nexus stays close at hand: reveal its compact top-edge panel, pin the mini panel, or press **Alt + Space** to open Chat. Choose your accent, companion and interface sounds in Settings.
 
-The interface supports English and Turkish: the main window, settings, memory, history,
-about, voice status and tray text follow **Settings → General → Language**. The
-first-run wizard and the introduction keep their own bilingual copy.
-See the [installer and build guide](docs/WINDOWS_PREVIEW.md) and the limits below.
+**Get started in minutes:** download the Windows installer, launch Nexus, connect a running local model server and select a model. **Python and a terminal are not required.**
 
-Switch the interface under **Settings → General → Language → Save** (`Ctrl + ,`).
-The first-run wizard also lets you choose the language and test a local model.
-In Turkish: **Ayarlar → Genel → Dil → Kaydet**. No restart is needed.
+[Download the latest beta](https://github.com/emiryigittt/nexus-local-ai-manager/releases/tag/v0.3.0-beta.3) · [Installation guide](docs/WINDOWS_PREVIEW.md) · [User guide](docs/USER_GUIDE.md) · [Privacy](docs/PRIVACY.md) · [Contribute](CONTRIBUTING.md)
 
-[Get started](#get-started) · [User guide](docs/USER_GUIDE.md) ·
-[Privacy](docs/PRIVACY.md) · [Contribute](CONTRIBUTING.md) · [Roadmap](ROADMAP.md)
-
-[All documentation — English / Türkçe](docs/INDEX.md)
+<sub>**Current release: 0.3.0 Beta 3.** The installer is unsigned, so Windows may show a publisher warning. Verify the download using the SHA256 file on the release page. Nexus connects to your model server; it does not bundle an LLM. See the privacy and security boundaries below before enabling web or third-party tools.</sub>
 
 ## Watch Nexus in 50 seconds
 
